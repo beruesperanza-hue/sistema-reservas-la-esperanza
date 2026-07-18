@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Reservation {
+  id        String   @id @default(cuid())
+  nombre    String
+  apellido  String
+  email     String
+  telefono  String
+  personas  Int
+  fecha     DateTime
+  hora      String
+  comentarios String?
+  estado    String   @default("confirmada")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fecha, hora, email])
+  @@index([fecha])
+  @@index([estado])
+}
+
+model Schedule {
+  id        String   @id @default(cuid())
+  dia       String
+  hora      String
+  capacidad Int      @default(20)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([dia, hora])
+  @@index([dia])
+}
+
+model Settings {
+  id                    String  @id @default(cuid())
+  nombreRestaurante     String  @default("La Esperanza")
+  emailRestaurante      String  @default("reservas@laesperanza.com")
+  telefonoRestaurante   String  @default("")
+  direccionRestaurante  String  @default("")
+  capacidadPorTurno     Int     @default(20)
+  diasAvanzados         Int     @default(60)
+  mensajeConfirmacion   String  @default("¡Gracias! Tu reserva fue realizada correctamente.")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  email     String?  @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

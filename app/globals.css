@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Lora", Georgia, serif;
+  background-color: #ffffff;
+  color: #2c2c2c;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #7a5f47;
+}
+
+h1 {
+  font-size: 3rem;
+  color: #9d7e52;
+  font-style: italic;
+}
+
+h2 {
+  font-size: 2.2rem;
+  color: #8a6d42;
+}
+
+h3 {
+  font-size: 1.5rem;
+  color: #9d7e52;
+}
+
+.btn {
+  @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 cursor-pointer;
+}
+
+.btn-primary {
+  @apply bg-esperanza-600 text-white hover:bg-esperanza-700 active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-esperanza-100 text-esperanza-700 hover:bg-esperanza-200 active:scale-95;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white hover:bg-red-600 active:scale-95;
+}
+
+.form-input {
+  @apply w-full px-4 py-2 border border-esperanza-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-esperanza-500 transition-all;
+}
+
+.card {
+  @apply bg-white border border-esperanza-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+  }
+  
+  .card {
+    background-color: #2a2a2a;
+    border-color: #444;
+  }
+
+  .form-input {
+    background-color: #333;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+}

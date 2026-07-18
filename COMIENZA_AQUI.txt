@@ -1,0 +1,93 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║            SISTEMA DE RESERVAS LA ESPERANZA - COMIENZA AQUI                ║
+║                      ¡Listo en 5 minutos!                                  ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📍 UBICACIÓN:
+   /Users/martinberaldi/Desktop/Staff/CLAUDITO/LA ESPERANZA/sistema-reservas
+
+⚡ INSTALACIÓN RÁPIDA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣  Abre Terminal y ve a la carpeta:
+    cd "/Users/martinberaldi/Desktop/Staff/CLAUDITO/LA ESPERANZA/sistema-reservas"
+
+2️⃣  Instala dependencias:
+    npm install
+
+3️⃣  Crea la base de datos:
+    npm run db:push
+    npm run db:seed
+
+4️⃣  Inicia el servidor:
+    npm run dev
+
+5️⃣  Abre en tu navegador:
+    🌐 http://localhost:3000/reservas    (Página pública)
+    🔐 http://localhost:3000/admin       (Panel de admin)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔑 LOGIN ADMIN:
+   Usuario: admin
+   Contraseña: admin123
+
+   ⚠️  Cambiar después del primer login
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTACIÓN:
+   • README.md - Documentación técnica completa
+   • INSTRUCCIONES_INSTALACION.md - Guía detallada con troubleshooting
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ LO QUE INCLUYE:
+
+✅ Página pública de reservas (formulario 3 pasos)
+✅ Panel de administración completo
+✅ Dashboard con estadísticas
+✅ Gestión de horarios
+✅ Autenticación segura
+✅ Email de confirmación (configurable)
+✅ Base de datos SQLite (migratable a PostgreSQL)
+✅ Diseño responsive y dark mode
+✅ Identidad visual de La Esperanza
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PRÓXIMAS ACCIONES:
+
+1. Instalar (npm install)
+2. Crear BD (npm run db:seed)
+3. Ejecutar (npm run dev)
+4. Probar la página de reservas
+5. Ingresar al admin
+6. Personalizar datos del restaurante
+7. Agregar horarios según tu calendario
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ PROBLEMAS?
+
+npm install fallando:
+  → Asegúrate de tener Node.js 18+ instalado
+
+npm run db:seed falla:
+  → Ejecuta: npm run db:push
+  → Luego: npm run db:seed
+
+Admin login no funciona:
+  → Ejecuta: npm run db:seed
+  → Intenta: admin / admin123
+
+Servidor no inicia:
+  → Verifica que no haya otro en puerto 3000
+  → Ejecuta: npm run dev
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 ¡LISTO! Tu sistema de reservas ya funciona.
+
+Desarrollado con ❤️ para La Esperanza
+Desde 2011 - De los Ascurra
