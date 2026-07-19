@@ -5,6 +5,10 @@ const prisma = new PrismaClient();
 
 async function checkAndSeed() {
   try {
+    console.log('🔄 Sincronizando schema con BD...');
+    execSync('npx prisma db push --skip-generate', { stdio: 'inherit' });
+    console.log('✅ Schema sincronizado');
+
     const adminCount = await prisma.adminUser.count();
 
     if (adminCount === 0) {
@@ -15,7 +19,8 @@ async function checkAndSeed() {
       console.log('✅ BD ya está poblada');
     }
   } catch (error) {
-    console.error('Error al verificar/ejecutar seed:', error);
+    console.error('❌ Error:', error.message);
+    // Continuar igualmente - la app podría funcionar parcialmente
   } finally {
     await prisma.$disconnect();
   }

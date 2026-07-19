@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npx prisma db push --skip-generate",
+    "build": "next build",
     "start": "node prisma/check-and-seed.js && next start",
     "lint": "next lint",
     "db:push": "prisma db push",
