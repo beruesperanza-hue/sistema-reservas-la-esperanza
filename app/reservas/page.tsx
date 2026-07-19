@@ -16,7 +16,7 @@ export default function ReservasPage() {
       <main className="flex-1">
         <div className="container mx-auto px-4 py-12 max-w-2xl">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-esperanza-700 mb-3 italic">Haz tu Reserva</h1>
+            <h1 className="text-4xl font-bold text-esperanza-700 mb-3 italic">Hacé tu Reserva</h1>
             <p className="text-gray-600 text-lg">
               Completa el formulario para reservar tu mesa en La Esperanza. Te enviaremos un email de confirmación.
             </p>

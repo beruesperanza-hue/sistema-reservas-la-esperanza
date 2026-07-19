@@ -136,11 +136,11 @@ export default function ReservationForm() {
           {(['fecha', 'horario', 'datos'] as const).map((s, i) => {
             const labels = ['Fecha', 'Horario', 'Datos'];
             return (
-              <div key={s} className="flex-1 text-center">
+              <div key={s} className="flex-1">
                 <button
                   type="button"
                   onClick={() => s === 'fecha' && setStep('fecha')}
-                  className={`w-full py-2 rounded-lg font-semibold transition-all ${
+                  className={`w-full py-3 rounded-lg font-semibold transition-all flex flex-col items-center justify-center gap-1 ${
                     step === s
                       ? 'bg-esperanza-600 text-white'
                       : ['fecha', 'horario', 'datos'].indexOf(step) > i
@@ -148,9 +148,9 @@ export default function ReservationForm() {
                       : 'bg-gray-200 text-gray-600'
                   }`}
                 >
-                  {i + 1}
+                  <span className="text-lg">{i + 1}</span>
+                  <span className="text-xs font-normal">{labels[i]}</span>
                 </button>
-                <p className="text-xs text-gray-600 mt-1">{labels[i]}</p>
               </div>
             );
           })}
