@@ -30,55 +30,47 @@ export default function ReviewsSection() {
   };
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-serif font-bold text-esperanza-700 mb-2">Lo que dicen nuestros clientes</h2>
-          <div className="flex items-center justify-center gap-2 mt-4">
-            <span className="text-3xl">⭐⭐⭐⭐⭐</span>
-            <span className="text-2xl font-bold text-esperanza-700">4.4</span>
-            <span className="text-gray-600">(125 reseñas)</span>
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-serif font-bold text-esperanza-700 mb-2">Lo que dicen nuestros clientes</h2>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className="text-2xl">⭐⭐⭐⭐</span>
+            <span className="text-lg font-bold text-esperanza-700">4.0</span>
+            <span className="text-sm text-gray-600">(207 opiniones en Google)</span>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-4">
           {reviews.map((review, i) => (
-            <div key={i} className="bg-gradient-to-br from-esperanza-50 to-white border border-esperanza-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="font-semibold text-gray-900">{review.name}</p>
-                  <p className="text-xs text-gray-500">{review.date}</p>
-                </div>
+            <div key={i} className="bg-esperanza-50 border border-esperanza-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="mb-2">
+                <p className="font-semibold text-sm text-gray-900">{review.name}</p>
+                <p className="text-xs text-gray-500">{review.date}</p>
               </div>
 
-              <div className="mb-3">
-                <p className="text-lg">{renderStars(review.rating)}</p>
+              <div className="mb-2">
+                <p className="text-sm">{renderStars(review.rating)}</p>
               </div>
 
-              <p className="text-gray-700 text-sm mb-4 leading-relaxed">"{review.text}"</p>
+              <p className="text-gray-700 text-xs mb-3 leading-relaxed">"{review.text}"</p>
 
-              <div className="flex gap-4 text-xs text-center">
-                <div>
+              <div className="flex gap-3 text-xs text-center">
+                <div className="flex-1">
                   <p className="text-esperanza-600 font-semibold">{review.categories.comida}★</p>
-                  <p className="text-gray-600">Comida</p>
+                  <p className="text-gray-600 text-xs">Comida</p>
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-esperanza-600 font-semibold">{review.categories.ambiente}★</p>
-                  <p className="text-gray-600">Ambiente</p>
+                  <p className="text-gray-600 text-xs">Ambiente</p>
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-esperanza-600 font-semibold">{review.categories.servicio}★</p>
-                  <p className="text-gray-600">Servicio</p>
+                  <p className="text-gray-600 text-xs">Servicio</p>
                 </div>
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <a href="/reservas" className="btn btn-primary btn-lg">
-            📅 Hacé tu reserva ahora
-          </a>
         </div>
       </div>
     </section>
