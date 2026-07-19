@@ -37,7 +37,7 @@ export default function ReviewsSection() {
           <div className="flex items-center justify-center gap-2 mt-2">
             <span className="text-2xl">⭐⭐⭐⭐</span>
             <span className="text-lg font-bold text-esperanza-700">4.0</span>
-            <span className="text-sm text-gray-600">(207 opiniones en Google)</span>
+            <span className="text-sm text-gray-600">(2.207 opiniones en Google)</span>
           </div>
         </div>
 
