@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer';
 
 // Configuración de nodemailer
 let transporter: any = null;
