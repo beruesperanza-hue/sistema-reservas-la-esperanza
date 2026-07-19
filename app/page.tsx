@@ -12,25 +12,25 @@ export default function Home() {
       <DiscountBanner />
 
       {/* Hero Section with Background Image */}
-      <section className="relative h-[500px] bg-cover bg-center" style={{backgroundImage: 'url(/hero-platos.jpg)'}}>
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+      <section className="relative h-[600px] bg-cover bg-center" style={{backgroundImage: 'url(/hero-platos.jpg)'}}>
+        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
         <div className="relative h-full flex items-center justify-center">
           <div className="container mx-auto px-4 max-w-6xl text-center text-white">
-            <div className="mb-6 animate-fade-in">
-              <span className="text-6xl">✦</span>
+            <div className="mb-8 animate-fade-in">
+              <span className="text-7xl">✦</span>
             </div>
 
-            <h1 className="text-6xl md:text-7xl font-serif font-bold mb-2 italic">La Esperanza</h1>
-            <p className="text-2xl md:text-3xl font-serif mb-3 italic">De los Ascurra</p>
-            <p className="italic text-lg md:text-xl mb-8 font-serif">Desde 2011</p>
+            <h1 className="text-7xl md:text-8xl font-serif font-bold mb-3 italic">La Esperanza</h1>
+            <p className="text-3xl md:text-4xl font-serif mb-4 italic">De los Ascurra</p>
+            <p className="italic text-xl md:text-2xl mb-10 font-serif">Desde 2011</p>
 
-            <p className="text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed font-body">
-              Un viaje gastronómico a España con nosotros.
+            <p className="text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-serif italic">
+              La taberna de España en Buenos Aires ⭐
             </p>
 
             <div className="flex gap-6 justify-center flex-wrap">
-              <Link href="/reservas" className="btn btn-primary btn-lg bg-esperanza-600 hover:bg-esperanza-700 text-white font-semibold shadow-lg">
-                📅 Hacé tu reserva
+              <Link href="/reservas" className="btn btn-primary px-10 py-4 text-xl md:text-2xl bg-accent-gold hover:bg-yellow-500 text-black font-bold shadow-2xl">
+                📅 Hacé tu Reserva
               </Link>
             </div>
           </div>
