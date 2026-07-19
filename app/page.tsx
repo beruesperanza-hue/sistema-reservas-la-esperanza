@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import DiscountBanner from '@/components/common/DiscountBanner';
+import RecommendedSection from '@/components/common/RecommendedSection';
 import ReviewsSection from '@/components/common/ReviewsSection';
 
 export default function Home() {
@@ -33,13 +34,17 @@ export default function Home() {
         </div>
       </section>
 
+      <RecommendedSection />
+
+      <ReviewsSection />
+
       {/* Historia Section */}
       <section className="py-20 bg-esperanza-50">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-serif font-bold text-esperanza-700 mb-2">Nuestra Historia</h2>
           </div>
-          
+
           <div className="space-y-8">
             <div className="bg-white p-8 rounded-lg border-l-4 border-esperanza-600">
               <h3 className="text-2xl font-serif font-bold text-esperanza-700 mb-3">📖 El Origen</h3>
@@ -84,8 +89,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-
-      <ReviewsSection />
 
       <Footer />
     </div>
