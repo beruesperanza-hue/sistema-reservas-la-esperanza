@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import AdminHeader from '@/components/admin/AdminHeader';
-import prisma from '@/lib/db';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
