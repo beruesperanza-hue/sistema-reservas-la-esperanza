@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Edit, Trash2, X, Check, Calendar, Search } from 'lucide-react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { cancelReservation, deleteReservation } from '@/app/actions/reservations';
 
@@ -138,7 +137,7 @@ export default function AdminReservasPage() {
           <div>
             <label className="form-label">Búsqueda</label>
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <span className="absolute left-3 top-3 text-gray-400">🔍</span>
               <input
                 type="text"
                 placeholder="Buscar por nombre, email o teléfono..."
@@ -158,7 +157,7 @@ export default function AdminReservasPage() {
           </div>
         ) : filtradas.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg">
-            <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <span className="text-5xl text-gray-300 mx-auto mb-4 block">📅</span>
             <p className="text-gray-600">No hay reservas para mostrar</p>
           </div>
         ) : (
@@ -203,8 +202,7 @@ export default function AdminReservasPage() {
                                 className="btn btn-small bg-amber-100 text-amber-700 hover:bg-amber-200 flex gap-1"
                                 title="Cancelar"
                               >
-                                <X className="w-4 h-4" />
-                                Cancelar
+                                ❌ Cancelar
                               </button>
                             ) : (
                               <div className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm font-semibold">
@@ -214,10 +212,10 @@ export default function AdminReservasPage() {
 
                             <button
                               onClick={() => handleDelete(reserva.id)}
-                              className="btn btn-small btn-danger flex gap-1"
+                              className="btn btn-small btn-danger"
                               title="Eliminar"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              🗑️
                             </button>
                           </div>
                         </div>

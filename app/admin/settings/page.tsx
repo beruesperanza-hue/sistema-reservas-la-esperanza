@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Trash2, Save } from 'lucide-react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { DIAS_SEMANA_ORDEN } from '@/lib/constants';
 
@@ -216,8 +215,7 @@ export default function SettingsPage() {
               </div>
 
               <button onClick={handleSaveSettings} disabled={saving} className="btn btn-primary">
-                <Save className="inline-block mr-2 w-5 h-5" />
-                {saving ? 'Guardando...' : 'Guardar Configuración'}
+                💾 {saving ? 'Guardando...' : 'Guardar Configuración'}
               </button>
             </div>
           )}
@@ -258,8 +256,7 @@ export default function SettingsPage() {
 
               <div className="flex items-end">
                 <button onClick={handleAddHorario} className="btn btn-primary w-full">
-                  <Plus className="inline-block mr-2 w-5 h-5" />
-                  Agregar
+                  ➕ Agregar
                 </button>
               </div>
             </div>
@@ -290,10 +287,9 @@ export default function SettingsPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleDeleteHorario(h.id)}
-                            className="btn btn-small btn-danger flex gap-1"
+                            className="btn btn-small btn-danger"
                           >
-                            <Trash2 className="w-4 h-4" />
-                            Eliminar
+                            🗑️ Eliminar
                           </button>
                         </div>
                       </div>

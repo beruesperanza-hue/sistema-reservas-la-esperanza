@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, Users, BookOpen, Clock } from 'lucide-react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import prisma from '@/lib/db';
 
@@ -76,27 +75,27 @@ export default function AdminDashboard() {
             {/* Stats Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               <StatCard
-                icon={<Calendar className="w-8 h-8" />}
+                icon={<span className="text-2xl">📅</span>}
                 title="Reservas Hoy"
                 value={stats.reservasHoy}
                 subtitle={`${stats.personasHoy} personas`}
                 color="esperanza"
               />
               <StatCard
-                icon={<Clock className="w-8 h-8" />}
+                icon={<span className="text-2xl">🕐</span>}
                 title="Reservas Mañana"
                 value={stats.reservasManana}
                 subtitle={`${stats.personasManana} personas`}
                 color="blue"
               />
               <StatCard
-                icon={<BookOpen className="w-8 h-8" />}
+                icon={<span className="text-2xl">📖</span>}
                 title="Total de Reservas"
                 value={stats.totalReservas}
                 color="green"
               />
               <StatCard
-                icon={<Users className="w-8 h-8" />}
+                icon={<span className="text-2xl">👥</span>}
                 title="Total de Personas"
                 value={stats.totalPersonas}
                 color="amber"

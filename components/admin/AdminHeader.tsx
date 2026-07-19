@@ -1,6 +1,5 @@
 'use client';
 
-import { LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -40,16 +39,14 @@ export default function AdminHeader() {
               href="/admin/settings"
               className="hover:text-esperanza-200 transition-colors flex gap-1 items-center"
             >
-              <Settings className="w-4 h-4" />
-              Configuración
+              ⚙️ Configuración
             </Link>
 
             <button
               onClick={handleLogout}
               className="ml-4 pl-4 border-l border-esperanza-700 hover:text-esperanza-200 transition-colors flex gap-1 items-center"
             >
-              <LogOut className="w-4 h-4" />
-              Salir
+              🚪 Salir
             </button>
           </nav>
         </div>

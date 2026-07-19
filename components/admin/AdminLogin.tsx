@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Lock, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLogin() {
@@ -46,7 +45,7 @@ export default function AdminLogin() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-block bg-white rounded-full p-4 mb-4">
-            <Lock className="w-12 h-12 text-esperanza-600" />
+            <span className="text-5xl">🔐</span>
           </div>
           <h1 className="text-4xl font-bold text-esperanza-700 italic mb-2">La Esperanza</h1>
           <p className="text-gray-600">Panel de Administración</p>
@@ -55,7 +54,7 @@ export default function AdminLogin() {
         {/* Error */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <span className="text-xl text-red-600 flex-shrink-0 mt-0.5">⚠️</span>
             <div>
               <p className="text-red-700 text-sm">{error}</p>
             </div>
