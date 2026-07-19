@@ -133,23 +133,27 @@ export default function ReservationForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Step Indicators */}
         <div className="flex gap-2 mb-8">
-          {(['fecha', 'horario', 'datos'] as const).map((s, i) => (
-            <div key={s} className="flex-1">
-              <button
-                type="button"
-                onClick={() => s === 'fecha' && setStep('fecha')}
-                className={`w-full py-2 rounded-lg font-semibold transition-all ${
-                  step === s
-                    ? 'bg-esperanza-600 text-white'
-                    : ['fecha', 'horario', 'datos'].indexOf(step) > i
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {i + 1}
-              </button>
-            </div>
-          ))}
+          {(['fecha', 'horario', 'datos'] as const).map((s, i) => {
+            const labels = ['Fecha', 'Horario', 'Datos'];
+            return (
+              <div key={s} className="flex-1 text-center">
+                <button
+                  type="button"
+                  onClick={() => s === 'fecha' && setStep('fecha')}
+                  className={`w-full py-2 rounded-lg font-semibold transition-all ${
+                    step === s
+                      ? 'bg-esperanza-600 text-white'
+                      : ['fecha', 'horario', 'datos'].indexOf(step) > i
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-200 text-gray-600'
+                  }`}
+                >
+                  {i + 1}
+                </button>
+                <p className="text-xs text-gray-600 mt-1">{labels[i]}</p>
+              </div>
+            );
+          })}
         </div>
 
         {/* Step 1: Date Selection */}
