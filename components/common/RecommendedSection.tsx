@@ -14,15 +14,15 @@ export default function RecommendedSection() {
 
             <div className="bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 rounded-lg p-8 space-y-4">
               <p className="text-lg leading-relaxed font-body">
-                🍽️ <span className="font-semibold">Prueba muchas cosas</span> — Nuestras tapas están diseñadas para compartir. Cada plato es una pequeña obra maestra que suma a la experiencia colectiva.
+                🍽️ <span className="font-semibold">Prueba muchas cosas</span> — Nuestras tapas españolas están diseñadas para compartir. Tortillas, gambas al ajillo, rabas, jamón ibérico... Cada plato es una pequeña obra maestra que suma a la experiencia colectiva.
               </p>
 
               <p className="text-lg leading-relaxed font-body">
-                ✦ <span className="font-semibold">Aprovecha el tamaño de tapa</span> — Pensadas en porciones perfectas, permite probar variedad sin comprometer calidad. La idea es disfrutar de la diversidad.
+                ✦ <span className="font-semibold">Aprovecha el tamaño de tapa</span> — Pensadas en porciones perfectas, permite probar variedad sin comprometer calidad. La idea es disfrutar de la diversidad de la gastronomía española en Buenos Aires.
               </p>
 
               <p className="text-lg leading-relaxed font-body">
-                ✈️ <span className="font-semibold">Déjate llevar por la experiencia</span> — Un verdadero viaje gastronómico a España desde Buenos Aires. Vinos de bodegas artesanales, sidra, cerveza tirada y la calidez de la cocina española en cada bocado.
+                ✈️ <span className="font-semibold">Déjate llevar por la experiencia</span> — Un verdadero viaje gastronómico a España desde Villa Crespo. Vinos de pequeñas bodegas argentinas, sidra española, cerveza tirada y la calidez de la cocina española en cada bocado.
               </p>
             </div>
 
