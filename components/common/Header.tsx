@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { Star } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -9,7 +8,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 max-w-6xl">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <Star className="w-8 h-8 text-accent-gold" fill="currentColor" />
+            <span className="text-2xl">✦</span>
             <div>
               <h1 className="text-2xl font-serif font-bold text-white italic">La Esperanza</h1>
               <p className="text-xs text-esperanza-300 italic">Desde 2011</p>

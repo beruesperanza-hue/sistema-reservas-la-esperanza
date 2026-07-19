@@ -1,6 +1,5 @@
 'use client';
 
-import { Star, MapPin, Phone, Mail, Instagram, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Footer() {
@@ -11,7 +10,7 @@ export default function Footer() {
           {/* Info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Star className="w-6 h-6" fill="currentColor" />
+              <span className="text-xl">✦</span>
               <h3 className="text-xl font-serif font-bold italic">La Esperanza</h3>
             </div>
             <p className="text-esperanza-200 text-sm">
@@ -25,15 +24,15 @@ export default function Footer() {
             <h4 className="font-serif font-bold mb-4 text-lg">Contacto</h4>
             <div className="space-y-3 text-sm">
               <div className="flex gap-2">
-                <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="flex-shrink-0 mt-0.5">📍</span>
                 <span className="text-esperanza-200">Aguirre 526, Villa Crespo, Buenos Aires</span>
               </div>
               <div className="flex gap-2">
-                <Phone className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="flex-shrink-0 mt-0.5">📞</span>
                 <span className="text-esperanza-200">+54-XXX-XXX-XXXX</span>
               </div>
               <div className="flex gap-2">
-                <Mail className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="flex-shrink-0 mt-0.5">✉️</span>
                 <span className="text-esperanza-200">eventoslaesperanza@gmail.com</span>
               </div>
             </div>
@@ -55,21 +54,21 @@ export default function Footer() {
         {/* Social & Opinion */}
         <div className="border-t border-esperanza-600 pt-8 mb-8">
           <div className="flex flex-col md:flex-row gap-8 justify-center items-center">
-            <Link 
-              href="https://instagram.com/esperanza_ascurra" 
+            <Link
+              href="https://instagram.com/esperanza_ascurra"
               target="_blank"
               className="flex items-center gap-2 text-esperanza-200 hover:text-accent-gold transition-colors"
             >
-              <Instagram className="w-5 h-5" />
+              <span>📷</span>
               @esperanza_ascurra
             </Link>
-            
-            <Link 
+
+            <Link
               href="https://g.page/r/laesperanza"
               target="_blank"
               className="flex items-center gap-2 text-esperanza-200 hover:text-accent-gold transition-colors"
             >
-              <MessageSquare className="w-5 h-5" />
+              <span>💬</span>
               Dejanos tu opinión
             </Link>
           </div>
