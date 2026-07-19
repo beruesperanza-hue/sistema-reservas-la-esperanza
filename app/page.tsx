@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
+import DiscountBanner from '@/components/common/DiscountBanner';
+import ReviewsSection from '@/components/common/ReviewsSection';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
+      <DiscountBanner />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-esperanza-50 to-white py-32">
@@ -81,6 +84,8 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <ReviewsSection />
 
       <Footer />
     </div>
