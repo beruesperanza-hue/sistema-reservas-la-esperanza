@@ -1,7 +1,14 @@
 // Email configuration (commented out - using console logging instead)
 
-export async function sendReservationConfirmation(email: string, reservationDetails: any) {
-  console.log('📧 Confirmación de reserva enviada (mock):', email, reservationDetails);
+export async function sendReservationConfirmation(
+  email: string,
+  nombre: string,
+  fecha: string,
+  hora: string,
+  personas: number,
+  telefono: string
+) {
+  console.log('📧 Confirmación de reserva:', { email, nombre, fecha, hora, personas, telefono });
   return true;
 }
 
