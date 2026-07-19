@@ -11,25 +11,28 @@ export default function Home() {
       <Header />
       <DiscountBanner />
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-esperanza-50 to-white py-32">
-        <div className="container mx-auto px-4 max-w-6xl text-center">
-          <div className="mb-8 animate-fade-in">
-            <span className="text-6xl">✦</span>
-          </div>
-          
-          <h1 className="text-7xl font-serif font-bold text-esperanza-700 mb-2 italic">La Esperanza</h1>
-          <p className="text-3xl text-esperanza-600 font-serif mb-4 italic">De los Ascurra</p>
-          <p className="text-esperanza-500 italic text-xl mb-12 font-serif">Desde 2011</p>
-          
-          <p className="text-gray-700 text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-body">
-            Un viaje gastronómico a España con nosotros.
-          </p>
+      {/* Hero Section with Background Image */}
+      <section className="relative h-[500px] bg-cover bg-center" style={{backgroundImage: 'url(/hero-platos.jpg)'}}>
+        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div className="relative h-full flex items-center justify-center">
+          <div className="container mx-auto px-4 max-w-6xl text-center text-white">
+            <div className="mb-6 animate-fade-in">
+              <span className="text-6xl">✦</span>
+            </div>
 
-          <div className="flex gap-6 justify-center flex-wrap">
-            <Link href="/reservas" className="btn btn-primary btn-lg bg-esperanza-600 hover:bg-esperanza-700 text-white font-semibold">
-              📅 Hacé tu reserva
-            </Link>
+            <h1 className="text-6xl md:text-7xl font-serif font-bold mb-2 italic">La Esperanza</h1>
+            <p className="text-2xl md:text-3xl font-serif mb-3 italic">De los Ascurra</p>
+            <p className="italic text-lg md:text-xl mb-8 font-serif">Desde 2011</p>
+
+            <p className="text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed font-body">
+              Un viaje gastronómico a España con nosotros.
+            </p>
+
+            <div className="flex gap-6 justify-center flex-wrap">
+              <Link href="/reservas" className="btn btn-primary btn-lg bg-esperanza-600 hover:bg-esperanza-700 text-white font-semibold shadow-lg">
+                📅 Hacé tu reserva
+              </Link>
+            </div>
           </div>
         </div>
       </section>
