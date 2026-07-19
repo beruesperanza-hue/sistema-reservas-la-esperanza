@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { ESTADOS_RESERVA } from '@/lib/constants';
 
 export async function GET(request: NextRequest) {
   try {
