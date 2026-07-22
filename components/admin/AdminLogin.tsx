@@ -91,14 +91,6 @@ export default function AdminLogin() {
           <button type="submit" disabled={loading} className="btn btn-primary w-full">
             {loading ? 'Verificando...' : 'Ingresar'}
           </button>
-
-          {/* Demo Info */}
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <p className="text-blue-900 text-sm">
-              <span className="font-semibold">Demo:</span> Usuario: <code className="bg-blue-100 px-2 py-1 rounded">admin</code> | Contraseña:{' '}
-              <code className="bg-blue-100 px-2 py-1 rounded">admin123</code>
-            </p>
-          </div>
         </form>
       </div>
     </div>

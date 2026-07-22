@@ -42,7 +42,9 @@ async function main() {
         await prisma.schedule.upsert({
           where: { dia_hora: { dia, hora } },
           update: {},
-          create: { dia, hora, capacidad: 20, activo: true },
+          // capacidadVereda arranca en 8 como punto de partida; ajustable desde
+          // el panel de admin (Configuración > Horarios).
+          create: { dia, hora, capacidad: 20, capacidadVereda: 8, activo: true },
         });
       }
     }

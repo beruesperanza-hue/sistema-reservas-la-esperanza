@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { ESTADOS_RESERVA } from '@/lib/constants';
-import { diaSemanaDe, esTurnoPasado, fechaISOaDate } from '@/lib/fechas';
+import { diaSemanaDe, fechaISOaDate } from '@/lib/fechas';
+import { getEstadoTurno } from '@/lib/turnos';
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const fecha = fechaISOaDate(fechaStr);
+    fechaISOaDate(fechaStr); // valida que sea una fecha real
     const diaNombre = diaSemanaDe(fechaStr);
 
     // Obtener horarios disponibles para ese día
@@ -45,34 +45,36 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Obtener configuración
-    const settings = await prisma.settings.findFirst();
-    const capacidadMaxima = settings?.capacidadPorTurno || 20;
-
-    // Para cada horario, verificar disponibilidad
+    // Para cada horario, verificar disponibilidad de cada sector por separado
+    // (cada uno tiene su propia capacidad definida en Schedule).
     const slots = await Promise.all(
       horarios.map(async (horario) => {
-        // Contar personas ya reservadas para ese horario
-        const reservedCount = await prisma.reservation.aggregate({
-          where: {
-            fecha,
-            hora: horario.hora,
-            estado: ESTADOS_RESERVA.CONFIRMADA,
-          },
-          _sum: { personas: true },
-        });
-
-        const reservedPersonas = reservedCount._sum.personas || 0;
-        const personasDisponibles = capacidadMaxima - reservedPersonas;
-        // Un turno de hoy que ya empezó no se puede reservar (hora de Buenos Aires).
-        const pasado = esTurnoPasado(fechaStr, horario.hora);
-        const disponible = !pasado && reservedPersonas + personas <= capacidadMaxima;
+        const estado = await getEstadoTurno(
+          fechaStr,
+          horario.hora,
+          horario.capacidad,
+          horario.capacidadVereda,
+          personas
+        );
 
         return {
           hora: horario.hora,
-          disponible,
-          pasado,
-          personas_disponibles: personasDisponibles,
+          pasado: estado.pasado,
+          // El horario aparece "disponible" en la grilla si ALGÚN sector tiene
+          // lugar; el sector elegido se valida de nuevo al confirmar la reserva.
+          disponible: estado.salon.disponible || estado.vereda.disponible,
+          salon: {
+            disponible: estado.salon.disponible,
+            libres: estado.salon.libres,
+            cerrado: estado.salon.cerradoManual,
+          },
+          vereda: {
+            // capacidad 0 = ese turno no tiene vereda habilitada
+            existe: estado.vereda.capacidad > 0,
+            disponible: estado.vereda.disponible,
+            libres: estado.vereda.libres,
+            cerrado: estado.vereda.cerradoManual,
+          },
         };
       })
     );

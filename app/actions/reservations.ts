@@ -3,7 +3,8 @@
 import prisma from '@/lib/db';
 import { sendReservationConfirmation, sendReservationCancellation } from '@/lib/email';
 import { MENSAJES, ESTADOS_RESERVA, UBICACIONES } from '@/lib/constants';
-import { esTurnoPasado, fechaISOaDate, formatearFechaLarga } from '@/lib/fechas';
+import { diaSemanaDe, esTurnoPasado, fechaISOaDate, formatearFechaLarga } from '@/lib/fechas';
+import { getEstadoTurno, sectorDe } from '@/lib/turnos';
 import { revalidatePath } from 'next/cache';
 
 interface CreateReservationData {
@@ -44,23 +45,28 @@ export async function createReservation(data: CreateReservationData) {
       return { success: false, error: MENSAJES.RESERVA_DUPLICADA };
     }
 
-    // Contar personas reservadas para ese horario
-    const reservedCount = await prisma.reservation.aggregate({
-      where: {
-        fecha,
-        hora: data.hora,
-        estado: ESTADOS_RESERVA.CONFIRMADA,
-      },
-      _sum: { personas: true },
+    // Capacidad y cierres del turno, por sector (salón y vereda son cupos
+    // independientes, definidos en Schedule).
+    const horario = await prisma.schedule.findUnique({
+      where: { dia_hora: { dia: diaSemanaDe(data.fecha), hora: data.hora } },
     });
+    const capacidadSalon = horario?.capacidad ?? 20;
+    const capacidadVereda = horario?.capacidadVereda ?? 0;
 
-    // Obtener configuración de capacidad
-    const settings = await prisma.settings.findFirst();
-    const capacidad = settings?.capacidadPorTurno || 20;
+    const estado = await getEstadoTurno(
+      data.fecha,
+      data.hora,
+      capacidadSalon,
+      capacidadVereda,
+      data.personas
+    );
+    const sector = sectorDe(estado, ubicacion);
 
-    const reservedPersonas = reservedCount._sum.personas || 0;
-    if (reservedPersonas + data.personas > capacidad) {
-      return { success: false, error: MENSAJES.HORARIO_LLENO };
+    if (sector.cerradoManual) {
+      return { success: false, error: MENSAJES.TURNO_CERRADO };
+    }
+    if (!sector.disponible) {
+      return { success: false, error: MENSAJES.SECTOR_LLENO };
     }
 
     // Crear la reserva
@@ -100,6 +106,100 @@ export async function createReservation(data: CreateReservationData) {
     };
   } catch (error) {
     console.error('Error creating reservation:', error);
+    return { success: false, error: MENSAJES.ERROR_GENERICO };
+  }
+}
+
+interface CreateReservationAdminData {
+  nombre: string;
+  apellido: string;
+  /** Opcional: si no se carga, no se manda mail y se guarda un placeholder único. */
+  email?: string;
+  telefono: string;
+  personas: number;
+  fecha: string;
+  hora: string;
+  ubicacion?: string;
+  comentarios?: string;
+}
+
+/**
+ * Carga una reserva desde el panel de admin (walk-in, teléfono, etc).
+ * A diferencia de createReservation, NO bloquea por turno pasado ni por
+ * cierre manual (el restaurante puede anotar gente igual), y el cupo es solo
+ * informativo: si se pasa de capacidad, avisa pero igual la crea.
+ */
+export async function createReservationAdmin(data: CreateReservationAdminData) {
+  try {
+    const fecha = fechaISOaDate(data.fecha);
+    const ubicacion =
+      data.ubicacion === UBICACIONES.VEREDA ? UBICACIONES.VEREDA : UBICACIONES.ADENTRO;
+    const tieneEmail = !!data.email && data.email.trim().length > 0;
+    const email = tieneEmail
+      ? data.email!.trim()
+      : `walkin-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@sin-email.laesperanza`;
+
+    const horario = await prisma.schedule.findUnique({
+      where: { dia_hora: { dia: diaSemanaDe(data.fecha), hora: data.hora } },
+    });
+    const capacidadSalon = horario?.capacidad ?? 20;
+    const capacidadVereda = horario?.capacidadVereda ?? 0;
+
+    const estado = await getEstadoTurno(
+      data.fecha,
+      data.hora,
+      capacidadSalon,
+      capacidadVereda,
+      data.personas
+    );
+    const sector = sectorDe(estado, ubicacion);
+
+    const reservation = await prisma.reservation.create({
+      data: {
+        nombre: data.nombre,
+        apellido: data.apellido,
+        email,
+        telefono: data.telefono,
+        personas: data.personas,
+        fecha,
+        hora: data.hora,
+        ubicacion,
+        comentarios: data.comentarios || null,
+        estado: ESTADOS_RESERVA.CONFIRMADA,
+        creadaPorAdmin: true,
+      },
+    });
+
+    if (tieneEmail) {
+      await sendReservationConfirmation(
+        email,
+        data.nombre,
+        formatearFechaLarga(data.fecha),
+        data.hora,
+        data.personas,
+        data.telefono,
+        ubicacion
+      );
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/reservas');
+
+    return {
+      success: true,
+      message: MENSAJES.RESERVA_EXITOSA,
+      reservationId: reservation.id,
+      // Avisos no bloqueantes para que el admin sepa que forzó algo.
+      avisos: [
+        estado.pasado ? 'El turno ya había pasado.' : null,
+        sector.cerradoManual ? 'El sector estaba cerrado manualmente.' : null,
+        !sector.disponible && !sector.cerradoManual
+          ? `Se pasó del cupo (quedaban ${sector.libres} lugares).`
+          : null,
+      ].filter((a): a is string => !!a),
+    };
+  } catch (error) {
+    console.error('Error creating admin reservation:', error);
     return { success: false, error: MENSAJES.ERROR_GENERICO };
   }
 }

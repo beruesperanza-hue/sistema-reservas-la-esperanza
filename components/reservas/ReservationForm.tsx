@@ -2,14 +2,23 @@
 
 import { useState } from 'react';
 import { createReservation } from '@/app/actions/reservations';
-import { UBICACIONES } from '@/lib/constants';
+import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import { formatearFechaLarga, hoyEnBA, sumarDias } from '@/lib/fechas';
+
+interface SectorSlot {
+  disponible: boolean;
+  libres: number;
+  cerrado: boolean;
+  /** Solo vereda: si el turno directamente no tiene mesas afuera. */
+  existe?: boolean;
+}
 
 interface AvailableSlot {
   hora: string;
   disponible: boolean;
   pasado?: boolean;
-  personas_disponibles: number;
+  salon: SectorSlot;
+  vereda: SectorSlot;
 }
 
 export default function ReservationForm() {
@@ -32,6 +41,9 @@ export default function ReservationForm() {
 
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+
+  // Slot elegido en el paso 2: permite mostrar cupos por sector en el paso 3.
+  const selectedSlot = availableSlots.find((s) => s.hora === formData.hora);
 
   const handleDateSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fecha = e.target.value;
@@ -96,11 +108,27 @@ export default function ReservationForm() {
         }, 5000);
       } else {
         setError(response.error || 'Error al crear la reserva');
+        // Puede que el cupo haya cambiado entre que se cargó la grilla y se
+        // confirmó (otra persona reservó mientras tanto) — refrescamos.
+        refrescarDisponibilidad();
       }
     } catch (err) {
       setError('Error al procesar la reserva');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const refrescarDisponibilidad = async () => {
+    if (!formData.fecha) return;
+    try {
+      const response = await fetch(
+        `/api/disponibilidad?fecha=${formData.fecha}&personas=${formData.personas}`
+      );
+      const data = await response.json();
+      if (response.ok) setAvailableSlots(data.slots || []);
+    } catch {
+      // silencioso: si falla el refresco, el usuario igual ve el mensaje de error del submit
     }
   };
 
@@ -231,7 +259,11 @@ export default function ReservationForm() {
                     key={slot.hora}
                     type="button"
                     onClick={() => {
-                      setFormData((prev) => ({ ...prev, hora: slot.hora }));
+                      // Preferimos el salón si hay lugar; si no, vereda.
+                      const ubicacion = slot.salon.disponible
+                        ? UBICACIONES.ADENTRO
+                        : UBICACIONES.VEREDA;
+                      setFormData((prev) => ({ ...prev, hora: slot.hora, ubicacion }));
                       setStep('datos');
                     }}
                     disabled={!slot.disponible}
@@ -328,26 +360,44 @@ export default function ReservationForm() {
             <div className="form-group">
               <label className="form-label">¿Dónde preferís sentarte?</label>
               <div className="grid grid-cols-2 gap-3">
-                {[
-                  { value: UBICACIONES.ADENTRO, label: 'Adentro', icono: '🏠' },
-                  { value: UBICACIONES.VEREDA, label: 'En la vereda', icono: '☀️' },
-                ].map((opcion) => (
-                  <button
-                    key={opcion.value}
-                    type="button"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, ubicacion: opcion.value }))
-                    }
-                    className={`py-3 px-4 rounded-lg font-semibold border-2 transition-all flex items-center justify-center gap-2 ${
-                      formData.ubicacion === opcion.value
-                        ? 'bg-esperanza-600 border-esperanza-600 text-white'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-esperanza-300'
-                    }`}
-                  >
-                    <span>{opcion.icono}</span>
-                    {opcion.label}
-                  </button>
-                ))}
+                {[UBICACIONES.ADENTRO, UBICACIONES.VEREDA].map((valor) => {
+                  const sector = valor === UBICACIONES.VEREDA ? selectedSlot?.vereda : selectedSlot?.salon;
+                  // Sin datos de disponibilidad (no debería pasar en el flujo normal) → no bloqueamos.
+                  const bloqueado = sector ? !sector.disponible : false;
+                  const sinVereda = valor === UBICACIONES.VEREDA && sector?.existe === false;
+
+                  return (
+                    <button
+                      key={valor}
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, ubicacion: valor }))}
+                      disabled={bloqueado}
+                      className={`py-3 px-4 rounded-lg font-semibold border-2 transition-all flex flex-col items-center justify-center gap-1 ${
+                        bloqueado
+                          ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                          : formData.ubicacion === valor
+                          ? 'bg-esperanza-600 border-esperanza-600 text-white'
+                          : 'bg-white border-gray-200 text-gray-700 hover:border-esperanza-300'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{UBICACIONES_ICONO[valor]}</span>
+                        {UBICACIONES_LABEL[valor]}
+                      </span>
+                      {sector && (
+                        <span className="text-xs font-normal opacity-80">
+                          {sinVereda
+                            ? 'No disponible'
+                            : sector.cerrado
+                            ? 'Cerrado'
+                            : bloqueado
+                            ? 'Completo'
+                            : `${sector.libres} lugares`}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
               {formData.ubicacion === UBICACIONES.VEREDA && (
                 <p className="text-xs text-gray-500 mt-2">
@@ -375,9 +425,7 @@ export default function ReservationForm() {
                 <span className="font-semibold">{formData.personas} personas</span> el{' '}
                 <span className="font-semibold">{formatearFechaLarga(formData.fecha)}</span> a las{' '}
                 <span className="font-semibold">{formData.hora}</span>,{' '}
-                <span className="font-semibold">
-                  {formData.ubicacion === UBICACIONES.VEREDA ? 'en la vereda' : 'adentro'}
-                </span>
+                <span className="font-semibold">{UBICACIONES_LABEL[formData.ubicacion]}</span>
               </p>
             </div>
 

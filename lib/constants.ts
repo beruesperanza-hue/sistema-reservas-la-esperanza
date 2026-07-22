@@ -37,8 +37,13 @@ export const UBICACIONES = {
 export type Ubicacion = (typeof UBICACIONES)[keyof typeof UBICACIONES];
 
 export const UBICACIONES_LABEL: Record<string, string> = {
-  [UBICACIONES.ADENTRO]: 'Adentro',
-  [UBICACIONES.VEREDA]: 'En la vereda',
+  [UBICACIONES.ADENTRO]: 'Salón',
+  [UBICACIONES.VEREDA]: 'Vereda',
+};
+
+export const UBICACIONES_ICONO: Record<string, string> = {
+  [UBICACIONES.ADENTRO]: '🏠',
+  [UBICACIONES.VEREDA]: '☀️',
 };
 
 export const ESTADOS_RESERVA = {
@@ -66,6 +71,8 @@ export const MENSAJES = {
   RESERVA_DUPLICADA: 'Ya existe una reserva para este horario con tu email.',
   HORARIO_LLENO: 'Lo siento, este horario está completamente lleno.',
   TURNO_PASADO: 'Ese horario ya pasó. Elegí uno más tarde o para otro día.',
+  SECTOR_LLENO: 'Ese sector ya no tiene lugar para ese horario. Probá el otro sector o cambiá de horario.',
+  TURNO_CERRADO: 'Ese horario no está disponible en este momento.',
   RESERVA_NO_ENCONTRADA: 'La reserva no fue encontrada.',
   CANCELA_EXITOSA: 'Tu reserva ha sido cancelada.',
   ERROR_GENERICO: 'Ocurrió un error. Por favor intenta más tarde.',

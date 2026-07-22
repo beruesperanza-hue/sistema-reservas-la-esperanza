@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { cancelReservation, deleteReservation } from '@/app/actions/reservations';
-import { UBICACIONES } from '@/lib/constants';
+import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import { formatearFechaLarga } from '@/lib/fechas';
+import NuevaReservaModal from '@/components/admin/NuevaReservaModal';
 
 interface Reservation {
   id: string;
@@ -18,6 +19,7 @@ interface Reservation {
   ubicacion?: string;
   comentarios?: string;
   estado: string;
+  creadaPorAdmin?: boolean;
 }
 
 export default function AdminReservasPage() {
@@ -26,6 +28,7 @@ export default function AdminReservasPage() {
   const [fechaFiltro, setFechaFiltro] = useState('');
   const [busqueda, setBusqueda] = useState('');
   const [loading, setLoading] = useState(true);
+  const [modalAbierto, setModalAbierto] = useState(false);
 
   useEffect(() => {
     loadReservas();
@@ -90,7 +93,12 @@ export default function AdminReservasPage() {
       <AdminHeader />
 
       <main className="container mx-auto px-4 py-12 max-w-7xl">
-        <h1 className="text-4xl font-bold text-esperanza-700 mb-8">Gestión de Reservas</h1>
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
+          <h1 className="text-4xl font-bold text-esperanza-700">Gestión de Reservas</h1>
+          <button onClick={() => setModalAbierto(true)} className="btn btn-primary">
+            📝 Nueva reserva
+          </button>
+        </div>
 
         {/* Filtros */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
@@ -167,87 +175,108 @@ export default function AdminReservasPage() {
           <div className="space-y-6">
             {Object.entries(agrupadas).map(([clave, resas]) => {
               const [fechaGrupo, horaGrupo] = clave.split('|');
-              const enVereda = resas
-                .filter((r) => r.ubicacion === UBICACIONES.VEREDA)
-                .reduce((sum, r) => sum + r.personas, 0);
-              const adentro = resas.reduce((sum, r) => sum + r.personas, 0) - enVereda;
+              const porSector = {
+                [UBICACIONES.ADENTRO]: resas.filter((r) => r.ubicacion !== UBICACIONES.VEREDA),
+                [UBICACIONES.VEREDA]: resas.filter((r) => r.ubicacion === UBICACIONES.VEREDA),
+              };
+              const totalPersonas = resas.reduce((sum, r) => sum + r.personas, 0);
 
               return (
-              <div key={clave} className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="bg-esperanza-100 border-l-4 border-esperanza-500 px-6 py-4">
-                  <h2 className="text-lg font-semibold text-esperanza-700">
-                    {formatearFechaLarga(fechaGrupo)} · {horaGrupo}
-                  </h2>
-                  <p className="text-sm text-esperanza-600">
-                    {resas.reduce((sum, r) => sum + r.personas, 0)} personas en{' '}
-                    {resas.length}{' '}
-                    {resas.length === 1 ? 'reserva' : 'reservas'}
-                    {' — '}
-                    🏠 {adentro} adentro · ☀️ {enVereda} en la vereda
-                  </p>
-                </div>
+                <div key={clave} className="bg-white rounded-lg shadow overflow-hidden">
+                  <div className="bg-esperanza-100 border-l-4 border-esperanza-500 px-6 py-4">
+                    <h2 className="text-lg font-semibold text-esperanza-700">
+                      {formatearFechaLarga(fechaGrupo)} · {horaGrupo}
+                    </h2>
+                    <p className="text-sm text-esperanza-600">
+                      {totalPersonas} personas en {resas.length}{' '}
+                      {resas.length === 1 ? 'reserva' : 'reservas'}
+                    </p>
+                  </div>
 
-                <div className="divide-y">
-                  {resas.map((reserva) => (
-                    <div
-                      key={reserva.id}
-                      className="p-6 hover:bg-gray-50 transition-colors flex items-start justify-between"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-start gap-4">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">
-                              {reserva.nombre} {reserva.apellido}
-                            </h3>
-                            <div className="grid sm:grid-cols-2 gap-2 mt-2 text-sm text-gray-600">
-                              <div>📧 {reserva.email}</div>
-                              <div>📱 {reserva.telefono}</div>
-                              <div>👥 {reserva.personas} personas</div>
-                              <div>
-                                {reserva.ubicacion === UBICACIONES.VEREDA
-                                  ? '☀️ En la vereda'
-                                  : '🏠 Adentro'}
-                              </div>
-                              {reserva.comentarios && (
-                                <div className="col-span-2">💬 {reserva.comentarios}</div>
-                              )}
-                            </div>
+                  <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
+                    {[UBICACIONES.ADENTRO, UBICACIONES.VEREDA].map((sector) => {
+                      const lista = porSector[sector];
+                      const personasSector = lista.reduce((sum, r) => sum + r.personas, 0);
+
+                      return (
+                        <div key={sector}>
+                          <div className="px-6 py-2.5 bg-gray-50 flex items-center justify-between">
+                            <span className="font-semibold text-sm text-gray-700 flex items-center gap-1.5">
+                              {UBICACIONES_ICONO[sector]} {UBICACIONES_LABEL[sector]}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {lista.length === 0
+                                ? 'sin reservas'
+                                : `${personasSector} personas · ${lista.length} ${lista.length === 1 ? 'reserva' : 'reservas'}`}
+                            </span>
                           </div>
 
-                          <div className="flex gap-2">
-                            {reserva.estado === 'confirmada' ? (
-                              <button
-                                onClick={() => handleCancel(reserva.id)}
-                                className="btn btn-small bg-amber-100 text-amber-700 hover:bg-amber-200 flex gap-1"
-                                title="Cancelar"
+                          <div className="divide-y">
+                            {lista.map((reserva) => (
+                              <div
+                                key={reserva.id}
+                                className="p-4 hover:bg-gray-50 transition-colors flex items-start justify-between gap-4"
                               >
-                                ❌ Cancelar
-                              </button>
-                            ) : (
-                              <div className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm font-semibold">
-                                Cancelada
-                              </div>
-                            )}
+                                <div className="flex-1">
+                                  <h3 className="font-semibold text-gray-900">
+                                    {reserva.nombre} {reserva.apellido}
+                                    {reserva.creadaPorAdmin && (
+                                      <span className="ml-2 text-xs font-normal text-esperanza-500">
+                                        cargada a mano
+                                      </span>
+                                    )}
+                                  </h3>
+                                  <div className="grid gap-1 mt-1.5 text-sm text-gray-600">
+                                    <div>📧 {reserva.email}</div>
+                                    <div>📱 {reserva.telefono}</div>
+                                    <div>👥 {reserva.personas} personas</div>
+                                    {reserva.comentarios && <div>💬 {reserva.comentarios}</div>}
+                                  </div>
+                                </div>
 
-                            <button
-                              onClick={() => handleDelete(reserva.id)}
-                              className="btn btn-small btn-danger"
-                              title="Eliminar"
-                            >
-                              🗑️
-                            </button>
+                                <div className="flex flex-col gap-2 flex-shrink-0">
+                                  {reserva.estado === 'confirmada' ? (
+                                    <button
+                                      onClick={() => handleCancel(reserva.id)}
+                                      className="btn btn-small bg-amber-100 text-amber-700 hover:bg-amber-200 flex gap-1"
+                                      title="Cancelar"
+                                    >
+                                      ❌ Cancelar
+                                    </button>
+                                  ) : (
+                                    <div className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm font-semibold text-center">
+                                      Cancelada
+                                    </div>
+                                  )}
+
+                                  <button
+                                    onClick={() => handleDelete(reserva.id)}
+                                    className="btn btn-small btn-danger"
+                                    title="Eliminar"
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
               );
             })}
           </div>
         )}
       </main>
+
+      {modalAbierto && (
+        <NuevaReservaModal
+          onClose={() => setModalAbierto(false)}
+          onCreada={loadReservas}
+        />
+      )}
     </div>
   );
 }

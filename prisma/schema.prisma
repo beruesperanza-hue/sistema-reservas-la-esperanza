@@ -19,6 +19,9 @@ model Reservation {
   ubicacion String   @default("adentro")
   comentarios String?
   estado    String   @default("confirmada")
+  // Cargada desde el panel de admin (walk-in / telefónica), sin pasar por las
+  // restricciones del formulario público (turno pasado, cierre manual, cupo).
+  creadaPorAdmin Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -31,13 +34,33 @@ model Schedule {
   id        String   @id @default(cuid())
   dia       String
   hora      String
+  // Capacidad del salón (adentro). Nombre histórico del campo.
   capacidad Int      @default(20)
+  // Capacidad de la vereda. 0 = ese turno no tiene mesas afuera.
+  capacidadVereda Int @default(0)
   activo    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([dia, hora])
   @@index([dia])
+}
+
+// Bloqueo puntual de un turno para una fecha específica (no recurrente).
+// sector = null cierra el turno completo; 'adentro' o 'vereda' cierra solo ese sector.
+// Se usa tanto para cierres manuales (lluvia, evento privado) como para el
+// cierre automático de turnos que ya pasaron, que NO se guarda acá — ese se
+// calcula al vuelo comparando contra la hora actual de Buenos Aires.
+model TurnoCierre {
+  id        String   @id @default(cuid())
+  fecha     DateTime
+  hora      String
+  sector    String?
+  motivo    String?
+  createdAt DateTime @default(now())
+
+  @@unique([fecha, hora, sector])
+  @@index([fecha])
 }
 
 model Settings {
