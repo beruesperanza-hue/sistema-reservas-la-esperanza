@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { CONTACTO } from '@/lib/constants';
 
 export default function Footer() {
   return (
@@ -25,15 +26,27 @@ export default function Footer() {
             <div className="space-y-3 text-sm">
               <div className="flex gap-2">
                 <span className="flex-shrink-0 mt-0.5">📍</span>
-                <span className="text-esperanza-200">Aguirre 526, Villa Crespo, Buenos Aires</span>
+                <Link
+                  href={CONTACTO.MAPS_URL}
+                  target="_blank"
+                  className="text-esperanza-200 hover:text-accent-gold transition-colors"
+                >
+                  {CONTACTO.DIRECCION}
+                </Link>
               </div>
               <div className="flex gap-2">
-                <span className="flex-shrink-0 mt-0.5">📞</span>
-                <span className="text-esperanza-200">+54-XXX-XXX-XXXX</span>
+                <span className="flex-shrink-0 mt-0.5">💬</span>
+                <Link
+                  href={CONTACTO.WHATSAPP_URL}
+                  target="_blank"
+                  className="text-esperanza-200 hover:text-accent-gold transition-colors"
+                >
+                  {CONTACTO.TELEFONO}
+                </Link>
               </div>
               <div className="flex gap-2">
                 <span className="flex-shrink-0 mt-0.5">✉️</span>
-                <span className="text-esperanza-200">eventoslaesperanza@gmail.com</span>
+                <span className="text-esperanza-200">{CONTACTO.EMAIL}</span>
               </div>
             </div>
           </div>

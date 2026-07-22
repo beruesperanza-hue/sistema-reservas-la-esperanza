@@ -34,6 +34,20 @@ export const ESTADOS_RESERVA = {
   PENDIENTE: 'pendiente',
 };
 
+// Datos de contacto del restaurante (se usan en el sitio y en los emails).
+export const CONTACTO = {
+  DIRECCION: 'Aguirre 526, Villa Crespo, Buenos Aires',
+  TELEFONO: '+54 9 11 2182-3702',
+  WHATSAPP_NUMERO: '5491121823702',
+  WHATSAPP_URL: 'https://wa.me/5491121823702',
+  MAPS_URL:
+    'https://www.google.com/maps/dir/?api=1&destination=Aguirre+526%2C+Villa+Crespo%2C+Buenos+Aires',
+  EMAIL: 'eventoslaesperanza@gmail.com',
+  INSTAGRAM: 'https://instagram.com/esperanza_ascurra',
+  INSTAGRAM_USER: '@esperanza_ascurra',
+  SITIO: process.env.NEXT_PUBLIC_SITE_URL || 'https://laesperanzadelosascurra.up.railway.app',
+};
+
 export const MENSAJES = {
   RESERVA_EXITOSA: '¡Gracias! Tu reserva fue realizada correctamente.',
   RESERVA_DUPLICADA: 'Ya existe una reserva para este horario con tu email.',
