@@ -16,6 +16,7 @@ model Reservation {
   personas  Int
   fecha     DateTime
   hora      String
+  ubicacion String   @default("adentro")
   comentarios String?
   estado    String   @default("confirmada")
   createdAt DateTime @default(now())

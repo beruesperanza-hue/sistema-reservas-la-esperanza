@@ -2,10 +2,13 @@
 
 import { useState } from 'react';
 import { createReservation } from '@/app/actions/reservations';
+import { UBICACIONES } from '@/lib/constants';
+import { formatearFechaLarga, hoyEnBA, sumarDias } from '@/lib/fechas';
 
 interface AvailableSlot {
   hora: string;
   disponible: boolean;
+  pasado?: boolean;
   personas_disponibles: number;
 }
 
@@ -23,6 +26,7 @@ export default function ReservationForm() {
     personas: '2',
     fecha: '',
     hora: '',
+    ubicacion: UBICACIONES.ADENTRO as string,
     comentarios: '',
   });
 
@@ -66,8 +70,9 @@ export default function ReservationForm() {
         email: formData.email,
         telefono: formData.telefono,
         personas: parseInt(formData.personas),
-        fecha: new Date(formData.fecha),
+        fecha: formData.fecha,
         hora: formData.hora,
+        ubicacion: formData.ubicacion,
         comentarios: formData.comentarios,
       });
 
@@ -83,6 +88,7 @@ export default function ReservationForm() {
             personas: '2',
             fecha: '',
             hora: '',
+            ubicacion: UBICACIONES.ADENTRO as string,
             comentarios: '',
           });
           setStep('fecha');
@@ -103,10 +109,10 @@ export default function ReservationForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const today = new Date().toISOString().split('T')[0];
-  const maxDate = new Date();
-  maxDate.setDate(maxDate.getDate() + 60);
-  const maxDateStr = maxDate.toISOString().split('T')[0];
+  // Hoy en Buenos Aires: si usáramos la fecha del navegador en UTC, después de
+  // las 21 hs de acá el calendario ya no dejaría reservar para hoy.
+  const today = hoyEnBA();
+  const maxDateStr = sumarDias(today, 60);
 
   return (
     <div className="w-full">
@@ -236,7 +242,9 @@ export default function ReservationForm() {
                     }`}
                   >
                     {slot.hora}
-                    {!slot.disponible && <div className="text-xs">Lleno</div>}
+                    {!slot.disponible && (
+                      <div className="text-xs">{slot.pasado ? 'Ya pasó' : 'Lleno'}</div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -318,6 +326,38 @@ export default function ReservationForm() {
             </div>
 
             <div className="form-group">
+              <label className="form-label">¿Dónde preferís sentarte?</label>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { value: UBICACIONES.ADENTRO, label: 'Adentro', icono: '🏠' },
+                  { value: UBICACIONES.VEREDA, label: 'En la vereda', icono: '☀️' },
+                ].map((opcion) => (
+                  <button
+                    key={opcion.value}
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({ ...prev, ubicacion: opcion.value }))
+                    }
+                    className={`py-3 px-4 rounded-lg font-semibold border-2 transition-all flex items-center justify-center gap-2 ${
+                      formData.ubicacion === opcion.value
+                        ? 'bg-esperanza-600 border-esperanza-600 text-white'
+                        : 'bg-white border-gray-200 text-gray-700 hover:border-esperanza-300'
+                    }`}
+                  >
+                    <span>{opcion.icono}</span>
+                    {opcion.label}
+                  </button>
+                ))}
+              </div>
+              {formData.ubicacion === UBICACIONES.VEREDA && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Las mesas de la vereda están sujetas a disponibilidad y al clima. Si llueve
+                  te reubicamos adentro.
+                </p>
+              )}
+            </div>
+
+            <div className="form-group">
               <label className="form-label">Comentarios (opcional)</label>
               <textarea
                 name="comentarios"
@@ -333,8 +373,11 @@ export default function ReservationForm() {
             <div className="bg-esperanza-50 p-4 rounded-lg border border-esperanza-200">
               <p className="text-sm text-esperanza-700">
                 <span className="font-semibold">{formData.personas} personas</span> el{' '}
-                <span className="font-semibold">{new Date(formData.fecha).toLocaleDateString('es-ES')}</span> a las{' '}
-                <span className="font-semibold">{formData.hora}</span>
+                <span className="font-semibold">{formatearFechaLarga(formData.fecha)}</span> a las{' '}
+                <span className="font-semibold">{formData.hora}</span>,{' '}
+                <span className="font-semibold">
+                  {formData.ubicacion === UBICACIONES.VEREDA ? 'en la vereda' : 'adentro'}
+                </span>
               </p>
             </div>
 

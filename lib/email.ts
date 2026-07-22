@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { CONTACTO } from '@/lib/constants';
+import { CONTACTO, UBICACIONES, UBICACIONES_LABEL } from '@/lib/constants';
 
 // Gmail API vía OAuth2 (usa HTTPS, no SMTP → funciona en Railway).
 // Manda los correos desde la casilla real del restaurante.
@@ -215,8 +215,11 @@ export async function sendReservationConfirmation(
   fecha: string,
   hora: string,
   personas: number,
-  telefono: string
+  telefono: string,
+  ubicacion: string = UBICACIONES.ADENTRO
 ) {
+  const ubicacionLabel = UBICACIONES_LABEL[ubicacion] || UBICACIONES_LABEL[UBICACIONES.ADENTRO];
+
   const fila = (label: string, valor: string) => `
     <tr>
       <td style="padding:10px 0;border-bottom:1px solid #e8ecf5;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#6b7c8f;">${label}</td>
@@ -231,8 +234,15 @@ export async function sendReservationConfirmation(
       ${fila('Fecha', fecha)}
       ${fila('Hora', hora)}
       ${fila('Personas', String(personas))}
+      ${fila('Mesa', ubicacionLabel)}
       ${fila('Teléfono', telefono)}
     </table>
+
+    ${
+      ubicacion === UBICACIONES.VEREDA
+        ? `<p style="margin:0 0 16px 0;font-size:14px;color:#6b7c8f;">Las mesas de la vereda dependen del clima y de la disponibilidad del momento. Si llueve, te reubicamos adentro.</p>`
+        : ''
+    }
 
     <p style="margin:0 0 8px 0;">Si necesitás cambiar o cancelar la reserva, escribinos por WhatsApp y lo resolvemos al toque.</p>
     <p style="margin:0 0 8px 0;">¡Te esperamos! 🌟</p>
@@ -246,6 +256,7 @@ export async function sendReservationConfirmation(
     `Fecha: ${fecha}`,
     `Hora: ${hora}`,
     `Personas: ${personas}`,
+    `Mesa: ${ubicacionLabel}`,
     `Teléfono: ${telefono}`,
     '',
     'Si necesitás cambiar o cancelar la reserva, escribinos por WhatsApp.',
@@ -299,7 +310,8 @@ export async function sendReservationEmail(email: string, reservationDetails: an
     reservationDetails.fecha,
     reservationDetails.hora,
     reservationDetails.personas,
-    reservationDetails.telefono
+    reservationDetails.telefono,
+    reservationDetails.ubicacion
   );
 }
 
@@ -310,6 +322,7 @@ export async function sendConfirmationEmail(email: string, details: any) {
     details.fecha,
     details.hora,
     details.personas,
-    details.telefono
+    details.telefono,
+    details.ubicacion
   );
 }

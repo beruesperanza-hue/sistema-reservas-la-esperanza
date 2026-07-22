@@ -28,6 +28,19 @@ export const DIA_NUMERO_A_NOMBRE = {
   6: 'sábado',
 };
 
+// Dónde quiere sentarse el cliente. La vereda depende del clima, por eso el aviso.
+export const UBICACIONES = {
+  ADENTRO: 'adentro',
+  VEREDA: 'vereda',
+} as const;
+
+export type Ubicacion = (typeof UBICACIONES)[keyof typeof UBICACIONES];
+
+export const UBICACIONES_LABEL: Record<string, string> = {
+  [UBICACIONES.ADENTRO]: 'Adentro',
+  [UBICACIONES.VEREDA]: 'En la vereda',
+};
+
 export const ESTADOS_RESERVA = {
   CONFIRMADA: 'confirmada',
   CANCELADA: 'cancelada',
@@ -52,6 +65,7 @@ export const MENSAJES = {
   RESERVA_EXITOSA: '¡Gracias! Tu reserva fue realizada correctamente.',
   RESERVA_DUPLICADA: 'Ya existe una reserva para este horario con tu email.',
   HORARIO_LLENO: 'Lo siento, este horario está completamente lleno.',
+  TURNO_PASADO: 'Ese horario ya pasó. Elegí uno más tarde o para otro día.',
   RESERVA_NO_ENCONTRADA: 'La reserva no fue encontrada.',
   CANCELA_EXITOSA: 'Tu reserva ha sido cancelada.',
   ERROR_GENERICO: 'Ocurrió un error. Por favor intenta más tarde.',

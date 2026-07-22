@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { dateAFechaISO, fechaISOaDate, hoyEnBA, sumarDias } from '@/lib/fechas';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,31 +10,21 @@ export async function GET(request: NextRequest) {
 
     let whereClause: any = {};
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
+    // "Hoy" es hoy en Buenos Aires, no en la zona horaria del servidor.
+    let diaISO: string | null = null;
     if (filtro === 'hoy') {
-      whereClause = {
-        fecha: {
-          gte: today,
-          lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
-        },
-      };
+      diaISO = hoyEnBA();
     } else if (filtro === 'manana') {
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      whereClause = {
-        fecha: {
-          gte: tomorrow,
-          lt: new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000),
-        },
-      };
+      diaISO = sumarDias(hoyEnBA(), 1);
     } else if (filtro === 'fecha' && fecha) {
-      const fechaDate = new Date(fecha);
+      diaISO = fecha;
+    }
+
+    if (diaISO) {
       whereClause = {
         fecha: {
-          gte: fechaDate,
-          lt: new Date(fechaDate.getTime() + 24 * 60 * 60 * 1000),
+          gte: fechaISOaDate(diaISO),
+          lt: fechaISOaDate(sumarDias(diaISO, 1)),
         },
       };
     }
@@ -46,7 +37,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       reservas: reservas.map((r) => ({
         ...r,
-        fecha: r.fecha.toISOString().split('T')[0],
+        fecha: dateAFechaISO(r.fecha),
       })),
     });
   } catch (error) {

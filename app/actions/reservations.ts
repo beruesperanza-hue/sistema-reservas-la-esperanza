@@ -2,7 +2,8 @@
 
 import prisma from '@/lib/db';
 import { sendReservationConfirmation, sendReservationCancellation } from '@/lib/email';
-import { MENSAJES, ESTADOS_RESERVA } from '@/lib/constants';
+import { MENSAJES, ESTADOS_RESERVA, UBICACIONES } from '@/lib/constants';
+import { esTurnoPasado, fechaISOaDate, formatearFechaLarga } from '@/lib/fechas';
 import { revalidatePath } from 'next/cache';
 
 interface CreateReservationData {
@@ -11,23 +12,30 @@ interface CreateReservationData {
   email: string;
   telefono: string;
   personas: number;
-  fecha: Date;
+  /** 'YYYY-MM-DD' — se compara siempre en hora de Buenos Aires. */
+  fecha: string;
   hora: string;
+  ubicacion?: string;
   comentarios?: string;
 }
 
 export async function createReservation(data: CreateReservationData) {
   try {
-    // Validar que la fecha sea válida
-    if (new Date(data.fecha) < new Date()) {
-      return { success: false, error: 'No puedes reservar fechas pasadas' };
+    // El turno se compara contra la hora de Buenos Aires, no la del servidor:
+    // reservar hoy a las 22:00 tiene que funcionar hasta que sean las 22:00 acá.
+    if (esTurnoPasado(data.fecha, data.hora)) {
+      return { success: false, error: MENSAJES.TURNO_PASADO };
     }
+
+    const fecha = fechaISOaDate(data.fecha);
+    const ubicacion =
+      data.ubicacion === UBICACIONES.VEREDA ? UBICACIONES.VEREDA : UBICACIONES.ADENTRO;
 
     // Buscar si ya existe una reserva para ese horario y email
     const existingReservation = await prisma.reservation.findFirst({
       where: {
         email: data.email,
-        fecha: new Date(data.fecha),
+        fecha,
         hora: data.hora,
       },
     });
@@ -39,7 +47,7 @@ export async function createReservation(data: CreateReservationData) {
     // Contar personas reservadas para ese horario
     const reservedCount = await prisma.reservation.aggregate({
       where: {
-        fecha: new Date(data.fecha),
+        fecha,
         hora: data.hora,
         estado: ESTADOS_RESERVA.CONFIRMADA,
       },
@@ -63,8 +71,9 @@ export async function createReservation(data: CreateReservationData) {
         email: data.email,
         telefono: data.telefono,
         personas: data.personas,
-        fecha: new Date(data.fecha),
+        fecha,
         hora: data.hora,
+        ubicacion,
         comentarios: data.comentarios || null,
         estado: ESTADOS_RESERVA.CONFIRMADA,
       },
@@ -74,10 +83,11 @@ export async function createReservation(data: CreateReservationData) {
     await sendReservationConfirmation(
       data.email,
       data.nombre,
-      new Date(data.fecha).toLocaleDateString('es-ES'),
+      formatearFechaLarga(data.fecha),
       data.hora,
       data.personas,
-      data.telefono
+      data.telefono,
+      ubicacion
     );
 
     revalidatePath('/admin');
@@ -140,6 +150,7 @@ export async function updateReservation(reservationId: string, data: Partial<Cre
         ...(data.email && { email: data.email }),
         ...(data.telefono && { telefono: data.telefono }),
         ...(data.personas && { personas: data.personas }),
+        ...(data.ubicacion && { ubicacion: data.ubicacion }),
         ...(data.comentarios !== undefined && { comentarios: data.comentarios }),
       },
     });

@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { cancelReservation, deleteReservation } from '@/app/actions/reservations';
+import { UBICACIONES } from '@/lib/constants';
+import { formatearFechaLarga } from '@/lib/fechas';
 
 interface Reservation {
   id: string;
@@ -13,6 +15,7 @@ interface Reservation {
   personas: number;
   fecha: string;
   hora: string;
+  ubicacion?: string;
   comentarios?: string;
   estado: string;
 }
@@ -74,7 +77,7 @@ export default function AdminReservasPage() {
   // Agrupar por horario
   const agrupadas = filtradas.reduce(
     (acc, r) => {
-      const key = `${r.fecha} - ${r.hora}`;
+      const key = `${r.fecha}|${r.hora}`;
       if (!acc[key]) acc[key] = [];
       acc[key].push(r);
       return acc;
@@ -162,14 +165,25 @@ export default function AdminReservasPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {Object.entries(agrupadas).map(([horario, resas]) => (
-              <div key={horario} className="bg-white rounded-lg shadow overflow-hidden">
+            {Object.entries(agrupadas).map(([clave, resas]) => {
+              const [fechaGrupo, horaGrupo] = clave.split('|');
+              const enVereda = resas
+                .filter((r) => r.ubicacion === UBICACIONES.VEREDA)
+                .reduce((sum, r) => sum + r.personas, 0);
+              const adentro = resas.reduce((sum, r) => sum + r.personas, 0) - enVereda;
+
+              return (
+              <div key={clave} className="bg-white rounded-lg shadow overflow-hidden">
                 <div className="bg-esperanza-100 border-l-4 border-esperanza-500 px-6 py-4">
-                  <h2 className="text-lg font-semibold text-esperanza-700">{horario}</h2>
+                  <h2 className="text-lg font-semibold text-esperanza-700">
+                    {formatearFechaLarga(fechaGrupo)} · {horaGrupo}
+                  </h2>
                   <p className="text-sm text-esperanza-600">
                     {resas.reduce((sum, r) => sum + r.personas, 0)} personas en{' '}
                     {resas.length}{' '}
                     {resas.length === 1 ? 'reserva' : 'reservas'}
+                    {' — '}
+                    🏠 {adentro} adentro · ☀️ {enVereda} en la vereda
                   </p>
                 </div>
 
@@ -189,6 +203,11 @@ export default function AdminReservasPage() {
                               <div>📧 {reserva.email}</div>
                               <div>📱 {reserva.telefono}</div>
                               <div>👥 {reserva.personas} personas</div>
+                              <div>
+                                {reserva.ubicacion === UBICACIONES.VEREDA
+                                  ? '☀️ En la vereda'
+                                  : '🏠 Adentro'}
+                              </div>
                               {reserva.comentarios && (
                                 <div className="col-span-2">💬 {reserva.comentarios}</div>
                               )}
@@ -224,7 +243,8 @@ export default function AdminReservasPage() {
                   ))}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
