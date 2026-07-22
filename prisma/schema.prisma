@@ -66,9 +66,9 @@ model TurnoCierre {
 model Settings {
   id                    String  @id @default(cuid())
   nombreRestaurante     String  @default("La Esperanza")
-  emailRestaurante      String  @default("reservas@laesperanza.com")
-  telefonoRestaurante   String  @default("")
-  direccionRestaurante  String  @default("")
+  emailRestaurante      String  @default("eventoslaesperanza@gmail.com")
+  telefonoRestaurante   String  @default("+54 9 11 2182-3702")
+  direccionRestaurante  String  @default("Aguirre 526, Villa Crespo, Buenos Aires")
   capacidadPorTurno     Int     @default(20)
   diasAvanzados         Int     @default(60)
   mensajeConfirmacion   String  @default("¡Gracias! Tu reserva fue realizada correctamente.")

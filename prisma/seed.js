@@ -26,7 +26,9 @@ async function main() {
       create: {
         id: 'default',
         nombreRestaurante: 'La Esperanza',
-        emailRestaurante: 'reservas@laesperanza.com',
+        emailRestaurante: 'eventoslaesperanza@gmail.com',
+        telefonoRestaurante: '+54 9 11 2182-3702',
+        direccionRestaurante: 'Aguirre 526, Villa Crespo, Buenos Aires',
         capacidadPorTurno: 20,
         diasAvanzados: 60,
       },
