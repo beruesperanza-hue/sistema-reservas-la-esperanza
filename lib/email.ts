@@ -48,7 +48,7 @@ export async function sendReservationConfirmation(
   }
 }
 
-export async function sendReservationCancellation(email: string, details: any) {
+export async function sendReservationCancellation(email: string, _details: any) {
   try {
     const mailOptions = {
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
