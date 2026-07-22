@@ -1,14 +1,11 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_PORT === '465',
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Remitente. Para producción real usá una dirección de un dominio verificado
+// en Resend (ej. reservas@tudominio.com). Para pruebas, Resend permite
+// 'onboarding@resend.dev' (solo envía al email de la cuenta).
+const FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev';
 
 export async function sendReservationConfirmation(
   email: string,
@@ -19,9 +16,9 @@ export async function sendReservationConfirmation(
   telefono: string
 ) {
   try {
-    console.log('🔧 ENVIANDO EMAIL REAL CON NODEMAILER A:', email);
-    const mailOptions = {
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    console.log('🔧 ENVIANDO EMAIL CON RESEND A:', email);
+    const { data, error } = await resend.emails.send({
+      from: FROM,
       to: email,
       subject: 'Confirmación de tu reserva en La Esperanza',
       html: `
@@ -37,10 +34,14 @@ export async function sendReservationConfirmation(
         <p>Si necesitas hacer cambios, contáctanos.</p>
         <p>¡Te esperamos!</p>
       `,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
-    console.log('✅ EMAIL ENVIADO EXITOSAMENTE A:', email);
+    if (error) {
+      console.error('❌ ERROR AL ENVIAR EMAIL:', error);
+      return false;
+    }
+
+    console.log('✅ EMAIL ENVIADO EXITOSAMENTE A:', email, '- id:', data?.id);
     return true;
   } catch (error) {
     console.error('❌ ERROR AL ENVIAR EMAIL:', error);
@@ -50,8 +51,8 @@ export async function sendReservationConfirmation(
 
 export async function sendReservationCancellation(email: string, _details: any) {
   try {
-    const mailOptions = {
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    const { data, error } = await resend.emails.send({
+      from: FROM,
       to: email,
       subject: 'Cancelación de tu reserva en La Esperanza',
       html: `
@@ -59,10 +60,14 @@ export async function sendReservationCancellation(email: string, _details: any) 
         <p>Tu reserva ha sido cancelada exitosamente.</p>
         <p>Si tienes preguntas, contáctanos.</p>
       `,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
-    console.log('✓ Cancelación enviada a:', email);
+    if (error) {
+      console.error('✗ Error al enviar email:', error);
+      return false;
+    }
+
+    console.log('✓ Cancelación enviada a:', email, '- id:', data?.id);
     return true;
   } catch (error) {
     console.error('✗ Error al enviar email:', error);
