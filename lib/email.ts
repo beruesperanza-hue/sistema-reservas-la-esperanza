@@ -19,6 +19,7 @@ export async function sendReservationConfirmation(
   telefono: string
 ) {
   try {
+    console.log('🔧 ENVIANDO EMAIL REAL CON NODEMAILER A:', email);
     const mailOptions = {
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to: email,
@@ -39,10 +40,10 @@ export async function sendReservationConfirmation(
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('✓ Confirmación enviada a:', email);
+    console.log('✅ EMAIL ENVIADO EXITOSAMENTE A:', email);
     return true;
   } catch (error) {
-    console.error('✗ Error al enviar email:', error);
+    console.error('❌ ERROR AL ENVIAR EMAIL:', error);
     return false;
   }
 }
