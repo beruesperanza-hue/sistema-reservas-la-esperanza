@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   viewport: 'width=device-width, initial-scale=1',
   authors: [{ name: 'La Esperanza de los Ascurra' }],
   openGraph: {
-    type: 'restaurant',
+    type: 'website',
     url: 'https://sistema-reservas-la-esperanza-production.up.railway.app',
     title: 'La Esperanza de los Ascurra | Tapas Españolas en Buenos Aires',
     description: 'La taberna de España en Buenos Aires. Auténticas tapas españolas desde 2011.',
