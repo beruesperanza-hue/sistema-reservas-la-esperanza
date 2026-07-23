@@ -1,21 +1,22 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import { SITE_URL } from '@/lib/site';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'La Esperanza de los Ascurra | Tapas Españolas en Villa Crespo, Buenos Aires',
-  description: 'La taberna de España en Buenos Aires. Auténticas tapas españolas, vinos artesanales y experiencia gastronómica única. Reserva tu mesa online en Villa Crespo.',
-  keywords: 'tapas españolas Buenos Aires, restaurante español Villa Crespo, tapas Buenos Aires, reserva de restaurant, comida española Argentina, tortilla española',
-  viewport: 'width=device-width, initial-scale=1',
+  metadataBase: new URL(SITE_URL),
+  title: 'La Esperanza de los Ascurra · Taberna española en Villa Crespo',
+  description: 'La taberna de España en Buenos Aires. Auténticas tapas españolas, vermut y vinos desde 2011. Reservá tu mesa online en Villa Crespo.',
+  keywords: 'tapas españolas Buenos Aires, restaurante español Villa Crespo, taberna española, vermut Buenos Aires, comida española Argentina, tortilla española',
   authors: [{ name: 'La Esperanza de los Ascurra' }],
   openGraph: {
     type: 'website',
-    url: 'https://sistema-reservas-la-esperanza-production.up.railway.app',
-    title: 'La Esperanza de los Ascurra | Tapas Españolas en Buenos Aires',
+    url: SITE_URL,
+    title: 'La Esperanza de los Ascurra · Taberna española en Villa Crespo',
     description: 'La taberna de España en Buenos Aires. Auténticas tapas españolas desde 2011.',
     images: [
       {
-        url: 'https://sistema-reservas-la-esperanza-production.up.railway.app/hero-platos.jpg',
+        url: `${SITE_URL}/hero-platos.jpg`,
         width: 1200,
         height: 630,
         alt: 'La Esperanza - Tapas españolas',
@@ -24,13 +25,18 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'La Esperanza de los Ascurra | Tapas Españolas',
-    description: 'La taberna de España en Buenos Aires. Reserva tu mesa online.',
-    images: ['https://sistema-reservas-la-esperanza-production.up.railway.app/hero-platos.jpg'],
+    title: 'La Esperanza de los Ascurra · Taberna española',
+    description: 'La taberna de España en Buenos Aires. Reservá tu mesa online.',
+    images: [`${SITE_URL}/hero-platos.jpg`],
   },
   alternates: {
-    canonical: 'https://sistema-reservas-la-esperanza-production.up.railway.app',
+    canonical: SITE_URL,
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -55,43 +61,39 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Restaurant',
+              '@id': `${SITE_URL}/#restaurant`,
               name: 'La Esperanza de los Ascurra',
-              image: 'https://sistema-reservas-la-esperanza-production.up.railway.app/hero-platos.jpg',
-              description: 'La taberna de España en Buenos Aires. Auténticas tapas españolas desde 2011.',
+              image: `${SITE_URL}/hero-platos.jpg`,
+              description:
+                'La Esperanza de los Ascurra es una taberna española en Villa Crespo, Buenos Aires, que sirve tapas y vermut desde 2011.',
               address: {
                 '@type': 'PostalAddress',
                 streetAddress: 'Aguirre 526',
-                addressLocality: 'Villa Crespo',
-                addressRegion: 'Buenos Aires',
-                postalCode: 'C1414',
+                addressLocality: 'Buenos Aires',
+                addressRegion: 'CABA',
+                postalCode: 'C1414ASL',
                 addressCountry: 'AR',
               },
-              telephone: '+54-11-XXXX-XXXX',
+              telephone: '+54 9 11 2182-3702',
               email: 'eventoslaesperanza@gmail.com',
-              url: 'https://sistema-reservas-la-esperanza-production.up.railway.app',
+              url: SITE_URL,
               priceRange: '$$',
-              cuisines: ['Spanish', 'Tapas'],
-              servesCuisine: 'Spanish',
+              servesCuisine: ['Española', 'Tapas'],
               foundingDate: '2011',
+              acceptsReservations: `${SITE_URL}/reservas`,
               openingHoursSpecification: [
                 {
                   '@type': 'OpeningHoursSpecification',
                   dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                  opens: '19:00',
-                  closes: '23:30',
-                },
-                {
-                  '@type': 'OpeningHoursSpecification',
-                  dayOfWeek: 'Sunday',
-                  opens: '19:00',
+                  opens: '19:30',
                   closes: '23:30',
                 },
               ],
-              aggregateRating: {
-                '@type': 'AggregateRating',
-                ratingValue: '4.0',
-                reviewCount: '2207',
-              },
+              sameAs: [
+                'https://www.instagram.com/esperanza_ascurra/',
+                'https://www.facebook.com/laesperanzadelosascurra/',
+                'https://www.tripadvisor.com/Restaurant_Review-g312741-d6416931-Reviews-La_Esperanza_De_Los_Ascurra-Buenos_Aires_Capital_Federal_District.html',
+              ],
             }),
           }}
         />

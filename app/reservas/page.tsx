@@ -3,9 +3,10 @@ import Footer from '@/components/common/Footer';
 import ReservationForm from '@/components/reservas/ReservationForm';
 
 export const metadata = {
-  title: 'Reserva tu Mesa | La Esperanza de los Ascurra | Tapas Españolas Buenos Aires',
-  description: 'Reserva tu mesa online en La Esperanza. Auténticas tapas españolas en Villa Crespo. Disponibilidad en tiempo real, hasta 60 días de anticipación.',
+  title: 'Reservar mesa · La Esperanza de los Ascurra · Villa Crespo',
+  description: 'Reservá tu mesa online en La Esperanza. Auténticas tapas españolas en Villa Crespo. Disponibilidad en tiempo real, hasta 60 días de anticipación.',
   keywords: 'reservar restaurante, reserva online, La Esperanza, tapas españolas, restaurant Villa Crespo',
+  alternates: { canonical: '/reservas' },
 };
 
 export default function ReservasPage() {
