@@ -170,7 +170,7 @@ export default function CartaPage() {
 
           <div className="bg-esperanza-50 border-l-4 border-accent-gold rounded-lg p-5 my-5">
             <h3 className="text-lg font-serif font-bold text-esperanza-700 mb-1">
-              🍷 Hora del Vermut <span className="text-sm font-body italic font-normal text-esperanza-400">— 19 a 20:30</span>
+              Hora del Vermut <span className="text-sm font-body italic font-normal text-esperanza-400">— 19 a 20:30</span>
             </h3>
             {HORA_DEL_VERMUT.map((it) => (
               <div key={it.nombre} className="flex items-baseline justify-between gap-4 py-1.5 text-sm">
@@ -222,7 +222,7 @@ export default function CartaPage() {
 
         <div className="text-center">
           <Link href="/reservas" className="btn btn-primary px-10 py-4 text-lg">
-            📅 Reservá tu mesa
+Reservá tu mesa
           </Link>
         </div>
       </main>

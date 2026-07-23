@@ -26,7 +26,6 @@ export default function Footer() {
             <h4 className="font-serif font-bold mb-4 text-lg">Contacto</h4>
             <div className="space-y-3 text-sm">
               <div className="flex gap-2">
-                <span className="flex-shrink-0 mt-0.5">📍</span>
                 <Link
                   href={CONTACTO.MAPS_URL}
                   target="_blank"
@@ -37,7 +36,6 @@ export default function Footer() {
                 </Link>
               </div>
               <div className="flex gap-2">
-                <span className="flex-shrink-0 mt-0.5">💬</span>
                 <Link
                   href={CONTACTO.WHATSAPP_URL}
                   target="_blank"
@@ -48,7 +46,6 @@ export default function Footer() {
                 </Link>
               </div>
               <div className="flex gap-2">
-                <span className="flex-shrink-0 mt-0.5">📞</span>
                 <Link
                   href={`tel:+${CONTACTO.WHATSAPP_NUMERO}`}
                   onClick={() => trackEvent('clic_telefono', { ubicacion: 'footer' })}
@@ -58,7 +55,6 @@ export default function Footer() {
                 </Link>
               </div>
               <div className="flex gap-2">
-                <span className="flex-shrink-0 mt-0.5">✉️</span>
                 <span className="text-esperanza-200">{CONTACTO.EMAIL}</span>
               </div>
             </div>
@@ -85,7 +81,6 @@ export default function Footer() {
               target="_blank"
               className="flex items-center gap-2 text-esperanza-200 hover:text-accent-gold transition-colors"
             >
-              <span>📷</span>
               @esperanza_ascurra
             </Link>
 
@@ -95,7 +90,6 @@ export default function Footer() {
               onClick={() => trackEvent('clic_dejar_reseña', { ubicacion: 'footer' })}
               className="flex items-center gap-2 text-esperanza-200 hover:text-accent-gold transition-colors"
             >
-              <span>💬</span>
               Dejanos tu opinión
             </Link>
           </div>
@@ -104,7 +98,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="border-t border-esperanza-600 pt-8 text-center text-sm text-esperanza-300">
           <p>© 2011 - 2026 La Esperanza. Todos los derechos reservados.</p>
-          <p className="mt-2 text-xs">Desarrollado con ❤️ para una mejor experiencia.</p>
+          <p className="mt-2 text-xs">Desarrollado para una mejor experiencia.</p>
         </div>
       </div>
     </footer>

@@ -160,7 +160,6 @@ export default function ReservationForm() {
     <div className="w-full">
       {success && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex gap-3 animate-fade-in">
-          <span className="text-2xl flex-shrink-0 mt-0.5">✅</span>
           <div>
             <h3 className="font-semibold text-green-900">¡Reserva Confirmada!</h3>
             <p className="text-green-700 text-sm">Te hemos enviado un email de confirmación.</p>
@@ -170,7 +169,6 @@ export default function ReservationForm() {
 
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3 animate-fade-in">
-          <span className="text-2xl flex-shrink-0 mt-0.5">⚠️</span>
           <div>
             <h3 className="font-semibold text-red-900">Error</h3>
             <p className="text-red-700 text-sm">{error}</p>
@@ -208,7 +206,7 @@ export default function ReservationForm() {
         {step === 'fecha' && (
           <div className="space-y-4 animate-slide-up">
             <h3 className="text-lg font-semibold text-esperanza-700 flex gap-2 font-serif">
-              📅 Selecciona una fecha
+              Selecciona una fecha
             </h3>
 
             <div>
@@ -242,7 +240,7 @@ export default function ReservationForm() {
         {step === 'horario' && (
           <div className="space-y-4 animate-slide-up">
             <h3 className="text-lg font-semibold text-esperanza-700 flex gap-2 font-serif">
-              🕐 Selecciona un horario
+              Selecciona un horario
             </h3>
 
             <div>
@@ -312,7 +310,7 @@ export default function ReservationForm() {
         {step === 'datos' && (
           <div className="space-y-4 animate-slide-up">
             <h3 className="text-lg font-semibold text-esperanza-700 flex gap-2 font-serif">
-              👤 Completa tus datos
+              Completa tus datos
             </h3>
 
             <div className="grid md:grid-cols-2 gap-4">

@@ -26,7 +26,7 @@ export default function ReviewsSection() {
   ];
 
   const renderStars = (rating: number) => {
-    return Array(rating).fill('⭐').join('');
+    return Array(rating).fill('★').join('');
   };
 
   return (
@@ -35,7 +35,7 @@ export default function ReviewsSection() {
         <div className="text-center mb-8">
           <h2 className="text-3xl font-serif font-bold text-esperanza-700 mb-2">Lo que dicen nuestros clientes</h2>
           <div className="flex items-center justify-center gap-2 mt-2">
-            <span className="text-2xl">⭐⭐⭐⭐</span>
+            <span className="text-2xl text-accent-gold">★★★★</span>
             <span className="text-lg font-bold text-esperanza-700">4.0</span>
             <span className="text-sm text-gray-600">(2.207 opiniones en Google)</span>
           </div>
