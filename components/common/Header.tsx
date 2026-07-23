@@ -19,6 +19,9 @@ export default function Header() {
             <Link href="/" className="text-white hover:text-accent-gold transition-colors font-medium">
               Inicio
             </Link>
+            <Link href="/carta" className="text-white hover:text-accent-gold transition-colors font-medium">
+              Carta
+            </Link>
             <Link href="/reservas" className="text-white hover:text-accent-gold transition-colors font-medium">
               Reservas
             </Link>

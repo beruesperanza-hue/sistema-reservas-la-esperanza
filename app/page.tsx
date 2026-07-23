@@ -39,6 +39,9 @@ export default function Home() {
               <Link href="/reservas" className="btn btn-primary px-10 py-4 text-xl md:text-2xl bg-accent-gold hover:bg-yellow-500 text-black font-bold shadow-2xl">
                 📅 Hacé tu Reserva
               </Link>
+              <Link href="/carta" className="btn btn-secondary px-10 py-4 text-xl md:text-2xl bg-white/10 hover:bg-white/20 text-white border-2 border-white font-bold backdrop-blur-sm">
+                📋 Ver la Carta
+              </Link>
             </div>
           </div>
         </div>
