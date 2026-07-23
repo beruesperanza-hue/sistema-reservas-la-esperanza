@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { createReservation } from '@/app/actions/reservations';
 import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import { formatearFechaLarga, hoyEnBA, sumarDias } from '@/lib/fechas';
+import { trackEvent } from '@/lib/analytics';
 
 interface SectorSlot {
   disponible: boolean;
@@ -97,6 +98,10 @@ export default function ReservationForm() {
       });
 
       if (response.success) {
+        trackEvent('reserva_enviada', {
+          personas: formData.personas,
+          ubicacion: formData.ubicacion,
+        });
         setSuccess(true);
         setStep('confirmacion');
         setTimeout(() => {

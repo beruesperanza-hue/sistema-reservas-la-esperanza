@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { CONTACTO } from '@/lib/constants';
+import { trackEvent } from '@/lib/analytics';
 
 export default function Footer() {
   return (
@@ -29,6 +30,7 @@ export default function Footer() {
                 <Link
                   href={CONTACTO.MAPS_URL}
                   target="_blank"
+                  onClick={() => trackEvent('clic_como_llegar', { ubicacion: 'footer' })}
                   className="text-esperanza-200 hover:text-accent-gold transition-colors"
                 >
                   {CONTACTO.DIRECCION}
@@ -39,9 +41,20 @@ export default function Footer() {
                 <Link
                   href={CONTACTO.WHATSAPP_URL}
                   target="_blank"
+                  onClick={() => trackEvent('clic_whatsapp', { ubicacion: 'footer' })}
                   className="text-esperanza-200 hover:text-accent-gold transition-colors"
                 >
                   {CONTACTO.TELEFONO}
+                </Link>
+              </div>
+              <div className="flex gap-2">
+                <span className="flex-shrink-0 mt-0.5">📞</span>
+                <Link
+                  href={`tel:+${CONTACTO.WHATSAPP_NUMERO}`}
+                  onClick={() => trackEvent('clic_telefono', { ubicacion: 'footer' })}
+                  className="text-esperanza-200 hover:text-accent-gold transition-colors"
+                >
+                  Llamar al restaurante
                 </Link>
               </div>
               <div className="flex gap-2">
@@ -77,8 +90,9 @@ export default function Footer() {
             </Link>
 
             <Link
-              href="https://g.page/r/laesperanza"
+              href={CONTACTO.GOOGLE_REVIEW_URL}
               target="_blank"
+              onClick={() => trackEvent('clic_dejar_reseña', { ubicacion: 'footer' })}
               className="flex items-center gap-2 text-esperanza-200 hover:text-accent-gold transition-colors"
             >
               <span>💬</span>

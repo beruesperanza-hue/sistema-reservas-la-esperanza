@@ -60,6 +60,7 @@ export const CONTACTO = {
   WHATSAPP_URL: 'https://wa.me/5491121823702',
   MAPS_URL:
     'https://www.google.com/maps/dir/?api=1&destination=Aguirre+526%2C+Villa+Crespo%2C+Buenos+Aires',
+  GOOGLE_REVIEW_URL: 'https://g.page/r/CTeyUMq7HyxGEBE/review',
   EMAIL: 'eventoslaesperanza@gmail.com',
   INSTAGRAM: 'https://instagram.com/esperanza_ascurra',
   INSTAGRAM_USER: '@esperanza_ascurra',

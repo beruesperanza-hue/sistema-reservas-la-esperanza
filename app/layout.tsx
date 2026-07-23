@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { SITE_URL } from '@/lib/site';
+import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -100,6 +101,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         {children}
+        <WhatsAppFloat />
 
         {/* Google Analytics */}
         <Script
