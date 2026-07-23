@@ -14,7 +14,7 @@ export default function RecommendedSection() {
 
             <div className="bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 rounded-lg p-8 space-y-4">
               <p className="text-lg leading-relaxed font-body">
-                🍽️ <span className="font-semibold">Prueba muchas cosas</span> — Nuestras tapas españolas están diseñadas para compartir. Tortillas, gambas al ajillo, rabas, jamón ibérico... Cada plato es una pequeña obra maestra que suma a la experiencia colectiva.
+<span className="font-semibold">Prueba muchas cosas</span> — Nuestras tapas españolas están diseñadas para compartir. Tortillas, gambas al ajillo, rabas, jamón ibérico... Cada plato es una pequeña obra maestra que suma a la experiencia colectiva.
               </p>
 
               <p className="text-lg leading-relaxed font-body">
@@ -22,7 +22,7 @@ export default function RecommendedSection() {
               </p>
 
               <p className="text-lg leading-relaxed font-body">
-                ✈️ <span className="font-semibold">Déjate llevar por la experiencia</span> — Un verdadero viaje gastronómico a España desde Villa Crespo. Vinos de pequeñas bodegas argentinas, sidra española, cerveza tirada y la calidez de la cocina española en cada bocado.
+<span className="font-semibold">Déjate llevar por la experiencia</span> — Un verdadero viaje gastronómico a España desde Villa Crespo. Vinos de pequeñas bodegas argentinas, sidra española, cerveza tirada y la calidez de la cocina española en cada bocado.
               </p>
             </div>
 
@@ -32,7 +32,7 @@ export default function RecommendedSection() {
           </div>
 
           <a href="/reservas" className="inline-block btn btn-lg bg-white text-esperanza-700 hover:bg-gray-100 font-semibold">
-            📅 Reserva tu experiencia
+Reserva tu experiencia
           </a>
         </div>
       </div>

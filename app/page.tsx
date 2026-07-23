@@ -32,15 +32,15 @@ export default function Home() {
             <p className="italic text-xl md:text-2xl mb-10 font-serif">Desde 2011</p>
 
             <p className="text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-serif italic">
-              La taberna de España en Buenos Aires ⭐
+              La taberna de España en Buenos Aires
             </p>
 
             <div className="flex gap-6 justify-center flex-wrap">
               <Link href="/reservas" className="btn btn-primary px-10 py-4 text-xl md:text-2xl bg-accent-gold hover:bg-yellow-500 text-black font-bold shadow-2xl">
-                📅 Hacé tu Reserva
+                Hacé tu Reserva
               </Link>
               <Link href="/carta" className="btn btn-secondary px-10 py-4 text-xl md:text-2xl bg-white/10 hover:bg-white/20 text-white border-2 border-white font-bold backdrop-blur-sm">
-                📋 Ver la Carta
+                Ver la Carta
               </Link>
             </div>
           </div>
@@ -61,15 +61,15 @@ export default function Home() {
           <div className="bg-white p-10 rounded-lg border-l-4 border-esperanza-600">
             <div className="space-y-6 text-gray-700 font-body leading-relaxed text-lg">
               <p>
-                <span className="text-2xl">📖</span> <span className="font-semibold">El Origen</span> — La Esperanza de los Ascurra nació en 2011 tras varios viajes a Madrid y una simple pregunta: <span className="italic">¿por qué no había una propuesta similar en Buenos Aires?</span>
+                <span className="font-semibold">El Origen</span> — La Esperanza de los Ascurra nació en 2011 tras varios viajes a Madrid y una simple pregunta: <span className="italic">¿por qué no había una propuesta similar en Buenos Aires?</span>
               </p>
 
               <p>
-                <span className="text-2xl">🌟</span> <span className="font-semibold">Pioneros</span> — Aunque hoy muchos restaurantes ofrecen platitos compartidos, sabemos que <span className="italic">fuimos pioneros en la idea de compartir distintos platos</span>. Una propuesta que revolucionó la forma de disfrutar la gastronomía en Buenos Aires.
+                <span className="font-semibold">Pioneros</span> — Aunque hoy muchos restaurantes ofrecen platitos compartidos, sabemos que <span className="italic">fuimos pioneros en la idea de compartir distintos platos</span>. Una propuesta que revolucionó la forma de disfrutar la gastronomía en Buenos Aires.
               </p>
 
               <p>
-                <span className="text-2xl">🗺️</span> <span className="font-semibold">Nuestro Viaje</span> — Nuestra historia ha recorrido varios barrios de Buenos Aires y ciudades de España. <span className="italic">Hoy, volvemos a nuestros orígenes en Villa Crespo</span>, reafirmando nuestra identidad de cocina española auténtica.
+                <span className="font-semibold">Nuestro Viaje</span> — Nuestra historia ha recorrido varios barrios de Buenos Aires y ciudades de España. <span className="italic">Hoy, volvemos a nuestros orígenes en Villa Crespo</span>, reafirmando nuestra identidad de cocina española auténtica.
               </p>
 
               <p className="text-base text-esperanza-700 italic pt-4 border-t border-esperanza-200">
@@ -88,7 +88,7 @@ export default function Home() {
             Reserva tu mesa ahora y disfruta de un momento especial en La Esperanza.
           </p>
           <Link href="/reservas" className="btn btn-lg bg-white text-esperanza-700 hover:bg-esperanza-50 font-semibold">
-            📅 Hacé tu reserva
+            Hacé tu reserva
           </Link>
         </div>
       </section>
