@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { createReservation } from '@/app/actions/reservations';
 import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import { formatearFechaLarga, hoyEnBA, sumarDias } from '@/lib/fechas';
@@ -42,6 +42,12 @@ export default function ReservationForm() {
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
+  // Guard síncrono: el estado `loading` se aplica recién en el próximo render,
+  // así que un doble-click puede disparar handleSubmit dos veces antes de que
+  // el botón se deshabilite. Un ref se lee/escribe al instante y cierra esa
+  // ventana de carrera.
+  const submittingRef = useRef(false);
+
   // Slot elegido en el paso 2: permite mostrar cupos por sector en el paso 3.
   const selectedSlot = availableSlots.find((s) => s.hora === formData.hora);
 
@@ -72,6 +78,8 @@ export default function ReservationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
     setError(null);
 
@@ -115,6 +123,7 @@ export default function ReservationForm() {
     } catch (err) {
       setError('Error al procesar la reserva');
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   };

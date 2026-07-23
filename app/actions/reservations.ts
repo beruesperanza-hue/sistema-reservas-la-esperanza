@@ -1,5 +1,6 @@
 'use server';
 
+import { Prisma } from '@prisma/client';
 import prisma from '@/lib/db';
 import { sendReservationConfirmation, sendReservationCancellation } from '@/lib/email';
 import { MENSAJES, ESTADOS_RESERVA, UBICACIONES } from '@/lib/constants';
@@ -105,6 +106,12 @@ export async function createReservation(data: CreateReservationData) {
       reservationId: reservation.id,
     };
   } catch (error) {
+    // Dos submits casi simultáneos (doble-click, reintento de red) pueden
+    // pasar ambos el chequeo findFirst antes de que el primero confirme:
+    // la constraint única [fecha, hora, email] de la base frena al segundo acá.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      return { success: false, error: MENSAJES.RESERVA_DUPLICADA };
+    }
     console.error('Error creating reservation:', error);
     return { success: false, error: MENSAJES.ERROR_GENERICO };
   }
