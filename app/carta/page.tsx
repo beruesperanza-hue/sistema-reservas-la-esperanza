@@ -162,7 +162,7 @@ export default function CartaPage() {
         />
         <SeccionTapaRacion titulo="Tapas y Raciones" platos={TAPAS_Y_RACIONES} />
         <SeccionTapaRacion titulo="Nuestros Clásicos de Mar" platos={CLASICOS_DE_MAR} />
-        <SeccionPrecioUnico titulo="Arroces del Mes" subtitulo="Para compartir" platos={ARROCES} />
+        <SeccionPrecioUnico titulo="Arroces del Mes" subtitulo="Para compartir · Se preparan al momento, demora 30/35 minutos" platos={ARROCES} />
         <SeccionPrecioUnico titulo="Postres" platos={POSTRES} />
 
         {/* Bebidas & Combos */}

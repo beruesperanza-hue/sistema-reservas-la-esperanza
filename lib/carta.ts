@@ -31,9 +31,9 @@ export const TORTILLAS: Plato[] = [
 export const TAPAS_Y_RACIONES: Plato[] = [
   { nombre: 'Papas bravas', tapa: 8800, racion: 14800 },
   { nombre: 'Croquetas de jamón (2/4 ud.)', tapa: 10800, racion: 18600 },
-  { nombre: 'Triolet: mejillones, zanahorias al curry y olivas', tapa: 11600 },
+  { nombre: 'Triolet: pollo escabeche, zanahorias al curry y olivas', tapa: 11600 },
   { nombre: 'Buñuelos de acelga con muzzarella (2/4 ud.)', tapa: 11600, racion: 21200 },
-  { nombre: 'Ensalada veggie: rúcula, pimientos, queso azul, zanahoria, olivas y alcauciles', tapa: 12800, racion: 19600 },
+  { nombre: 'Ensalada veggie: rúcula, pimientos, cherry salteado, zanahoria, olivas, cebolla encurtida y cilantro', tapa: 12800, racion: 19600 },
   { nombre: 'Pincho moruno con puré de berenjenas', tapa: 15900, racion: 24900 },
   { nombre: 'Pollo al aglio con papas españolas', tapa: 16200, racion: 26900 },
   { nombre: 'Cerdo cabrales con batatas', tapa: 16900, racion: 27000 },
@@ -41,18 +41,18 @@ export const TAPAS_Y_RACIONES: Plato[] = [
   { nombre: 'Provoleta con tomate y pesto', racion: 20700 },
   { nombre: 'Camembert frito con salsa de arándanos', racion: 21700 },
   { nombre: 'Burrata: rúcula, cebolla encurtida, pepinos agridulces y cherry salteados', racion: 23400 },
-  { nombre: 'Ojo de bife (300 gr) con puré de berenjenas y cebollas encurtidas', racion: 35000 },
+  { nombre: 'Ojo de bife (300 gr) con salsa de pimiento y huevo frito', racion: 35000 },
 ];
 
 export const CLASICOS_DE_MAR: Plato[] = [
   { nombre: 'Rabas', tapa: 16200, racion: 29700 },
-  { nombre: 'Huevos rotos con gambas al ajillo', tapa: 20700, racion: 34000 },
-  { nombre: 'Gambas al ajillo o al azafrán', racion: 30800 },
+  { nombre: 'Huevos rotos con gambas al ajillo', tapa: 22000, racion: 36000 },
+  { nombre: 'Gambas al ajillo o al azafrán', tapa: 20000, racion: 29000 },
 ];
 
 export const ARROCES: Plato[] = [
   { nombre: 'Paella valenciana: pollo, cerdo, chauchas y romero', precio: 41400 },
-  { nombre: 'Arroz con gambas y panceta', precio: 46700 },
+  { nombre: 'Arroz con gambas y calamares', precio: 48000 },
 ];
 
 export const POSTRES: Plato[] = [
@@ -92,9 +92,7 @@ export const SIN_ALCOHOL: ItemBebida[] = [
 
 export const VINITOS: ItemBebida[] = [
   { nombre: 'Alamos Malbec', precio: 18000 },
-  { nombre: 'Conejo Verde Blanc de Blancs', precio: 18200 },
-  { nombre: 'Conejo Verde Blanc Rosado', precio: 18200 },
-  { nombre: 'Conejo Verde Blanc Malbec', precio: 18200 },
+  { nombre: 'Chateaux Subsónico Blanco', precio: 23000 },
   { nombre: 'Nicasia Cabernet Franc', precio: 20000 },
   { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 24000 },
 ];
