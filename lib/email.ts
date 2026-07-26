@@ -107,10 +107,10 @@ function layout(preheader: string, titulo: string, contenido: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${titulo}</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f2f2f0;">
+<body style="margin:0;padding:0;background-color:#f6f1e7;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${preheader}</div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2f2f0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f1e7;">
     <tr>
       <td align="center" style="padding:24px 12px;">
 
@@ -129,8 +129,8 @@ function layout(preheader: string, titulo: string, contenido: string): string {
 
           <!-- Banda con el título -->
           <tr>
-            <td align="center" style="background-color:#0f2235;padding:16px 24px;">
-              <h1 style="margin:0;font-family:Helvetica,Arial,sans-serif;font-size:18px;line-height:24px;letter-spacing:2px;text-transform:uppercase;color:#d4af37;font-weight:bold;">
+            <td align="center" style="background-color:#171310;padding:18px 24px;">
+              <h1 style="margin:0;font-family:Helvetica,Arial,sans-serif;font-size:18px;line-height:24px;letter-spacing:3px;text-transform:uppercase;color:#c9a961;font-weight:bold;">
                 ${titulo}
               </h1>
             </td>
@@ -138,7 +138,7 @@ function layout(preheader: string, titulo: string, contenido: string): string {
 
           <!-- Contenido -->
           <tr>
-            <td style="padding:32px 32px 8px 32px;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:24px;color:#2b2b2b;">
+            <td style="padding:32px 32px 8px 32px;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:24px;color:#201914;">
               ${contenido}
             </td>
           </tr>
@@ -154,7 +154,7 @@ function layout(preheader: string, titulo: string, contenido: string): string {
                 </tr>
                 <tr>
                   <td align="center">
-                    ${boton(CONTACTO.MAPS_URL, '📍 Cómo llegar', '#0f2235')}
+                    ${boton(CONTACTO.MAPS_URL, '📍 Cómo llegar', '#171310')}
                   </td>
                 </tr>
               </table>
@@ -163,28 +163,28 @@ function layout(preheader: string, titulo: string, contenido: string): string {
 
           <!-- Footer -->
           <tr>
-            <td style="background-color:#0f2235;padding:28px 32px;font-family:Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#d4dde8;" align="center">
+            <td style="background-color:#171310;padding:28px 32px;font-family:Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#c2b8ac;" align="center">
               <p style="margin:0 0 6px 0;">
-                <a href="${CONTACTO.MAPS_URL}" target="_blank" style="color:#ffffff;text-decoration:underline;">
+                <a href="${CONTACTO.MAPS_URL}" target="_blank" style="color:#f6f1e7;text-decoration:underline;">
                   ${CONTACTO.DIRECCION}
                 </a>
               </p>
               <p style="margin:0 0 6px 0;">
                 WhatsApp:
-                <a href="${WHATSAPP_URL}" target="_blank" style="color:#ffffff;text-decoration:underline;">
+                <a href="${WHATSAPP_URL}" target="_blank" style="color:#f6f1e7;text-decoration:underline;">
                   ${CONTACTO.TELEFONO}
                 </a>
               </p>
               <p style="margin:0 0 6px 0;">
-                <a href="${CONTACTO.INSTAGRAM}" target="_blank" style="color:#ffffff;text-decoration:underline;">
+                <a href="${CONTACTO.INSTAGRAM}" target="_blank" style="color:#c9a961;text-decoration:underline;">
                   ${CONTACTO.INSTAGRAM_USER}
                 </a>
                 &nbsp;·&nbsp;
-                <a href="${CONTACTO.SITIO}" target="_blank" style="color:#ffffff;text-decoration:underline;">
+                <a href="${CONTACTO.SITIO}" target="_blank" style="color:#f6f1e7;text-decoration:underline;">
                   Ver el sitio
                 </a>
               </p>
-              <p style="margin:16px 0 0 0;font-size:11px;color:#8fa8c9;">
+              <p style="margin:16px 0 0 0;font-size:11px;color:#8f877c;">
                 La Esperanza de los Ascurra · Desde 2011
               </p>
             </td>
@@ -222,8 +222,8 @@ export async function sendReservationConfirmation(
 
   const fila = (label: string, valor: string) => `
     <tr>
-      <td style="padding:10px 0;border-bottom:1px solid #e8ecf5;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#6b7c8f;">${label}</td>
-      <td align="right" style="padding:10px 0;border-bottom:1px solid #e8ecf5;font-family:Helvetica,Arial,sans-serif;font-size:16px;color:#0f2235;font-weight:bold;">${valor}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8b8378;">${label}</td>
+      <td align="right" style="padding:10px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:16px;color:#201914;font-weight:bold;">${valor}</td>
     </tr>`;
 
   const contenido = `
@@ -240,7 +240,7 @@ export async function sendReservationConfirmation(
 
     ${
       ubicacion === UBICACIONES.VEREDA
-        ? `<p style="margin:0 0 16px 0;font-size:14px;color:#6b7c8f;">Las mesas de la vereda dependen del clima y de la disponibilidad del momento. Si llueve, te reubicamos adentro.</p>`
+        ? `<p style="margin:0 0 16px 0;font-size:14px;color:#8b8378;">Las mesas de la vereda dependen del clima y de la disponibilidad del momento. Si llueve, te reubicamos adentro.</p>`
         : ''
     }
 

@@ -1,8 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import { Bricolage_Grotesque } from 'next/font/google';
 import { SITE_URL } from '@/lib/site';
 import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 import './globals.css';
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-display',
+  weight: ['400', '600', '700', '800'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -46,14 +54,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html lang="es" className={bricolage.variable}>
       <head>
         <meta name="google-site-verification" content="LB4Re5tJqEiMPC7HyoLthz1X59aSAQ3A4iCNmMGVDk4" />
-
-
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lora:wght@400;600&display=swap" rel="stylesheet" />
 
         {/* Schema.org Restaurant Markup */}
         <script

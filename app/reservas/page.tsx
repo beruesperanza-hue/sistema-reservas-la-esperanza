@@ -11,36 +11,36 @@ export const metadata = {
 
 export default function ReservasPage() {
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-night text-sand font-body flex flex-col">
       <Header />
 
-      {/* Main Content */}
-      <main className="flex-1">
-        <div className="container mx-auto px-4 py-12 max-w-2xl">
+      <main className="flex-1 pt-32 pb-20 md:pt-40">
+        <div className="mx-auto px-5 max-w-2xl">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-esperanza-700 mb-3 italic">Hacé tu Reserva</h1>
-            <p className="text-gray-600 text-lg">
-              Completa el formulario para reservar tu mesa en La Esperanza. Te enviaremos un email de confirmación.
+            <span className="font-mono text-[11px] tracking-widest uppercase text-brand-gold block mb-3">Reservá tu mesa</span>
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl text-sand mb-3">Hacé tu Reserva</h1>
+            <p className="text-sand-dim text-lg">
+              Completá el formulario para reservar tu mesa en La Esperanza. Te enviaremos un email de confirmación.
             </p>
           </div>
 
-          <div className="card shadow-lg">
+          <div className="border border-white/10 rounded-sm p-6 md:p-8 bg-night-2">
             <ReservationForm />
           </div>
 
           {/* Info */}
-          <div className="mt-12 grid md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-              <h3 className="font-bold text-blue-900 mb-2">💡 Tip</h3>
-              <p className="text-blue-800 text-sm">
-                Asegúrate de proporcionar un email y teléfono válido para poder confirmar tu reserva.
+          <div className="mt-10 grid md:grid-cols-2 gap-5">
+            <div className="border border-white/10 rounded-sm p-5">
+              <h3 className="font-display font-semibold text-sand mb-2">💡 Tip</h3>
+              <p className="text-sand-dim text-sm">
+                Asegurate de proporcionar un email y teléfono válido para poder confirmar tu reserva.
               </p>
             </div>
 
-            <div className="bg-amber-50 p-6 rounded-lg border border-amber-200">
-              <h3 className="font-bold text-amber-900 mb-2">⏰ Importante</h3>
-              <p className="text-amber-800 text-sm">
-                Puedes reservar con hasta 60 días de anticipación. Por favor, cancela con tiempo si no puedas asistir.
+            <div className="border border-brand-gold/25 bg-brand-gold/[.05] rounded-sm p-5">
+              <h3 className="font-display font-semibold text-sand mb-2">⏰ Importante</h3>
+              <p className="text-sand-dim text-sm">
+                Podés reservar con hasta 60 días de anticipación. Por favor, cancelá con tiempo si no podés asistir.
               </p>
             </div>
           </div>

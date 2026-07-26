@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { SITE_URL } from '@/lib/site';
+import { Reveal } from '@/lib/motion';
 import {
   TORTILLAS,
   TAPAS_Y_RACIONES,
@@ -31,33 +32,31 @@ export const metadata: Metadata = {
 
 function PlatoConTapaYRacion({ plato }: { plato: Plato }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 py-3 border-b border-esperanza-100 last:border-0">
-      <div className="flex-1">
-        <span className="font-body text-gray-800">
-          {plato.nombre}
-          {plato.nueva && (
-            <span className="ml-2 align-middle text-[10px] font-sans font-bold uppercase tracking-wide text-accent-gold border border-accent-gold rounded-full px-2 py-0.5">
-              Nueva
-            </span>
-          )}
-        </span>
-      </div>
-      <div className="flex gap-6 text-sm font-semibold text-esperanza-700 flex-shrink-0 tabular-nums">
+    <div className="flex items-baseline justify-between gap-4 py-3.5 border-b border-white/10 last:border-0">
+      <span className="text-sand/90">
+        {plato.nombre}
+        {plato.nueva && (
+          <span className="ml-2 align-middle text-[10px] font-mono font-semibold uppercase tracking-wide text-brand-amber border border-brand-amber/50 rounded-full px-2 py-0.5">
+            Nueva
+          </span>
+        )}
+      </span>
+      <span className="flex gap-6 text-sm font-mono text-sand flex-shrink-0 tabular-nums">
         <span className="w-16 text-right">{plato.tapa ? formatearPrecio(plato.tapa) : '—'}</span>
         <span className="w-16 text-right">{plato.racion ? formatearPrecio(plato.racion) : '—'}</span>
-      </div>
+      </span>
     </div>
   );
 }
 
 function SeccionTapaRacion({ titulo, subtitulo, platos }: { titulo: string; subtitulo?: string; platos: Plato[] }) {
   return (
-    <div className="mb-14">
+    <Reveal className="mb-16">
       <div className="mb-4">
-        <h2 className="text-2xl md:text-3xl">{titulo}</h2>
-        {subtitulo && <p className="text-sm italic text-esperanza-400 font-body">{subtitulo}</p>}
+        <h2 className="font-display font-bold text-2xl md:text-3xl text-sand">{titulo}</h2>
+        {subtitulo && <p className="text-sm text-sand-dim mt-1">{subtitulo}</p>}
       </div>
-      <div className="flex justify-end gap-6 text-xs uppercase tracking-wide text-esperanza-400 font-sans mb-1 pr-0">
+      <div className="flex justify-end gap-6 text-[10px] uppercase tracking-widest font-mono text-sand-faint mb-1">
         <span className="w-16 text-right">Tapa</span>
         <span className="w-16 text-right">Ración</span>
       </div>
@@ -66,39 +65,39 @@ function SeccionTapaRacion({ titulo, subtitulo, platos }: { titulo: string; subt
           <PlatoConTapaYRacion key={p.nombre} plato={p} />
         ))}
       </div>
-    </div>
+    </Reveal>
   );
 }
 
 function SeccionPrecioUnico({ titulo, subtitulo, platos }: { titulo: string; subtitulo?: string; platos: Plato[] }) {
   return (
-    <div className="mb-14">
+    <Reveal className="mb-16">
       <div className="mb-4">
-        <h2 className="text-2xl md:text-3xl">{titulo}</h2>
-        {subtitulo && <p className="text-sm italic text-esperanza-400 font-body">{subtitulo}</p>}
+        <h2 className="font-display font-bold text-2xl md:text-3xl text-sand">{titulo}</h2>
+        {subtitulo && <p className="text-sm text-sand-dim mt-1">{subtitulo}</p>}
       </div>
       <div>
         {platos.map((p) => (
-          <div key={p.nombre} className="flex items-baseline justify-between gap-4 py-3 border-b border-esperanza-100 last:border-0">
-            <span className="font-body text-gray-800 flex-1">{p.nombre}</span>
-            <span className="text-sm font-semibold text-esperanza-700 tabular-nums flex-shrink-0">
+          <div key={p.nombre} className="flex items-baseline justify-between gap-4 py-3.5 border-b border-white/10 last:border-0">
+            <span className="text-sand/90 flex-1">{p.nombre}</span>
+            <span className="font-mono text-sand tabular-nums flex-shrink-0">
               {p.precio ? formatearPrecio(p.precio) : '—'}
             </span>
           </div>
         ))}
       </div>
-    </div>
+    </Reveal>
   );
 }
 
 function ListaBebidas({ titulo, items }: { titulo: string; items: ItemBebida[] }) {
   return (
     <div>
-      <h3 className="text-lg font-serif font-bold text-esperanza-700 mb-3">{titulo}</h3>
+      <h3 className="font-display font-semibold text-lg text-sand mb-3">{titulo}</h3>
       {items.map((it) => (
-        <div key={it.nombre} className="flex items-baseline justify-between gap-4 py-2 border-b border-esperanza-100 last:border-0 text-sm">
-          <span className="font-body text-gray-700 flex-1">{it.nombre}</span>
-          <span className="font-semibold text-esperanza-700 tabular-nums flex-shrink-0">{formatearPrecio(it.precio)}</span>
+        <div key={it.nombre} className="flex items-baseline justify-between gap-4 py-2 border-b border-white/10 last:border-0 text-sm">
+          <span className="text-sand-dim flex-1">{it.nombre}</span>
+          <span className="font-mono text-sand tabular-nums flex-shrink-0">{formatearPrecio(it.precio)}</span>
         </div>
       ))}
     </div>
@@ -134,7 +133,7 @@ export default function CartaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-night text-sand font-body">
       <Header />
 
       <script
@@ -143,17 +142,19 @@ export default function CartaPage() {
       />
 
       {/* Hero */}
-      <section className="bg-esperanza-700 py-16 text-center text-white">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <span className="text-4xl">★</span>
-          <h1 className="mt-3 text-5xl md:text-6xl">Nuestra Carta</h1>
-          <p className="mt-3 text-lg italic font-body text-esperanza-200">
+      <section className="pt-36 pb-16 md:pt-44 md:pb-20 text-center border-b border-white/10">
+        <div className="mx-auto px-5 max-w-3xl">
+          <svg viewBox="0 0 24 24" className="w-7 h-7 mx-auto mb-4" fill="#c9a961">
+            <path d="M12 1 14.5 8.6 22.5 8.6 16 13.3 18.5 20.9 12 16.2 5.5 20.9 8 13.3 1.5 8.6 9.5 8.6Z" />
+          </svg>
+          <h1 className="font-display font-extrabold text-5xl md:text-7xl tracking-[-.02em] text-sand">Nuestra Carta</h1>
+          <p className="mt-4 text-brand-gold font-mono text-sm tracking-wide">
             Menú Aniversario · 15 años en Villa Crespo, Buenos Aires
           </p>
         </div>
       </section>
 
-      <main className="container mx-auto px-4 max-w-3xl py-14">
+      <main className="mx-auto px-5 max-w-2xl py-16 md:py-20">
         <SeccionTapaRacion
           titulo="★ Nuestras Tortillas"
           subtitulo="La especialidad de la casa"
@@ -165,17 +166,17 @@ export default function CartaPage() {
         <SeccionPrecioUnico titulo="Postres" platos={POSTRES} />
 
         {/* Bebidas & Combos */}
-        <div className="mb-14">
-          <h2 className="text-2xl md:text-3xl mb-1">Bebidas &amp; Combos</h2>
+        <Reveal className="mb-16">
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-sand mb-1">Bebidas &amp; Combos</h2>
 
-          <div className="bg-esperanza-50 border-l-4 border-accent-gold rounded-lg p-5 my-5">
-            <h3 className="text-lg font-serif font-bold text-esperanza-700 mb-1">
-              🍷 Hora del Vermut <span className="text-sm font-body italic font-normal text-esperanza-400">— 19 a 20:30</span>
+          <div className="border border-brand-gold/30 bg-brand-gold/[.05] rounded-sm p-5 my-5">
+            <h3 className="font-display font-semibold text-lg text-sand mb-1">
+              🍷 Hora del Vermut <span className="text-sm font-body font-normal text-sand-dim">— 19 a 20:30</span>
             </h3>
             {HORA_DEL_VERMUT.map((it) => (
               <div key={it.nombre} className="flex items-baseline justify-between gap-4 py-1.5 text-sm">
-                <span className="font-body text-gray-700 flex-1">{it.nombre}</span>
-                <span className="font-semibold text-esperanza-700 tabular-nums flex-shrink-0">{formatearPrecio(it.precio)}</span>
+                <span className="text-sand-dim flex-1">{it.nombre}</span>
+                <span className="font-mono text-sand tabular-nums flex-shrink-0">{formatearPrecio(it.precio)}</span>
               </div>
             ))}
           </div>
@@ -186,43 +187,46 @@ export default function CartaPage() {
             <ListaBebidas titulo="Vermut y Cubatas" items={VERMUT_Y_CUBATAS} />
             <ListaBebidas titulo="Sin Alcohol" items={SIN_ALCOHOL} />
           </div>
-        </div>
+        </Reveal>
 
         {/* Espe Combos */}
-        <div className="mb-14">
-          <h2 className="text-2xl md:text-3xl mb-1">Espe Combos</h2>
-          <p className="text-sm italic text-esperanza-400 font-body mb-5">
+        <Reveal className="mb-16">
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-sand mb-1">Espe Combos</h2>
+          <p className="text-sm text-sand-dim mb-5">
             Comen 2, pican 4 — combos de 5 tapas para compartir, con 10% de descuento sobre el precio suelto
           </p>
-          <div className="grid sm:grid-cols-2 gap-5">
+          <div className="grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10">
             {ESPE_COMBOS.map((c) => (
-              <div key={c.nombre} className="card">
-                <h3 className="text-xl font-serif font-bold italic text-esperanza-700 mb-2">{c.nombre}</h3>
-                <p className="text-sm font-body text-gray-600 mb-4">{c.incluye}</p>
-                <p className="text-lg font-bold text-esperanza-700">
+              <div key={c.nombre} className="bg-night p-6">
+                <h3 className="font-display font-semibold text-xl text-sand mb-2">{c.nombre}</h3>
+                <p className="text-sm text-sand-dim mb-4">{c.incluye}</p>
+                <p className="font-mono text-lg text-sand">
                   {formatearPrecio(c.precio)}{' '}
-                  <span className="text-xs font-normal text-gray-400">
+                  <span className="text-xs text-sand-faint">
                     (suelto {formatearPrecio(c.precioSuelto)})
                   </span>
                 </p>
               </div>
             ))}
           </div>
-        </div>
+        </Reveal>
 
         {/* Receta del mes */}
-        <div className="bg-esperanza-50 rounded-lg p-6 text-center mb-14">
-          <p className="text-xs uppercase tracking-wide text-esperanza-400 font-sans mb-1">Receta del mes</p>
-          <p className="text-2xl font-serif italic text-esperanza-700">{RECETA_DEL_MES}</p>
-        </div>
+        <Reveal className="bg-night-2 border border-white/10 rounded-sm p-6 text-center mb-16">
+          <p className="text-[11px] uppercase tracking-widest font-mono text-brand-gold mb-2">Receta del mes</p>
+          <p className="font-display font-semibold text-2xl text-sand">{RECETA_DEL_MES}</p>
+        </Reveal>
 
-        <p className="text-center text-sm text-gray-500 font-body mb-10">
+        <p className="text-center text-sm text-sand-faint mb-10">
           Precios en pesos argentinos. Consultá por opciones sin gluten.
         </p>
 
         <div className="text-center">
-          <Link href="/reservas" className="btn btn-primary px-10 py-4 text-lg">
-            📅 Reservá tu mesa
+          <Link
+            href="/reservas"
+            className="inline-flex items-center gap-2 font-semibold text-sm px-8 py-3.5 rounded-sm bg-sand text-night hover:bg-brand-amber transition-colors"
+          >
+            Reservá tu mesa →
           </Link>
         </div>
       </main>

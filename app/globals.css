@@ -19,6 +19,9 @@ body {
   line-height: 1.6;
 }
 
+/* Estos tamaños/colores heredados son la base del panel de admin.
+   Home, Carta y Reservas (marca 2026) fijan su propio color en cada
+   h1/h2 via className — no dependen de esta cascada. */
 h1, h2, h3, h4, h5, h6 {
   font-family: "Playfair Display", Georgia, serif;
   font-weight: 700;
@@ -28,8 +31,6 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
   font-size: 3rem;
-  color: #9d7e52;
-  font-style: italic;
 }
 
 h2 {
@@ -73,6 +74,11 @@ h3 {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @media (prefers-color-scheme: dark) {
