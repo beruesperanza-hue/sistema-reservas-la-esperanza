@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { Bricolage_Grotesque } from 'next/font/google';
 import { SITE_URL } from '@/lib/site';
+import { CONTACTO } from '@/lib/constants';
 import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 import './globals.css';
 
@@ -97,7 +98,16 @@ export default function RootLayout({
                 'https://www.instagram.com/esperanza_ascurra/',
                 'https://www.facebook.com/laesperanzadelosascurra/',
                 'https://www.tripadvisor.com/Restaurant_Review-g312741-d6416931-Reviews-La_Esperanza_De_Los_Ascurra-Buenos_Aires_Capital_Federal_District.html',
+                CONTACTO.GOOGLE_LISTING_URL,
               ],
+              // Rating real de Google Business Profile, confirmado por el
+              // dueño el 26/07/2026 y visible en la propia home enlazado
+              // a la ficha — no es un numero inventado (ver lib/constants.ts).
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: CONTACTO.GOOGLE_RATING,
+                reviewCount: CONTACTO.GOOGLE_RATING_COUNT,
+              },
             }),
           }}
         />

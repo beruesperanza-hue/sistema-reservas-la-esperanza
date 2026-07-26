@@ -61,6 +61,10 @@ export const CONTACTO = {
   MAPS_URL:
     'https://www.google.com/maps/dir/?api=1&destination=Aguirre+526%2C+Villa+Crespo%2C+Buenos+Aires',
   GOOGLE_REVIEW_URL: 'https://g.page/r/CTeyUMq7HyxGEBE/review',
+  // Ficha real de Google Maps — confirmada por el dueño el 26/07/2026.
+  GOOGLE_LISTING_URL: 'https://share.google/YXn59GfhEJlejnfZw',
+  GOOGLE_RATING: 4.0,
+  GOOGLE_RATING_COUNT: 2210,
   EMAIL: 'eventoslaesperanza@gmail.com',
   INSTAGRAM: 'https://instagram.com/esperanza_ascurra',
   INSTAGRAM_USER: '@esperanza_ascurra',

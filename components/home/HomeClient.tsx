@@ -96,6 +96,19 @@ export default function HomeClient() {
               Ver la carta
             </MagneticLink>
           </div>
+          <a
+            href={CONTACTO.GOOGLE_LISTING_URL}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-2 mt-6 text-sand-dim hover:text-brand-gold transition-colors text-sm"
+          >
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="#c9a961">
+              <path d="M12 1 14.5 8.6 22.5 8.6 16 13.3 18.5 20.9 12 16.2 5.5 20.9 8 13.3 1.5 8.6 9.5 8.6Z" />
+            </svg>
+            <span>
+              <b className="text-sand font-semibold">{CONTACTO.GOOGLE_RATING.toFixed(1)}</b> · {CONTACTO.GOOGLE_RATING_COUNT.toLocaleString('es-AR')} opiniones en Google
+            </span>
+          </a>
         </div>
         <div className="hidden sm:flex absolute right-5 md:right-8 bottom-9 z-[2] flex-col items-center gap-2.5 text-sand-dim font-mono text-[11px] tracking-[.12em]">
           <span>SCROLL</span>
