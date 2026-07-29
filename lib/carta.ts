@@ -15,6 +15,7 @@ export interface Combo {
   incluye: string;
   precio: number;
   precioSuelto: number;
+  vegetariano?: boolean;
 }
 
 export interface ItemBebida {
@@ -98,30 +99,33 @@ export const VINITOS: ItemBebida[] = [
 ];
 
 // "Comen 2, pican 4" — combos para compartir, nombrados como barrios de Madrid.
+// precioSuelto = suma real de precios tapa de cada ítem incluido (lib/carta.ts,
+// no un número aparte) — actualizado 2026-07-27 junto con ingredientes y precio.
 export const ESPE_COMBOS: Combo[] = [
   {
     nombre: 'Atocha',
-    incluye: 'Tapas de papas bravas, croquetas de jamón, Triolet, buñuelos y ensalada veggie',
+    incluye: 'Papas bravas, croquetas de jamón, Triolet, buñuelos y pincho moruno',
     precio: 50000,
-    precioSuelto: 55600,
+    precioSuelto: 58700,
   },
   {
     nombre: 'Sol',
-    incluye: 'Tapas de tortilla de papas, ensalada veggie, croquetas de jamón, buñuelos y papas bravas',
-    precio: 51800,
-    precioSuelto: 57500,
+    incluye: 'Tortilla de camembert, ensalada veggie, buñuelos y papas bravas',
+    precio: 45000,
+    precioSuelto: 49200,
+    vegetariano: true,
   },
   {
     nombre: 'Chueca',
-    incluye: 'Tapas de tortilla de papas, pincho moruno, pollo al aglio, rabas y croquetas de jamón',
-    precio: 65700,
-    precioSuelto: 73000,
+    incluye: 'Tortilla de papas, pincho moruno, pollo al aglio y rabas',
+    precio: 58000,
+    precioSuelto: 61800,
   },
   {
     nombre: 'Chamartín',
-    incluye: 'Tapas de tortilla con cherry y camembert, huevos rotos con gambas, rabas, cerdo cabrales y papas bravas',
-    precio: 70700,
-    precioSuelto: 78600,
+    incluye: 'Tortilla cherry/camembert, huevos rotos con gambas al ajillo, rabas y cerdo cabrales',
+    precio: 65000,
+    precioSuelto: 71100,
   },
 ];
 

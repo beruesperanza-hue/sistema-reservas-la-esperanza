@@ -198,7 +198,14 @@ export default function CartaPage() {
           <div className="grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10">
             {ESPE_COMBOS.map((c) => (
               <div key={c.nombre} className="bg-night p-6">
-                <h3 className="font-display font-semibold text-xl text-sand mb-2">{c.nombre}</h3>
+                <h3 className="font-display font-semibold text-xl text-sand mb-2">
+                  {c.nombre}
+                  {c.vegetariano && (
+                    <span className="ml-2 align-middle text-[10px] font-mono font-semibold uppercase tracking-wide text-brand-amber border border-brand-amber/50 rounded-full px-2 py-0.5">
+                      Vegetariano
+                    </span>
+                  )}
+                </h3>
                 <p className="text-sm text-sand-dim mb-4">{c.incluye}</p>
                 <p className="font-mono text-lg text-sand">
                   {formatearPrecio(c.precio)}{' '}

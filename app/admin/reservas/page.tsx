@@ -160,6 +160,34 @@ export default function AdminReservasPage() {
           </div>
         </div>
 
+        {/* Resumen: lo primero que se lee — cuántas reservas y cuánta gente */}
+        {!loading && filtradas.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white rounded-lg shadow p-5">
+              <div className="text-3xl font-bold text-esperanza-700">{filtradas.length}</div>
+              <div className="text-sm text-gray-500">Reservas</div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-5">
+              <div className="text-3xl font-bold text-esperanza-700">
+                {filtradas.reduce((sum, r) => sum + r.personas, 0)}
+              </div>
+              <div className="text-sm text-gray-500">Personas</div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-5">
+              <div className="text-3xl font-bold text-esperanza-700">
+                {filtradas.filter((r) => r.ubicacion !== UBICACIONES.VEREDA).length}
+              </div>
+              <div className="text-sm text-gray-500">{UBICACIONES_ICONO[UBICACIONES.ADENTRO]} Salón</div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-5">
+              <div className="text-3xl font-bold text-esperanza-700">
+                {filtradas.filter((r) => r.ubicacion === UBICACIONES.VEREDA).length}
+              </div>
+              <div className="text-sm text-gray-500">{UBICACIONES_ICONO[UBICACIONES.VEREDA]} Vereda</div>
+            </div>
+          </div>
+        )}
+
         {/* Reservas */}
         {loading ? (
           <div className="text-center py-12">
@@ -213,51 +241,61 @@ export default function AdminReservasPage() {
 
                           <div className="divide-y">
                             {lista.map((reserva) => (
-                              <div
-                                key={reserva.id}
-                                className="p-4 hover:bg-gray-50 transition-colors flex items-start justify-between gap-4"
-                              >
-                                <div className="flex-1">
-                                  <h3 className="font-semibold text-gray-900">
-                                    {reserva.nombre} {reserva.apellido}
+                              <details key={reserva.id} className="group p-3 hover:bg-gray-50 transition-colors">
+                                <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <span
+                                      className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                                        reserva.estado === 'confirmada' ? 'bg-green-500' : 'bg-red-400'
+                                      }`}
+                                      title={reserva.estado === 'confirmada' ? 'Confirmada' : 'Cancelada'}
+                                    />
+                                    <span className="font-semibold text-gray-900 truncate">
+                                      {reserva.nombre} {reserva.apellido}
+                                    </span>
                                     {reserva.creadaPorAdmin && (
-                                      <span className="ml-2 text-xs font-normal text-esperanza-500">
-                                        cargada a mano
+                                      <span className="text-[10px] font-normal text-esperanza-500 bg-esperanza-50 px-1.5 py-0.5 rounded flex-shrink-0">
+                                        a mano
                                       </span>
                                     )}
-                                  </h3>
-                                  <div className="grid gap-1 mt-1.5 text-sm text-gray-600">
+                                  </div>
+                                  <div className="flex items-center gap-3 flex-shrink-0 text-sm text-gray-600">
+                                    <span className="font-medium">👥 {reserva.personas}</span>
+                                    <span className="text-gray-400 group-open:rotate-180 transition-transform">⌄</span>
+                                  </div>
+                                </summary>
+
+                                <div className="mt-2.5 ml-4.5 pl-3 border-l-2 border-gray-100 flex items-start justify-between gap-4">
+                                  <div className="text-sm text-gray-600 space-y-0.5">
                                     <div>📧 {reserva.email}</div>
                                     <div>📱 {reserva.telefono}</div>
-                                    <div>👥 {reserva.personas} personas</div>
                                     {reserva.comentarios && <div>💬 {reserva.comentarios}</div>}
                                   </div>
-                                </div>
 
-                                <div className="flex flex-col gap-2 flex-shrink-0">
-                                  {reserva.estado === 'confirmada' ? (
+                                  <div className="flex gap-2 flex-shrink-0">
+                                    {reserva.estado === 'confirmada' ? (
+                                      <button
+                                        onClick={() => handleCancel(reserva.id)}
+                                        className="btn btn-small bg-amber-100 text-amber-700 hover:bg-amber-200"
+                                        title="Cancelar"
+                                      >
+                                        ❌
+                                      </button>
+                                    ) : (
+                                      <div className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-semibold text-center">
+                                        Cancelada
+                                      </div>
+                                    )}
                                     <button
-                                      onClick={() => handleCancel(reserva.id)}
-                                      className="btn btn-small bg-amber-100 text-amber-700 hover:bg-amber-200 flex gap-1"
-                                      title="Cancelar"
+                                      onClick={() => handleDelete(reserva.id)}
+                                      className="btn btn-small btn-danger"
+                                      title="Eliminar"
                                     >
-                                      ❌ Cancelar
+                                      🗑️
                                     </button>
-                                  ) : (
-                                    <div className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm font-semibold text-center">
-                                      Cancelada
-                                    </div>
-                                  )}
-
-                                  <button
-                                    onClick={() => handleDelete(reserva.id)}
-                                    className="btn btn-small btn-danger"
-                                    title="Eliminar"
-                                  >
-                                    🗑️
-                                  </button>
+                                  </div>
                                 </div>
-                              </div>
+                              </details>
                             ))}
                           </div>
                         </div>
