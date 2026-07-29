@@ -32,116 +32,134 @@ interface Turno {
   vereda: SectorTurno;
 }
 
-function BarraOcupacion({ reservado, capacidad }: { reservado: number; capacidad: number }) {
-  const pct = capacidad > 0 ? Math.min(100, Math.round((reservado / capacidad) * 100)) : 0;
-  const color = pct >= 100 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-500' : 'bg-green-500';
+function ToggleCierre({ cerrado, onClick }: { cerrado: boolean; onClick: () => void }) {
   return (
-    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-      <div className={`h-full ${color} transition-all`} style={{ width: `${pct}%` }} />
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      role="switch"
+      aria-checked={!cerrado}
+      title={cerrado ? 'Cerrado — tocar para reabrir' : 'Abierto — tocar para cerrar'}
+      className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${
+        cerrado ? 'bg-gray-300' : 'bg-green-500'
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
+          cerrado ? 'left-0.5' : 'left-4'
+        }`}
+      />
+    </button>
   );
 }
 
-function SectorCard({
-  sector,
+function ReservaRow({ reserva }: { reserva: ReservaTurno }) {
+  return (
+    <details className="group px-5 py-2.5 hover:bg-gray-50 transition-colors">
+      <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
+        <span className="font-medium text-gray-900 truncate flex items-center gap-2 min-w-0">
+          {reserva.nombre} {reserva.apellido}
+          {reserva.creadaPorAdmin && (
+            <span className="text-[10px] font-normal text-esperanza-500 bg-esperanza-50 px-1.5 py-0.5 rounded flex-shrink-0">
+              a mano
+            </span>
+          )}
+        </span>
+        <span className="flex items-center gap-3 text-sm text-gray-500 flex-shrink-0">
+          <span className="font-medium">👥 {reserva.personas}</span>
+          <span className="text-gray-400 group-open:rotate-180 transition-transform">⌄</span>
+        </span>
+      </summary>
+      <div className="mt-1.5 pl-0.5 text-xs text-gray-500 space-y-0.5">
+        <div>📱 {reserva.telefono}</div>
+        <div>📧 {reserva.email}</div>
+        {reserva.comentarios && <div>💬 {reserva.comentarios}</div>}
+      </div>
+    </details>
+  );
+}
+
+function SectorAcordeon({
   tipo,
-  pasado,
+  turnos,
   onToggleCierre,
   onNuevaReserva,
 }: {
-  sector: SectorTurno;
   tipo: string;
-  pasado: boolean;
-  onToggleCierre: () => void;
-  onNuevaReserva: () => void;
+  turnos: Turno[];
+  onToggleCierre: (hora: string) => void;
+  onNuevaReserva: (hora: string) => void;
 }) {
-  const [abierta, setAbierta] = useState(false);
-  const sinSector = sector.capacidad === 0; // ej. turnos sin vereda habilitada
+  const [abierto, setAbierto] = useState(true);
 
-  if (sinSector) {
-    return (
-      <div className="flex-1 rounded-lg border border-dashed border-gray-200 p-3 text-center text-xs text-gray-400">
-        {UBICACIONES_ICONO[tipo]} {UBICACIONES_LABEL[tipo]} — sin mesas este turno
-      </div>
-    );
-  }
+  const filas = turnos
+    .map((turno) => ({ turno, sector: tipo === UBICACIONES.ADENTRO ? turno.salon : turno.vereda }))
+    .filter((f) => f.sector.capacidad > 0);
 
-  const estadoLabel = pasado ? 'Cerrado (pasó)' : sector.cerrado ? 'Cerrado' : null;
+  const totalPersonas = filas.reduce((sum, f) => sum + f.sector.reservado, 0);
+  const totalReservas = filas.reduce((sum, f) => sum + f.sector.reservas.length, 0);
 
   return (
-    <div
-      className={`flex-1 rounded-lg border p-3 ${
-        pasado || sector.cerrado ? 'border-gray-200 bg-gray-50' : 'border-esperanza-100'
-      }`}
-    >
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="font-semibold text-sm flex items-center gap-1.5">
+    <div className="bg-white rounded-lg shadow overflow-hidden mb-3">
+      <button
+        type="button"
+        onClick={() => setAbierto((v) => !v)}
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
+      >
+        <span className="font-semibold text-gray-900 flex items-center gap-2">
           {UBICACIONES_ICONO[tipo]} {UBICACIONES_LABEL[tipo]}
         </span>
-        {estadoLabel ? (
-          <span className="text-xs font-semibold text-gray-400">{estadoLabel}</span>
-        ) : (
-          <span className="text-xs text-gray-500">
-            {sector.reservado}/{sector.capacidad}
+        <span className="flex items-center gap-3 text-sm text-gray-500">
+          <span>
+            {totalReservas === 0
+              ? 'sin reservas'
+              : `${totalPersonas} personas · ${totalReservas} ${totalReservas === 1 ? 'reserva' : 'reservas'}`}
           </span>
-        )}
-      </div>
+          <span className={`text-gray-400 transition-transform inline-block ${abierto ? 'rotate-180' : ''}`}>⌄</span>
+        </span>
+      </button>
 
-      {!pasado && <BarraOcupacion reservado={sector.reservado} capacidad={sector.capacidad} />}
+      {abierto && (
+        <div className="border-t border-gray-100">
+          {filas.length === 0 ? (
+            <p className="px-5 py-6 text-center text-sm text-gray-400">Sin turnos configurados para este día.</p>
+          ) : (
+            filas.map(({ turno, sector }) => (
+              <div key={turno.hora} className={`border-b border-gray-100 last:border-0 ${turno.pasado ? 'opacity-60' : ''}`}>
+                <div className="flex items-center justify-between gap-3 px-5 py-2.5 bg-gray-50">
+                  <span className="font-semibold text-sm text-esperanza-700 flex-shrink-0">
+                    🕐 {turno.hora}
+                    {turno.pasado && <span className="ml-2 text-xs font-normal text-gray-400">pasó</span>}
+                  </span>
+                  <span className="text-xs text-gray-500 truncate">
+                    {sector.reservas.length === 0
+                      ? 'sin reservas'
+                      : `${sector.reservado} personas · ${sector.reservas.length} ${sector.reservas.length === 1 ? 'reserva' : 'reservas'}`}
+                  </span>
+                  <div className="flex items-center gap-2.5 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => onNuevaReserva(turno.hora)}
+                      className="text-xs px-2 py-1 rounded bg-esperanza-100 text-esperanza-700 hover:bg-esperanza-200 font-semibold"
+                    >
+                      + Reserva
+                    </button>
+                    {!turno.pasado && (
+                      <ToggleCierre cerrado={sector.cerrado} onClick={() => onToggleCierre(turno.hora)} />
+                    )}
+                  </div>
+                </div>
 
-      {sector.reservas.length > 0 && (
-        <button
-          type="button"
-          onClick={() => setAbierta((v) => !v)}
-          className="text-xs text-esperanza-600 hover:text-esperanza-800 mt-2 font-medium"
-        >
-          {abierta ? 'Ocultar' : 'Ver'} {sector.reservas.length}{' '}
-          {sector.reservas.length === 1 ? 'reserva' : 'reservas'}
-        </button>
-      )}
-
-      {abierta && (
-        <ul className="mt-2 space-y-1.5">
-          {sector.reservas.map((r) => (
-            <li key={r.id} className="text-xs bg-white rounded p-2 border border-gray-100">
-              <div className="flex justify-between">
-                <span className="font-semibold">
-                  {r.nombre} {r.apellido}
-                </span>
-                <span>👥 {r.personas}</span>
+                <div className="divide-y divide-gray-50">
+                  {sector.reservas.map((r) => (
+                    <ReservaRow key={r.id} reserva={r} />
+                  ))}
+                </div>
               </div>
-              <div className="text-gray-500">
-                📱 {r.telefono}
-                {r.creadaPorAdmin && <span className="ml-1 text-esperanza-500">· cargada a mano</span>}
-              </div>
-              {r.comentarios && <div className="text-gray-500 italic">💬 {r.comentarios}</div>}
-            </li>
-          ))}
-        </ul>
+            ))
+          )}
+        </div>
       )}
-
-      <div className="flex gap-2 mt-2.5">
-        <button
-          type="button"
-          onClick={onNuevaReserva}
-          className="text-xs px-2 py-1 rounded bg-esperanza-100 text-esperanza-700 hover:bg-esperanza-200 font-semibold"
-        >
-          + Reserva
-        </button>
-        {!pasado && (
-          <button
-            type="button"
-            onClick={onToggleCierre}
-            className={`text-xs px-2 py-1 rounded font-semibold ${
-              sector.cerrado
-                ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                : 'bg-red-50 text-red-600 hover:bg-red-100'
-            }`}
-          >
-            {sector.cerrado ? 'Reabrir' : 'Cerrar'}
-          </button>
-        )}
-      </div>
     </div>
   );
 }
@@ -162,7 +180,11 @@ export default function TurnoBoard({ fecha }: { fecha: string }) {
 
   useEffect(cargar, [fecha]);
 
-  const toggleCierre = async (hora: string, sectorTipo: string, sector: SectorTurno) => {
+  const toggleCierre = async (hora: string, sectorTipo: string) => {
+    const turno = turnos.find((t) => t.hora === hora);
+    const sector = sectorTipo === UBICACIONES.ADENTRO ? turno?.salon : turno?.vereda;
+    if (!sector) return;
+
     if (sector.cerrado && sector.cierreId) {
       await fetch(`/api/admin/cierres/${sector.cierreId}`, { method: 'DELETE' });
     } else {
@@ -183,50 +205,20 @@ export default function TurnoBoard({ fecha }: { fecha: string }) {
     );
   }
 
-  if (turnos.length === 0) {
-    return (
-      <div className="text-center py-12 bg-white rounded-lg">
-        <span className="text-4xl text-gray-300 block mb-2">📅</span>
-        <p className="text-gray-600">No hay turnos configurados para este día.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-3">
-      {turnos.map((turno) => (
-        <div
-          key={turno.hora}
-          className={`bg-white rounded-lg shadow overflow-hidden ${turno.pasado ? 'opacity-60' : ''}`}
-        >
-          <div className="flex items-center justify-between px-4 py-2.5 bg-esperanza-50 border-b border-esperanza-100">
-            <h3 className="font-serif font-bold text-esperanza-700">
-              🕐 {turno.hora}
-              {turno.pasado && <span className="ml-2 text-xs font-normal text-gray-400">Turno pasado</span>}
-            </h3>
-            <span className="text-xs text-gray-500">
-              {turno.salon.reservado + turno.vereda.reservado} personas en total
-            </span>
-          </div>
-
-          <div className="p-3 flex flex-col sm:flex-row gap-3">
-            <SectorCard
-              sector={turno.salon}
-              tipo={UBICACIONES.ADENTRO}
-              pasado={turno.pasado}
-              onToggleCierre={() => toggleCierre(turno.hora, UBICACIONES.ADENTRO, turno.salon)}
-              onNuevaReserva={() => setModal({ hora: turno.hora, sector: UBICACIONES.ADENTRO })}
-            />
-            <SectorCard
-              sector={turno.vereda}
-              tipo={UBICACIONES.VEREDA}
-              pasado={turno.pasado}
-              onToggleCierre={() => toggleCierre(turno.hora, UBICACIONES.VEREDA, turno.vereda)}
-              onNuevaReserva={() => setModal({ hora: turno.hora, sector: UBICACIONES.VEREDA })}
-            />
-          </div>
-        </div>
-      ))}
+    <div>
+      <SectorAcordeon
+        tipo={UBICACIONES.ADENTRO}
+        turnos={turnos}
+        onToggleCierre={(hora) => toggleCierre(hora, UBICACIONES.ADENTRO)}
+        onNuevaReserva={(hora) => setModal({ hora, sector: UBICACIONES.ADENTRO })}
+      />
+      <SectorAcordeon
+        tipo={UBICACIONES.VEREDA}
+        turnos={turnos}
+        onToggleCierre={(hora) => toggleCierre(hora, UBICACIONES.VEREDA)}
+        onNuevaReserva={(hora) => setModal({ hora, sector: UBICACIONES.VEREDA })}
+      />
 
       {modal && (
         <NuevaReservaModal

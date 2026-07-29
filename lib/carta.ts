@@ -94,8 +94,11 @@ export const SIN_ALCOHOL: ItemBebida[] = [
 export const VINITOS: ItemBebida[] = [
   { nombre: 'Alamos Malbec', precio: 18000 },
   { nombre: 'Chateaux Subsónico Blanco', precio: 23000 },
+  { nombre: 'Chateaux Subsónico Blend o Malbec', precio: 35000 },
+  { nombre: 'Ferus Blanc de Blancs', precio: 28000 },
   { nombre: 'Nicasia Cabernet Franc', precio: 20000 },
   { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 24000 },
+  { nombre: 'San Pedro de Yacochuya', precio: 54000 },
 ];
 
 // "Comen 2, pican 4" — combos para compartir, nombrados como barrios de Madrid.
