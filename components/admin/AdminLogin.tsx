@@ -27,7 +27,7 @@ export default function AdminLogin() {
       if (response.ok) {
         // Guardar token en cookie
         document.cookie = `admin_token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}`;
-        router.push('/admin/dashboard');
+        router.push('/admin/reservas');
         router.refresh();
       } else {
         setError(data.error || 'Error al iniciar sesión');

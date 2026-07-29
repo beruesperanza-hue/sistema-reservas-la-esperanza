@@ -12,7 +12,7 @@ export default async function AdminPage() {
   const token = cookieStore.get('admin_token');
 
   if (token) {
-    redirect('/admin/dashboard');
+    redirect('/admin/reservas');
   }
 
   return <AdminLogin />;
