@@ -43,13 +43,6 @@ export default function Footer() {
             >
               {CONTACTO.TELEFONO}
             </Link>
-            <Link
-              href={`tel:+${CONTACTO.WHATSAPP_NUMERO}`}
-              onClick={() => trackEvent('clic_telefono', { ubicacion: 'footer' })}
-              className="block py-1 text-sm hover:text-brand-gold transition-colors"
-            >
-              Llamar al restaurante
-            </Link>
           </div>
 
           <div>

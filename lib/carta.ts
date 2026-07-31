@@ -81,7 +81,7 @@ export const VERMUT_Y_CUBATAS: ItemBebida[] = [
   { nombre: 'Campari con naranja o tónica', precio: 10500 },
   { nombre: 'Aperol Spritz', precio: 13100 },
   { nombre: 'Fernet con coca', precio: 13100 },
-  { nombre: 'Negroni', precio: 14700 },
+  { nombre: 'Negroni Sbagliato: Vermouth Rosso, Campari y Espumante', precio: 14700 },
   { nombre: 'Vinos por copa', precio: 6800 },
 ];
 
@@ -96,8 +96,8 @@ export const VINITOS: ItemBebida[] = [
   { nombre: 'Chateaux Subsónico Blanco', precio: 23000 },
   { nombre: 'Chateaux Subsónico Blend o Malbec', precio: 35000 },
   { nombre: 'Ferus Blanc de Blancs', precio: 28000 },
-  { nombre: 'Nicasia Cabernet Franc', precio: 20000 },
-  { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 24000 },
+  { nombre: 'Nicasia Cabernet Franc', precio: 22000 },
+  { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 25000 },
   { nombre: 'San Pedro de Yacochuya', precio: 54000 },
 ];
 
