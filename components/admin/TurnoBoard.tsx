@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { marcarAsistio } from '@/app/actions/reservations';
 import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import NuevaReservaModal from './NuevaReservaModal';
 
@@ -13,6 +14,7 @@ interface ReservaTurno {
   email: string;
   comentarios?: string | null;
   creadaPorAdmin: boolean;
+  asistio: boolean;
 }
 
 interface SectorTurno {
@@ -39,7 +41,7 @@ function ToggleCierre({ cerrado, onClick }: { cerrado: boolean; onClick: () => v
       onClick={onClick}
       role="switch"
       aria-checked={!cerrado}
-      title={cerrado ? 'Cerrado — tocar para reabrir' : 'Abierto — tocar para cerrar'}
+      title={cerrado ? 'Turno cerrado a nuevas reservas — tocar para reabrir' : 'Turno abierto — tocar para cerrarlo a nuevas reservas'}
       className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${
         cerrado ? 'bg-gray-300' : 'bg-green-500'
       }`}
@@ -53,24 +55,56 @@ function ToggleCierre({ cerrado, onClick }: { cerrado: boolean; onClick: () => v
   );
 }
 
-function ReservaRow({ reserva }: { reserva: ReservaTurno }) {
+function CheckAsistio({ asistio, onClick }: { asistio: boolean; onClick: () => void }) {
   return (
-    <details className="group px-5 py-2.5 hover:bg-gray-50 transition-colors">
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      }}
+      title={asistio ? 'Ya se sentó — tocar para desmarcar' : 'Marcar que ya se sentó'}
+      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+        asistio ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 text-transparent hover:border-esperanza-400'
+      }`}
+    >
+      ✓
+    </button>
+  );
+}
+
+function ReservaRow({
+  reserva,
+  onToggleAsistio,
+}: {
+  reserva: ReservaTurno;
+  onToggleAsistio: () => void;
+}) {
+  return (
+    <details className={`group px-5 py-2.5 hover:bg-gray-50 transition-colors ${reserva.asistio ? 'bg-green-50/40' : ''}`}>
       <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
-        <span className="font-medium text-gray-900 truncate flex items-center gap-2 min-w-0">
-          {reserva.nombre} {reserva.apellido}
-          {reserva.creadaPorAdmin && (
-            <span className="text-[10px] font-normal text-esperanza-500 bg-esperanza-50 px-1.5 py-0.5 rounded flex-shrink-0">
-              a mano
-            </span>
-          )}
+        <span className="flex items-center gap-3 min-w-0">
+          <CheckAsistio asistio={reserva.asistio} onClick={onToggleAsistio} />
+          <span
+            className={`font-medium truncate flex items-center gap-2 min-w-0 ${
+              reserva.asistio ? 'text-gray-400 line-through' : 'text-gray-900'
+            }`}
+          >
+            {reserva.nombre} {reserva.apellido}
+            {reserva.creadaPorAdmin && (
+              <span className="text-[10px] font-normal text-esperanza-500 bg-esperanza-50 px-1.5 py-0.5 rounded flex-shrink-0 no-underline">
+                a mano
+              </span>
+            )}
+          </span>
         </span>
         <span className="flex items-center gap-3 text-sm text-gray-500 flex-shrink-0">
           <span className="font-medium">👥 {reserva.personas}</span>
           <span className="text-gray-400 group-open:rotate-180 transition-transform">⌄</span>
         </span>
       </summary>
-      <div className="mt-1.5 pl-0.5 text-xs text-gray-500 space-y-0.5">
+      <div className="mt-1.5 pl-9 text-xs text-gray-500 space-y-0.5">
         <div>📱 {reserva.telefono}</div>
         <div>📧 {reserva.email}</div>
         {reserva.comentarios && <div>💬 {reserva.comentarios}</div>}
@@ -83,11 +117,13 @@ function SectorAcordeon({
   tipo,
   turnos,
   onToggleCierre,
+  onToggleAsistio,
   onNuevaReserva,
 }: {
   tipo: string;
   turnos: Turno[];
   onToggleCierre: (hora: string) => void;
+  onToggleAsistio: (reservaId: string, nuevoValor: boolean) => void;
   onNuevaReserva: (hora: string) => void;
 }) {
   const [abierto, setAbierto] = useState(true);
@@ -98,6 +134,10 @@ function SectorAcordeon({
 
   const totalPersonas = filas.reduce((sum, f) => sum + f.sector.reservado, 0);
   const totalReservas = filas.reduce((sum, f) => sum + f.sector.reservas.length, 0);
+  const totalSentados = filas.reduce(
+    (sum, f) => sum + f.sector.reservas.filter((r) => r.asistio).reduce((s, r) => s + r.personas, 0),
+    0
+  );
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden mb-3">
@@ -113,7 +153,9 @@ function SectorAcordeon({
           <span>
             {totalReservas === 0
               ? 'sin reservas'
-              : `${totalPersonas} personas · ${totalReservas} ${totalReservas === 1 ? 'reserva' : 'reservas'}`}
+              : `${totalPersonas} personas · ${totalReservas} ${totalReservas === 1 ? 'reserva' : 'reservas'}${
+                  totalSentados > 0 ? ` · ${totalSentados} sentados` : ''
+                }`}
           </span>
           <span className={`text-gray-400 transition-transform inline-block ${abierto ? 'rotate-180' : ''}`}>⌄</span>
         </span>
@@ -152,7 +194,7 @@ function SectorAcordeon({
 
                 <div className="divide-y divide-gray-50">
                   {sector.reservas.map((r) => (
-                    <ReservaRow key={r.id} reserva={r} />
+                    <ReservaRow key={r.id} reserva={r} onToggleAsistio={() => onToggleAsistio(r.id, !r.asistio)} />
                   ))}
                 </div>
               </div>
@@ -164,7 +206,13 @@ function SectorAcordeon({
   );
 }
 
-export default function TurnoBoard({ fecha }: { fecha: string }) {
+export default function TurnoBoard({
+  fecha,
+  onAsistioChange,
+}: {
+  fecha: string;
+  onAsistioChange?: (id: string, asistio: boolean) => void;
+}) {
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<{ hora: string; sector: string } | null>(null);
@@ -197,6 +245,28 @@ export default function TurnoBoard({ fecha }: { fecha: string }) {
     cargar();
   };
 
+  const toggleAsistio = async (reservaId: string, nuevoValor: boolean) => {
+    // Optimista: se ve al toque, sin esperar la vuelta del servidor ni
+    // recargar el tablero entero (por eso NO se llama a cargar() acá).
+    setTurnos((prev) =>
+      prev.map((t) => ({
+        ...t,
+        salon: {
+          ...t.salon,
+          reservas: t.salon.reservas.map((r) => (r.id === reservaId ? { ...r, asistio: nuevoValor } : r)),
+        },
+        vereda: {
+          ...t.vereda,
+          reservas: t.vereda.reservas.map((r) => (r.id === reservaId ? { ...r, asistio: nuevoValor } : r)),
+        },
+      }))
+    );
+    onAsistioChange?.(reservaId, nuevoValor);
+
+    const result = await marcarAsistio(reservaId, nuevoValor);
+    if (!result.success) cargar(); // si falló, traer el estado real
+  };
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -211,12 +281,14 @@ export default function TurnoBoard({ fecha }: { fecha: string }) {
         tipo={UBICACIONES.ADENTRO}
         turnos={turnos}
         onToggleCierre={(hora) => toggleCierre(hora, UBICACIONES.ADENTRO)}
+        onToggleAsistio={toggleAsistio}
         onNuevaReserva={(hora) => setModal({ hora, sector: UBICACIONES.ADENTRO })}
       />
       <SectorAcordeon
         tipo={UBICACIONES.VEREDA}
         turnos={turnos}
         onToggleCierre={(hora) => toggleCierre(hora, UBICACIONES.VEREDA)}
+        onToggleAsistio={toggleAsistio}
         onNuevaReserva={(hora) => setModal({ hora, sector: UBICACIONES.VEREDA })}
       />
 

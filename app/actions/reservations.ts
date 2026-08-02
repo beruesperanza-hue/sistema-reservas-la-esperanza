@@ -211,6 +211,24 @@ export async function createReservationAdmin(data: CreateReservationAdminData) {
   }
 }
 
+/**
+ * Marca (o desmarca) que el cliente ya se sentó. A diferencia del cierre de
+ * turno, esto es por reserva individual y no toca el cupo ni a nadie más.
+ */
+export async function marcarAsistio(reservationId: string, asistio: boolean) {
+  try {
+    await prisma.reservation.update({
+      where: { id: reservationId },
+      data: { asistio },
+    });
+    revalidatePath('/admin');
+    return { success: true };
+  } catch (error) {
+    console.error('Error marcando asistencia:', error);
+    return { success: false, error: MENSAJES.ERROR_GENERICO };
+  }
+}
+
 export async function cancelReservation(reservationId: string) {
   try {
     const reservation = await prisma.reservation.findUnique({

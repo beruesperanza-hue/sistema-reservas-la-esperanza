@@ -64,6 +64,7 @@ export async function GET(request: NextRequest) {
           email: r.email,
           comentarios: r.comentarios,
           creadaPorAdmin: r.creadaPorAdmin,
+          asistio: r.asistio,
         })),
       });
 

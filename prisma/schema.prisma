@@ -22,6 +22,9 @@ model Reservation {
   // Cargada desde el panel de admin (walk-in / telefónica), sin pasar por las
   // restricciones del formulario público (turno pasado, cierre manual, cupo).
   creadaPorAdmin Boolean @default(false)
+  // El cliente ya se sentó. Es informativo por reserva — no afecta el cupo
+  // ni a otras reservas del mismo turno (a diferencia de TurnoCierre).
+  asistio   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

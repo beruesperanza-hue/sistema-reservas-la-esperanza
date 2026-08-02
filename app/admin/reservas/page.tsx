@@ -5,7 +5,7 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import MiniCalendario from '@/components/admin/MiniCalendario';
 import TurnoBoard from '@/components/admin/TurnoBoard';
 import NuevaReservaModal from '@/components/admin/NuevaReservaModal';
-import { cancelReservation, deleteReservation } from '@/app/actions/reservations';
+import { cancelReservation, deleteReservation, marcarAsistio } from '@/app/actions/reservations';
 import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import { formatearFechaLarga, hoyEnBA, sumarDias } from '@/lib/fechas';
 
@@ -22,21 +22,29 @@ interface Reservation {
   comentarios?: string;
   estado: string;
   creadaPorAdmin?: boolean;
+  asistio?: boolean;
 }
 
 function StatsRow({ reservas }: { reservas: Reservation[] }) {
   if (reservas.length === 0) return null;
+  const totalPersonas = reservas.reduce((sum, r) => sum + r.personas, 0);
+  const sentados = reservas.filter((r) => r.asistio).reduce((sum, r) => sum + r.personas, 0);
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
       <div className="bg-white rounded-lg shadow p-5">
         <div className="text-3xl font-bold text-esperanza-700">{reservas.length}</div>
         <div className="text-sm text-gray-500">Reservas</div>
       </div>
       <div className="bg-white rounded-lg shadow p-5">
-        <div className="text-3xl font-bold text-esperanza-700">
-          {reservas.reduce((sum, r) => sum + r.personas, 0)}
-        </div>
+        <div className="text-3xl font-bold text-esperanza-700">{totalPersonas}</div>
         <div className="text-sm text-gray-500">Personas</div>
+      </div>
+      <div className="bg-white rounded-lg shadow p-5">
+        <div className="text-3xl font-bold text-green-600">
+          {sentados}
+          <span className="text-base text-gray-400">/{totalPersonas}</span>
+        </div>
+        <div className="text-sm text-gray-500">Sentados</div>
       </div>
       <div className="bg-white rounded-lg shadow p-5">
         <div className="text-3xl font-bold text-esperanza-700">
@@ -129,6 +137,19 @@ export default function AdminReservasPage() {
     if (!confirm('¿Eliminar esta reserva permanentemente?')) return;
     const result = await deleteReservation(id);
     if (result.success) setRefreshKey((k) => k + 1);
+  };
+
+  // Sincroniza el stat "Sentados" del día en vivo, sin recargar todo el
+  // tablero (que vive en TurnoBoard con su propio estado optimista).
+  const handleAsistioChangeDia = (id: string, asistio: boolean) => {
+    setReservasDia((prev) => prev.map((r) => (r.id === id ? { ...r, asistio } : r)));
+  };
+
+  const handleToggleAsistioListado = async (id: string, actual: boolean) => {
+    const nuevoValor = !actual;
+    setTodas((prev) => prev.map((r) => (r.id === id ? { ...r, asistio: nuevoValor } : r)));
+    const result = await marcarAsistio(id, nuevoValor);
+    if (!result.success) setRefreshKey((k) => k + 1);
   };
 
   const filtradas = todas.filter((r) => {
@@ -272,20 +293,38 @@ export default function AdminReservasPage() {
 
                                   <div className="divide-y">
                                     {lista.map((reserva) => (
-                                      <details key={reserva.id} className="group p-3 hover:bg-gray-50 transition-colors">
+                                      <details key={reserva.id} className={`group p-3 hover:bg-gray-50 transition-colors ${reserva.asistio ? 'bg-green-50/40' : ''}`}>
                                         <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
                                           <div className="flex items-center gap-2.5 min-w-0">
+                                            {reserva.estado === 'confirmada' && (
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  e.stopPropagation();
+                                                  handleToggleAsistioListado(reserva.id, !!reserva.asistio);
+                                                }}
+                                                title={reserva.asistio ? 'Ya se sentó — tocar para desmarcar' : 'Marcar que ya se sentó'}
+                                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 text-[11px] transition-colors ${
+                                                  reserva.asistio
+                                                    ? 'bg-green-500 border-green-500 text-white'
+                                                    : 'border-gray-300 text-transparent hover:border-esperanza-400'
+                                                }`}
+                                              >
+                                                ✓
+                                              </button>
+                                            )}
                                             <span
                                               className={`w-2 h-2 rounded-full flex-shrink-0 ${
                                                 reserva.estado === 'confirmada' ? 'bg-green-500' : 'bg-red-400'
                                               }`}
                                               title={reserva.estado === 'confirmada' ? 'Confirmada' : 'Cancelada'}
                                             />
-                                            <span className="font-semibold text-gray-900 truncate">
+                                            <span className={`font-semibold truncate ${reserva.asistio ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
                                               {reserva.nombre} {reserva.apellido}
                                             </span>
                                             {reserva.creadaPorAdmin && (
-                                              <span className="text-[10px] font-normal text-esperanza-500 bg-esperanza-50 px-1.5 py-0.5 rounded flex-shrink-0">
+                                              <span className="text-[10px] font-normal text-esperanza-500 bg-esperanza-50 px-1.5 py-0.5 rounded flex-shrink-0 no-underline">
                                                 a mano
                                               </span>
                                             )}
@@ -342,7 +381,11 @@ export default function AdminReservasPage() {
             ) : (
               <>
                 <StatsRow reservas={reservasDia} />
-                <TurnoBoard key={`${fechaSeleccionada}-${refreshKey}`} fecha={fechaSeleccionada} />
+                <TurnoBoard
+                  key={`${fechaSeleccionada}-${refreshKey}`}
+                  fecha={fechaSeleccionada}
+                  onAsistioChange={handleAsistioChangeDia}
+                />
               </>
             )}
           </div>
