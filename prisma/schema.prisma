@@ -28,9 +28,121 @@ model Reservation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Vínculo opcional al cliente del CRM. Nullable: reservas viejas y nuevas
+  // sin match de cliente siguen funcionando igual que antes.
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
   @@unique([fecha, hora, email])
   @@index([fecha])
   @@index([estado])
+  @@index([customerId])
+}
+
+// Un cliente del restaurante, independiente de sus reservas (CLIENTE ≠ RESERVA).
+// Puede venir de la web, cargado a mano, o importado de un export externo
+// (Excel viejo, Woki, Bigbox, Mozrest, Instagram, Facebook).
+model Customer {
+  id            String   @id @default(cuid())
+  nombre        String
+  apellido      String?
+  email         String?
+  telefono      String?
+  telefonoPais  String?
+
+  // Fuente de alta: 'web' | 'admin' | 'importado_excel' | 'importado_woki' |
+  // 'importado_bigbox' | 'importado_mozrest' | 'instagram' | 'facebook' | ...
+  origen        String
+  // Solo si origen empieza con 'importado_': referencia al lote de carga.
+  importId      String?
+  import        CustomerImport? @relation(fields: [importId], references: [id])
+
+  // --- Actividad histórica (importada de un export externo, NO inventada) ---
+  visitasHistoricas      Int       @default(0)
+  ultimaVisitaHistorica  DateTime?
+  primeraVisitaHistorica DateTime?
+  gastoPromedio          Float?
+  gastoPromedioMoneda    String?
+  noShows                Int       @default(0)
+  cancelacionesHistoricas Int      @default(0)
+  eliminacionesHistoricas Int      @default(0)
+  notasHistoricas        String?   // texto libre del Excel viejo, sin estructurar
+
+  // --- Campos libres para segmentación ---
+  vip           Boolean   @default(false)
+  tags          String[]  @default([])
+  notas         String?
+  fechaNacimiento DateTime?
+
+  reservas        Reservation[]
+  consentimientos ConsentRecord[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
+  @@index([telefono])
+  @@index([origen])
+}
+
+// Un lote de importación (un Excel/CSV subido una vez). Guarda el mapeo de
+// columnas usado y sirve para poder filtrar "clientes importados desde X".
+model CustomerImport {
+  id              String   @id @default(cuid())
+  fuente          String   // 'excel', 'woki', 'bigbox', 'mozrest', etc. (texto libre)
+  nombreArchivo   String
+  columnMapping   Json     // qué columna del archivo mapeó a qué campo
+  filasTotales    Int
+  filasImportadas Int
+  filasConError   Int
+  errores         Json?    // detalle de filas que fallaron, para descargar/revisar
+  creadoPor       String?  // referencia a AdminUser en el futuro; por ahora texto
+  createdAt       DateTime @default(now())
+
+  clientes        Customer[]
+}
+
+// Consentimiento por canal, con historial (no se pisa un registro: cada
+// cambio de estado crea una fila nueva, así queda la auditoría completa).
+model ConsentRecord {
+  id              String   @id @default(cuid())
+  customerId      String
+  customer        Customer @relation(fields: [customerId], references: [id])
+  canal           String   // 'email' | 'whatsapp'
+  estado          String   // 'autorizado' | 'revocado' | 'nunca_solicitado'
+  fuente          String?  // 'formulario_reserva', 'importacion_excel', 'admin_manual', etc.
+  metodoObtencion String?
+  evidencia       String?  // link/referencia si existe (ej. captura, id de checkbox)
+  createdAt       DateTime @default(now())
+
+  @@index([customerId, canal])
+}
+
+// Filtro guardado. La definición del filtro se guarda como JSON (árbol de
+// condiciones AND/OR) y se recalcula en cada consulta — nunca se guarda una
+// lista fija de IDs.
+model Segment {
+  id          String   @id @default(cuid())
+  nombre      String   @unique
+  descripcion String?
+  filtro      Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Registro de un envío de mail a un segmento (para no perder trazabilidad
+// de a quién se le mandó qué y cuándo).
+model EmailCampaignLog {
+  id            String   @id @default(cuid())
+  segmentId     String?
+  segmentNombre String   // copia del nombre al momento de enviar, por si el segmento se borra después
+  asunto        String
+  cuerpoHtml    String
+  destinatarios Int
+  enviados      Int
+  fallidos      Int
+  enviadoPor    String?
+  createdAt     DateTime @default(now())
 }
 
 model Schedule {

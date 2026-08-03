@@ -326,3 +326,19 @@ export async function sendConfirmationEmail(email: string, details: any) {
     details.ubicacion
   );
 }
+
+// Mail de campaña a un cliente del CRM (lib/segmentos.ts + app/actions/customers.ts).
+// Reusa el mismo layout de header/footer que los mails transaccionales.
+export async function sendCampaignEmail(
+  email: string,
+  asunto: string,
+  cuerpoHtml: string,
+  cuerpoTexto: string
+): Promise<boolean> {
+  return enviarMail(
+    email,
+    asunto,
+    layout(asunto, asunto, cuerpoHtml),
+    [cuerpoTexto, '', PIE_TEXTO].join('\n')
+  );
+}

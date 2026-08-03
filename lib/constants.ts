@@ -71,6 +71,10 @@ export const CONTACTO = {
   SITIO: process.env.NEXT_PUBLIC_SITE_URL || 'https://laesperanzadelosascurra.up.railway.app',
 };
 
+// Límite gratuito de envíos por día de la Gmail API (lib/email.ts). Si una
+// campaña supera esto, la página de envío avisa antes de mandar.
+export const LIMITE_GMAIL_DIARIO = 500;
+
 export const MENSAJES = {
   RESERVA_EXITOSA: '¡Gracias! Tu reserva fue realizada correctamente.',
   RESERVA_DUPLICADA: 'Ya existe una reserva para este horario con tu email.',
