@@ -19,6 +19,39 @@ interface CreateReservationData {
   hora: string;
   ubicacion?: string;
   comentarios?: string;
+  /** Checkbox de opt-in del formulario. Nunca marcado por defecto. */
+  aceptaMarketing?: boolean;
+}
+
+/**
+ * Busca o crea el Customer de esta reserva (por email, o por teléfono si no
+ * hay match de email) y linkea la reserva. Si tildó el opt-in, registra el
+ * consentimiento — nunca se crea un registro si no lo tildó explícitamente
+ * (no marcarlo no revoca un consentimiento previo, simplemente no suma uno).
+ */
+async function vincularClienteYConsentimiento(
+  reservationId: string,
+  data: { nombre: string; apellido: string; email: string; telefono: string; aceptaMarketing?: boolean }
+) {
+  const email = data.email.trim().toLowerCase();
+  const telefono = data.telefono.trim();
+
+  let cliente = await prisma.customer.findFirst({ where: { email } });
+  if (!cliente) cliente = await prisma.customer.findFirst({ where: { telefono } });
+
+  if (!cliente) {
+    cliente = await prisma.customer.create({
+      data: { nombre: data.nombre, apellido: data.apellido, email, telefono, origen: 'web' },
+    });
+  }
+
+  await prisma.reservation.update({ where: { id: reservationId }, data: { customerId: cliente.id } });
+
+  if (data.aceptaMarketing) {
+    await prisma.consentRecord.create({
+      data: { customerId: cliente.id, canal: 'email', estado: 'autorizado', fuente: 'formulario_reserva' },
+    });
+  }
 }
 
 export async function createReservation(data: CreateReservationData) {
@@ -96,6 +129,20 @@ export async function createReservation(data: CreateReservationData) {
       data.telefono,
       ubicacion
     );
+
+    // No bloqueante: si falla el link a Customer, la reserva ya está hecha y
+    // el mail ya salió — no tiene sentido devolver error por esto.
+    try {
+      await vincularClienteYConsentimiento(reservation.id, {
+        nombre: data.nombre,
+        apellido: data.apellido,
+        email: data.email,
+        telefono: data.telefono,
+        aceptaMarketing: data.aceptaMarketing,
+      });
+    } catch (e) {
+      console.error('Error vinculando cliente/consentimiento:', e);
+    }
 
     revalidatePath('/admin');
     revalidatePath('/reservas');

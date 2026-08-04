@@ -46,6 +46,7 @@ export default function ReservationForm() {
     hora: '',
     ubicacion: UBICACIONES.ADENTRO as string,
     comentarios: '',
+    aceptaMarketing: false,
   });
 
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
@@ -103,6 +104,7 @@ export default function ReservationForm() {
         hora: formData.hora,
         ubicacion: formData.ubicacion,
         comentarios: formData.comentarios,
+        aceptaMarketing: formData.aceptaMarketing,
       });
 
       if (response.success) {
@@ -123,6 +125,7 @@ export default function ReservationForm() {
             hora: '',
             ubicacion: UBICACIONES.ADENTRO as string,
             comentarios: '',
+            aceptaMarketing: false,
           });
           setStep('fecha');
           setSuccess(false);
@@ -431,6 +434,18 @@ export default function ReservationForm() {
                 placeholder="Alergias, preferencias, celebración especial, etc..."
               />
             </div>
+
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.aceptaMarketing}
+                onChange={(e) => setFormData((prev) => ({ ...prev, aceptaMarketing: e.target.checked }))}
+                className="mt-0.5 w-4 h-4 accent-brand-gold flex-shrink-0"
+              />
+              <span className="text-sm text-sand-dim">
+                Quiero recibir novedades, promos y eventos de La Esperanza por email.
+              </span>
+            </label>
 
             {/* Summary */}
             <div className="bg-brand-gold/10 p-4 rounded-sm border border-brand-gold/25">
