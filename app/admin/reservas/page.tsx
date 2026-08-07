@@ -5,8 +5,8 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import MiniCalendario from '@/components/admin/MiniCalendario';
 import TurnoBoard from '@/components/admin/TurnoBoard';
 import NuevaReservaModal from '@/components/admin/NuevaReservaModal';
-import { cancelReservation, deleteReservation, marcarAsistio } from '@/app/actions/reservations';
-import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
+import { cancelReservation, deleteReservation, marcarAsistio, updateReservation } from '@/app/actions/reservations';
+import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import { formatearFechaLarga, hoyEnBA, sumarDias } from '@/lib/fechas';
 
 interface Reservation {
@@ -149,6 +149,12 @@ export default function AdminReservasPage() {
     const nuevoValor = !actual;
     setTodas((prev) => prev.map((r) => (r.id === id ? { ...r, asistio: nuevoValor } : r)));
     const result = await marcarAsistio(id, nuevoValor);
+    if (!result.success) setRefreshKey((k) => k + 1);
+  };
+
+  const handleEditarPersonasListado = async (id: string, personas: number) => {
+    setTodas((prev) => prev.map((r) => (r.id === id ? { ...r, personas } : r)));
+    const result = await updateReservation(id, { personas });
     if (!result.success) setRefreshKey((k) => k + 1);
   };
 
@@ -336,10 +342,25 @@ export default function AdminReservasPage() {
                                         </summary>
 
                                         <div className="mt-2.5 ml-4.5 pl-3 border-l-2 border-gray-100 flex items-start justify-between gap-4">
-                                          <div className="text-sm text-gray-600 space-y-0.5">
+                                          <div className="text-sm text-gray-600 space-y-1">
                                             <div>📧 {reserva.email}</div>
                                             <div>📱 {reserva.telefono}</div>
                                             {reserva.comentarios && <div>💬 {reserva.comentarios}</div>}
+                                            <div className="flex items-center gap-1.5">
+                                              <span>👥 Personas:</span>
+                                              <select
+                                                value={reserva.personas}
+                                                onClick={(e) => e.stopPropagation()}
+                                                onChange={(e) => handleEditarPersonasListado(reserva.id, parseInt(e.target.value))}
+                                                className="border border-gray-200 rounded px-1.5 py-0.5 text-xs font-medium text-gray-700"
+                                              >
+                                                {PERSONAS_OPCIONES.map((n) => (
+                                                  <option key={n} value={n}>
+                                                    {n}
+                                                  </option>
+                                                ))}
+                                              </select>
+                                            </div>
                                           </div>
 
                                           <div className="flex gap-2 flex-shrink-0">

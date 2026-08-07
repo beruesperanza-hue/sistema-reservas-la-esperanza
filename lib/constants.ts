@@ -28,6 +28,9 @@ export const DIA_NUMERO_A_NOMBRE = {
   6: 'sábado',
 };
 
+// Opciones de cantidad de personas al cargar o editar una reserva.
+export const PERSONAS_OPCIONES = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 20];
+
 // Dónde quiere sentarse el cliente. La vereda depende del clima, por eso el aviso.
 export const UBICACIONES = {
   ADENTRO: 'adentro',

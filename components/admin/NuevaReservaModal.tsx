@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { createReservationAdmin } from '@/app/actions/reservations';
-import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
+import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import { formatearFechaCorta } from '@/lib/fechas';
 
 interface Props {
@@ -13,8 +13,6 @@ interface Props {
   onClose: () => void;
   onCreada: () => void;
 }
-
-const PERSONAS_OPCIONES = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 20];
 
 export default function NuevaReservaModal({
   fechaInicial,

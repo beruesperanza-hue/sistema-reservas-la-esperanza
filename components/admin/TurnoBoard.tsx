@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { marcarAsistio } from '@/app/actions/reservations';
-import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
+import { marcarAsistio, updateReservation } from '@/app/actions/reservations';
+import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import NuevaReservaModal from './NuevaReservaModal';
 
 interface ReservaTurno {
@@ -77,9 +77,11 @@ function CheckAsistio({ asistio, onClick }: { asistio: boolean; onClick: () => v
 function ReservaRow({
   reserva,
   onToggleAsistio,
+  onEditarPersonas,
 }: {
   reserva: ReservaTurno;
   onToggleAsistio: () => void;
+  onEditarPersonas: (personas: number) => void;
 }) {
   return (
     <details className={`group px-5 py-2.5 hover:bg-gray-50 transition-colors ${reserva.asistio ? 'bg-green-50/40' : ''}`}>
@@ -104,10 +106,25 @@ function ReservaRow({
           <span className="text-gray-400 group-open:rotate-180 transition-transform">⌄</span>
         </span>
       </summary>
-      <div className="mt-1.5 pl-9 text-xs text-gray-500 space-y-0.5">
+      <div className="mt-1.5 pl-9 text-xs text-gray-500 space-y-1.5">
         <div>📱 {reserva.telefono}</div>
         <div>📧 {reserva.email}</div>
         {reserva.comentarios && <div>💬 {reserva.comentarios}</div>}
+        <div className="flex items-center gap-1.5">
+          <span>👥 Personas:</span>
+          <select
+            value={reserva.personas}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => onEditarPersonas(parseInt(e.target.value))}
+            className="border border-gray-200 rounded px-1.5 py-0.5 text-xs font-medium text-gray-700"
+          >
+            {PERSONAS_OPCIONES.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </details>
   );
@@ -118,12 +135,14 @@ function SectorAcordeon({
   turnos,
   onToggleCierre,
   onToggleAsistio,
+  onEditarPersonas,
   onNuevaReserva,
 }: {
   tipo: string;
   turnos: Turno[];
   onToggleCierre: (hora: string) => void;
   onToggleAsistio: (reservaId: string, nuevoValor: boolean) => void;
+  onEditarPersonas: (reservaId: string, personas: number) => void;
   onNuevaReserva: (hora: string) => void;
 }) {
   const [abierto, setAbierto] = useState(true);
@@ -194,7 +213,12 @@ function SectorAcordeon({
 
                 <div className="divide-y divide-gray-50">
                   {sector.reservas.map((r) => (
-                    <ReservaRow key={r.id} reserva={r} onToggleAsistio={() => onToggleAsistio(r.id, !r.asistio)} />
+                    <ReservaRow
+                      key={r.id}
+                      reserva={r}
+                      onToggleAsistio={() => onToggleAsistio(r.id, !r.asistio)}
+                      onEditarPersonas={(personas) => onEditarPersonas(r.id, personas)}
+                    />
                   ))}
                 </div>
               </div>
@@ -267,6 +291,31 @@ export default function TurnoBoard({
     if (!result.success) cargar(); // si falló, traer el estado real
   };
 
+  const editarPersonas = async (reservaId: string, personas: number) => {
+    setTurnos((prev) =>
+      prev.map((t) => ({
+        ...t,
+        salon: {
+          ...t.salon,
+          reservado: t.salon.reservas.some((r) => r.id === reservaId)
+            ? t.salon.reservado - (t.salon.reservas.find((r) => r.id === reservaId)?.personas ?? 0) + personas
+            : t.salon.reservado,
+          reservas: t.salon.reservas.map((r) => (r.id === reservaId ? { ...r, personas } : r)),
+        },
+        vereda: {
+          ...t.vereda,
+          reservado: t.vereda.reservas.some((r) => r.id === reservaId)
+            ? t.vereda.reservado - (t.vereda.reservas.find((r) => r.id === reservaId)?.personas ?? 0) + personas
+            : t.vereda.reservado,
+          reservas: t.vereda.reservas.map((r) => (r.id === reservaId ? { ...r, personas } : r)),
+        },
+      }))
+    );
+
+    const result = await updateReservation(reservaId, { personas });
+    if (!result.success) cargar();
+  };
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -282,6 +331,7 @@ export default function TurnoBoard({
         turnos={turnos}
         onToggleCierre={(hora) => toggleCierre(hora, UBICACIONES.ADENTRO)}
         onToggleAsistio={toggleAsistio}
+        onEditarPersonas={editarPersonas}
         onNuevaReserva={(hora) => setModal({ hora, sector: UBICACIONES.ADENTRO })}
       />
       <SectorAcordeon
@@ -289,6 +339,7 @@ export default function TurnoBoard({
         turnos={turnos}
         onToggleCierre={(hora) => toggleCierre(hora, UBICACIONES.VEREDA)}
         onToggleAsistio={toggleAsistio}
+        onEditarPersonas={editarPersonas}
         onNuevaReserva={(hora) => setModal({ hora, sector: UBICACIONES.VEREDA })}
       />
 
