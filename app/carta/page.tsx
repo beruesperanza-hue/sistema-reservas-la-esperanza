@@ -4,6 +4,7 @@ import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { SITE_URL } from '@/lib/site';
 import { Reveal } from '@/lib/motion';
+import { obtenerItemsInactivos, estaActivo } from '@/lib/menuDisponibilidad';
 import {
   TORTILLAS,
   TAPAS_Y_RACIONES,
@@ -21,6 +22,10 @@ import {
   type Plato,
   type ItemBebida,
 } from '@/lib/carta';
+
+// La disponibilidad se consulta en cada visita (no en build) para que
+// activar/desactivar un ítem desde el admin se vea al instante, sin deploy.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Carta y precios — Tapas, paellas y vermut | La Esperanza',
@@ -91,6 +96,7 @@ function SeccionPrecioUnico({ titulo, subtitulo, platos }: { titulo: string; sub
 }
 
 function ListaBebidas({ titulo, items }: { titulo: string; items: ItemBebida[] }) {
+  if (items.length === 0) return null;
   return (
     <div>
       <h3 className="font-display font-semibold text-lg text-sand mb-3">{titulo}</h3>
@@ -104,7 +110,24 @@ function ListaBebidas({ titulo, items }: { titulo: string; items: ItemBebida[] }
   );
 }
 
-export default function CartaPage() {
+export default async function CartaPage() {
+  const inactivos = await obtenerItemsInactivos();
+  function activos<T extends { nombre: string }>(seccion: string, items: T[]): T[] {
+    return items.filter((it) => estaActivo(inactivos, seccion, it.nombre));
+  }
+
+  const tortillas = activos('tortillas', TORTILLAS);
+  const tapasRaciones = activos('tapas_raciones', TAPAS_Y_RACIONES);
+  const clasicosMar = activos('clasicos_mar', CLASICOS_DE_MAR);
+  const arroces = activos('arroces', ARROCES);
+  const postres = activos('postres', POSTRES);
+  const horaVermut = activos('hora_vermut', HORA_DEL_VERMUT);
+  const deGrifo = activos('de_grifo', DE_GRIFO);
+  const vermutCubatas = activos('vermut_cubatas', VERMUT_Y_CUBATAS);
+  const sinAlcohol = activos('sin_alcohol', SIN_ALCOHOL);
+  const vinitos = activos('vinitos', VINITOS);
+  const espeCombos = activos('espe_combos', ESPE_COMBOS);
+
   const menuSchema = {
     '@context': 'https://schema.org',
     '@type': 'Menu',
@@ -112,11 +135,11 @@ export default function CartaPage() {
     url: `${SITE_URL}/carta`,
     inLanguage: 'es-AR',
     hasMenuSection: [
-      { titulo: 'Nuestras Tortillas', platos: TORTILLAS },
-      { titulo: 'Tapas y Raciones', platos: TAPAS_Y_RACIONES },
-      { titulo: 'Nuestros Clásicos de Mar', platos: CLASICOS_DE_MAR },
-      { titulo: 'Arroces del Mes', platos: ARROCES },
-      { titulo: 'Postres', platos: POSTRES },
+      { titulo: 'Nuestras Tortillas', platos: tortillas },
+      { titulo: 'Tapas y Raciones', platos: tapasRaciones },
+      { titulo: 'Nuestros Clásicos de Mar', platos: clasicosMar },
+      { titulo: 'Arroces del Mes', platos: arroces },
+      { titulo: 'Postres', platos: postres },
     ].map((s) => ({
       '@type': 'MenuSection',
       name: s.titulo,
@@ -155,68 +178,76 @@ export default function CartaPage() {
       </section>
 
       <main className="mx-auto px-5 max-w-2xl py-16 md:py-20">
-        <SeccionTapaRacion
-          titulo="★ Nuestras Tortillas"
-          subtitulo="La especialidad de la casa"
-          platos={TORTILLAS}
-        />
-        <SeccionTapaRacion titulo="Tapas y Raciones" platos={TAPAS_Y_RACIONES} />
-        <SeccionTapaRacion titulo="Nuestros Clásicos de Mar" platos={CLASICOS_DE_MAR} />
-        <SeccionPrecioUnico titulo="Arroces del Mes" subtitulo="Para compartir · Se preparan al momento, demora 30/35 minutos" platos={ARROCES} />
-        <SeccionPrecioUnico titulo="Postres" platos={POSTRES} />
+        {tortillas.length > 0 && (
+          <SeccionTapaRacion
+            titulo="★ Nuestras Tortillas"
+            subtitulo="La especialidad de la casa"
+            platos={tortillas}
+          />
+        )}
+        {tapasRaciones.length > 0 && <SeccionTapaRacion titulo="Tapas y Raciones" platos={tapasRaciones} />}
+        {clasicosMar.length > 0 && <SeccionTapaRacion titulo="Nuestros Clásicos de Mar" platos={clasicosMar} />}
+        {arroces.length > 0 && (
+          <SeccionPrecioUnico titulo="Arroces del Mes" subtitulo="Para compartir · Se preparan al momento, demora 30/35 minutos" platos={arroces} />
+        )}
+        {postres.length > 0 && <SeccionPrecioUnico titulo="Postres" platos={postres} />}
 
         {/* Bebidas & Combos */}
         <Reveal className="mb-16">
           <h2 className="font-display font-bold text-2xl md:text-3xl text-sand mb-1">Bebidas &amp; Combos</h2>
 
-          <div className="border border-brand-gold/30 bg-brand-gold/[.05] rounded-sm p-5 my-5">
-            <h3 className="font-display font-semibold text-lg text-sand mb-1">
-              🍷 Hora del Vermut <span className="text-sm font-body font-normal text-sand-dim">— 19 a 20:30</span>
-            </h3>
-            {HORA_DEL_VERMUT.map((it) => (
-              <div key={it.nombre} className="flex items-baseline justify-between gap-4 py-1.5 text-sm">
-                <span className="text-sand-dim flex-1">{it.nombre}</span>
-                <span className="font-mono text-sand tabular-nums flex-shrink-0">{formatearPrecio(it.precio)}</span>
-              </div>
-            ))}
-          </div>
+          {horaVermut.length > 0 && (
+            <div className="border border-brand-gold/30 bg-brand-gold/[.05] rounded-sm p-5 my-5">
+              <h3 className="font-display font-semibold text-lg text-sand mb-1">
+                🍷 Hora del Vermut <span className="text-sm font-body font-normal text-sand-dim">— 19 a 20:30</span>
+              </h3>
+              {horaVermut.map((it) => (
+                <div key={it.nombre} className="flex items-baseline justify-between gap-4 py-1.5 text-sm">
+                  <span className="text-sand-dim flex-1">{it.nombre}</span>
+                  <span className="font-mono text-sand tabular-nums flex-shrink-0">{formatearPrecio(it.precio)}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 gap-x-10 gap-y-8 mt-6">
-            <ListaBebidas titulo="De Grifo" items={DE_GRIFO} />
-            <ListaBebidas titulo="Vinitos" items={VINITOS} />
-            <ListaBebidas titulo="Vermut y Cubatas" items={VERMUT_Y_CUBATAS} />
-            <ListaBebidas titulo="Sin Alcohol" items={SIN_ALCOHOL} />
+            <ListaBebidas titulo="De Grifo" items={deGrifo} />
+            <ListaBebidas titulo="Vinitos" items={vinitos} />
+            <ListaBebidas titulo="Vermut y Cubatas" items={vermutCubatas} />
+            <ListaBebidas titulo="Sin Alcohol" items={sinAlcohol} />
           </div>
         </Reveal>
 
         {/* Espe Combos */}
-        <Reveal className="mb-16">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-sand mb-1">Espe Combos</h2>
-          <p className="text-sm text-sand-dim mb-5">
-            Comen 2, pican 4 — combos de 5 tapas para compartir, con 10% de descuento sobre el precio suelto
-          </p>
-          <div className="grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10">
-            {ESPE_COMBOS.map((c) => (
-              <div key={c.nombre} className="bg-night p-6">
-                <h3 className="font-display font-semibold text-xl text-sand mb-2">
-                  {c.nombre}
-                  {c.vegetariano && (
-                    <span className="ml-2 align-middle text-[10px] font-mono font-semibold uppercase tracking-wide text-brand-amber border border-brand-amber/50 rounded-full px-2 py-0.5">
-                      Vegetariano
+        {espeCombos.length > 0 && (
+          <Reveal className="mb-16">
+            <h2 className="font-display font-bold text-2xl md:text-3xl text-sand mb-1">Espe Combos</h2>
+            <p className="text-sm text-sand-dim mb-5">
+              Comen 2, pican 4 — combos de 5 tapas para compartir, con 10% de descuento sobre el precio suelto
+            </p>
+            <div className="grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10">
+              {espeCombos.map((c) => (
+                <div key={c.nombre} className="bg-night p-6">
+                  <h3 className="font-display font-semibold text-xl text-sand mb-2">
+                    {c.nombre}
+                    {c.vegetariano && (
+                      <span className="ml-2 align-middle text-[10px] font-mono font-semibold uppercase tracking-wide text-brand-amber border border-brand-amber/50 rounded-full px-2 py-0.5">
+                        Vegetariano
+                      </span>
+                    )}
+                  </h3>
+                  <p className="text-sm text-sand-dim mb-4">{c.incluye}</p>
+                  <p className="font-mono text-lg text-sand">
+                    {formatearPrecio(c.precio)}{' '}
+                    <span className="text-xs text-sand-faint">
+                      (suelto {formatearPrecio(c.precioSuelto)})
                     </span>
-                  )}
-                </h3>
-                <p className="text-sm text-sand-dim mb-4">{c.incluye}</p>
-                <p className="font-mono text-lg text-sand">
-                  {formatearPrecio(c.precio)}{' '}
-                  <span className="text-xs text-sand-faint">
-                    (suelto {formatearPrecio(c.precioSuelto)})
-                  </span>
-                </p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        )}
 
         {/* Receta del mes */}
         <Reveal className="bg-night-2 border border-white/10 rounded-sm p-6 text-center mb-16">

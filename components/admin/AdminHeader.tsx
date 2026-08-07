@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 const LINKS = [
   { href: '/admin/reservas', label: 'Reservas' },
   { href: '/admin/clientes', label: 'Clientes' },
+  { href: '/admin/carta', label: 'Carta' },
   { href: '/admin/settings', label: '⚙️ Configuración' },
 ];
 

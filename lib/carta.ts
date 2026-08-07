@@ -134,6 +134,29 @@ export const ESPE_COMBOS: Combo[] = [
 
 export const RECETA_DEL_MES = 'Gambas al ajillo';
 
+// Metadata de secciones para el panel de admin (activar/desactivar ítems) y
+// para filtrar la carta pública por disponibilidad. El "slug" es la clave
+// estable que se guarda en MenuItemEstado — no cambiar sin migrar los datos.
+export interface SeccionMenu {
+  slug: string;
+  titulo: string;
+  items: { nombre: string }[];
+}
+
+export const SECCIONES_MENU: SeccionMenu[] = [
+  { slug: 'tortillas', titulo: 'Nuestras Tortillas', items: TORTILLAS },
+  { slug: 'tapas_raciones', titulo: 'Tapas y Raciones', items: TAPAS_Y_RACIONES },
+  { slug: 'clasicos_mar', titulo: 'Nuestros Clásicos de Mar', items: CLASICOS_DE_MAR },
+  { slug: 'arroces', titulo: 'Arroces del Mes', items: ARROCES },
+  { slug: 'postres', titulo: 'Postres', items: POSTRES },
+  { slug: 'hora_vermut', titulo: 'Hora del Vermut', items: HORA_DEL_VERMUT },
+  { slug: 'de_grifo', titulo: 'De Grifo', items: DE_GRIFO },
+  { slug: 'vermut_cubatas', titulo: 'Vermut y Cubatas', items: VERMUT_Y_CUBATAS },
+  { slug: 'sin_alcohol', titulo: 'Sin Alcohol', items: SIN_ALCOHOL },
+  { slug: 'vinitos', titulo: 'Vinitos', items: VINITOS },
+  { slug: 'espe_combos', titulo: 'Espe Combos', items: ESPE_COMBOS },
+];
+
 export function formatearPrecio(valor: number): string {
   return `$${valor.toLocaleString('es-AR')}`;
 }

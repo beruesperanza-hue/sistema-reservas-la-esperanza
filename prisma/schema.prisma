@@ -200,3 +200,17 @@ model AdminUser {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// Estado de disponibilidad de un ítem de la carta. lib/carta.ts sigue siendo
+// la fuente de contenido (nombre, precio, descripción) — esta tabla solo
+// guarda si está activo o no. Sin fila = activo (default true), así que no
+// hace falta crear una fila por cada ítem, solo para los que se desactivan.
+model MenuItemEstado {
+  id        String   @id @default(cuid())
+  seccion   String
+  nombre    String
+  activo    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  @@unique([seccion, nombre])
+}
