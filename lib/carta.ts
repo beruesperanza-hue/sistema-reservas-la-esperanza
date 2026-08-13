@@ -82,7 +82,7 @@ export const VERMUT_Y_CUBATAS: ItemBebida[] = [
   { nombre: 'Aperol Spritz', precio: 13100 },
   { nombre: 'Fernet con coca', precio: 13100 },
   { nombre: 'Negroni Sbagliato: Vermouth Rosso, Campari y Espumante', precio: 14700 },
-  { nombre: 'Vinos por copa', precio: 6800 },
+  { nombre: 'Vinos por copa: Alma Mora Malbec', precio: 6800 },
 ];
 
 export const SIN_ALCOHOL: ItemBebida[] = [
@@ -92,13 +92,17 @@ export const SIN_ALCOHOL: ItemBebida[] = [
 ];
 
 export const VINITOS: ItemBebida[] = [
-  { nombre: 'Alamos Malbec', precio: 18000 },
+  { nombre: 'Alamos Malbec', precio: 20000 },
   { nombre: 'Chateaux Subsónico Blanco', precio: 23000 },
   { nombre: 'Chateaux Subsónico Blend o Malbec', precio: 35000 },
+  { nombre: 'DV Catena Cabernet-Malbec', precio: 28000 },
+  { nombre: 'Fabre Montmayou Reserva', precio: 23000 },
   { nombre: 'Ferus Blanc de Blancs', precio: 28000 },
   { nombre: 'Nicasia Cabernet Franc', precio: 22000 },
+  { nombre: 'Perro Callejero Pinot Noir', precio: 23000 },
   { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 25000 },
   { nombre: 'San Pedro de Yacochuya', precio: 54000 },
+  { nombre: 'Sapo de otro pozo Malbec', precio: 30000 },
 ];
 
 // "Comen 2, pican 4" — combos para compartir, nombrados como barrios de Madrid.
