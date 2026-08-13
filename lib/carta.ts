@@ -101,7 +101,7 @@ export const VINITOS: ItemBebida[] = [
   { nombre: 'Nicasia Cabernet Franc', precio: 22000 },
   { nombre: 'Perro Callejero Pinot Noir', precio: 23000 },
   { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 25000 },
-  { nombre: 'San Pedro de Yacochuya', precio: 54000 },
+  { nombre: 'San Pedro de Yacochuya 2020', precio: 54000 },
   { nombre: 'Sapo de otro pozo Malbec', precio: 30000 },
 ];
 
