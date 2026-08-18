@@ -28,8 +28,9 @@ export const DIA_NUMERO_A_NOMBRE = {
   6: 'sábado',
 };
 
-// Opciones de cantidad de personas al cargar o editar una reserva.
-export const PERSONAS_OPCIONES = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 20];
+// Opciones de cantidad de personas al cargar o editar una reserva. Todos los
+// números del 1 al 20 — antes saltaba impares (7, 9, 11, 13...) por arriba de 6.
+export const PERSONAS_OPCIONES = Array.from({ length: 20 }, (_, i) => i + 1);
 
 // Dónde quiere sentarse el cliente. La vereda depende del clima, por eso el aviso.
 export const UBICACIONES = {

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { createReservation } from '@/app/actions/reservations';
-import { UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
+import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
 import { formatearFechaLarga, hoyEnBA, sumarDias } from '@/lib/fechas';
 import { trackEvent } from '@/lib/analytics';
 
@@ -255,7 +255,7 @@ export default function ReservationForm() {
             <div>
               <label className={labelCls}>Cantidad de personas</label>
               <select name="personas" value={formData.personas} onChange={handleInputChange} className={inputCls}>
-                {[1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 20].map((n) => (
+                {PERSONAS_OPCIONES.map((n) => (
                   <option key={n} value={n} className="bg-night-2 text-sand">
                     {n} {n === 1 ? 'persona' : 'personas'}
                   </option>
