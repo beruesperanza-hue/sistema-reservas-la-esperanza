@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 const LINKS = [
   { href: '/carta', label: 'Carta' },
+  { href: '/pedidos', label: 'Pedidos' },
   { href: '/#historia', label: 'Historia' },
   { href: '/#visitanos', label: 'Visitanos' },
 ];

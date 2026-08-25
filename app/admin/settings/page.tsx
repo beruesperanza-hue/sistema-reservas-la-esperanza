@@ -20,6 +20,9 @@ interface Settings {
   emailRestaurante: string;
   telefonoRestaurante: string;
   direccionRestaurante: string;
+  aceptaPedidosOnline: boolean;
+  tiempoPreparacionMin: number;
+  pedidoMinimo: number;
 }
 
 export default function SettingsPage() {
@@ -219,6 +222,56 @@ export default function SettingsPage() {
                     type="number"
                     value={settings.diasAvanzados}
                     onChange={(e) => setSettings({ ...settings, diasAvanzados: parseInt(e.target.value) })}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+
+              <button onClick={handleSaveSettings} disabled={saving} className="btn btn-primary">
+                💾 {saving ? 'Guardando...' : 'Guardar Configuración'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Pedidos online */}
+        <div className="bg-white rounded-lg shadow p-8 mb-8">
+          <h2 className="text-2xl font-bold text-esperanza-700 mb-6">Pedidos online</h2>
+
+          {settings && (
+            <div className="space-y-6">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.aceptaPedidosOnline}
+                  onChange={(e) => setSettings({ ...settings, aceptaPedidosOnline: e.target.checked })}
+                  className="w-5 h-5 accent-esperanza-600"
+                />
+                <span className="font-semibold text-esperanza-700">Aceptando pedidos online</span>
+              </label>
+              <p className="text-sm text-gray-500 -mt-4">
+                Si lo desactivás, /pedidos deja de aceptar pedidos nuevos hasta que lo actives de nuevo.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="form-group">
+                  <label className="form-label">Tiempo de preparación (minutos)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={settings.tiempoPreparacionMin}
+                    onChange={(e) => setSettings({ ...settings, tiempoPreparacionMin: parseInt(e.target.value) || 0 })}
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Pedido mínimo ($)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={settings.pedidoMinimo}
+                    onChange={(e) => setSettings({ ...settings, pedidoMinimo: parseInt(e.target.value) || 0 })}
                     className="form-input"
                   />
                 </div>

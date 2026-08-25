@@ -327,6 +327,71 @@ export async function sendConfirmationEmail(email: string, details: any) {
   );
 }
 
+interface ItemPedidoMail {
+  nombre: string;
+  cantidad: number;
+  precioUnitario: number;
+}
+
+export async function sendOrderConfirmation(
+  email: string,
+  nombre: string,
+  numero: number,
+  items: ItemPedidoMail[],
+  subtotal: number,
+  horaListoEstimada: string | null
+) {
+  const formatearARS = (v: number) => `$${v.toLocaleString('es-AR')}`;
+
+  const filasItems = items
+    .map(
+      (it) => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#201914;">${it.cantidad}× ${it.nombre}</td>
+      <td align="right" style="padding:8px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#201914;">${formatearARS(it.precioUnitario * it.cantidad)}</td>
+    </tr>`
+    )
+    .join('');
+
+  const contenido = `
+    <p style="margin:0 0 16px 0;">Hola <strong>${nombre}</strong>,</p>
+    <p style="margin:0 0 24px 0;">¡Recibimos tu pago! Tu pedido <strong>#${numero}</strong> ya está confirmado${
+      horaListoEstimada ? ` y estará listo para retirar aproximadamente a las <strong>${horaListoEstimada}</strong>` : ''
+    }.</p>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
+      ${filasItems}
+      <tr>
+        <td style="padding:12px 0 0 0;font-family:Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;color:#201914;">Total</td>
+        <td align="right" style="padding:12px 0 0 0;font-family:Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;color:#201914;">${formatearARS(subtotal)}</td>
+      </tr>
+    </table>
+
+    <p style="margin:0 0 8px 0;">Retirá tu pedido en el local: ${CONTACTO.DIRECCION}.</p>
+    <p style="margin:0 0 8px 0;">Cualquier consulta, escribinos por WhatsApp. ¡Gracias por elegirnos! 🌟</p>
+  `;
+
+  const texto = [
+    `Hola ${nombre},`,
+    '',
+    `¡Recibimos tu pago! Tu pedido #${numero} ya está confirmado${horaListoEstimada ? ` y estará listo aprox. a las ${horaListoEstimada}` : ''}.`,
+    '',
+    ...items.map((it) => `${it.cantidad}× ${it.nombre} — ${formatearARS(it.precioUnitario * it.cantidad)}`),
+    `Total: ${formatearARS(subtotal)}`,
+    '',
+    `Retirá tu pedido en: ${CONTACTO.DIRECCION}`,
+    '',
+    PIE_TEXTO,
+  ].join('\n');
+
+  return enviarMail(
+    email,
+    `Pedido #${numero} confirmado — La Esperanza`,
+    layout(`Pedido #${numero} confirmado.`, 'Pedido confirmado', contenido),
+    texto
+  );
+}
+
 // Mail de campaña a un cliente del CRM (lib/segmentos.ts + app/actions/customers.ts).
 // Reusa el mismo layout de header/footer que los mails transaccionales.
 export async function sendCampaignEmail(

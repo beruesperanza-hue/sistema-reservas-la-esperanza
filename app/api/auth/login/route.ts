@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { verifyPassword } from '@/lib/auth';
-import { generateToken } from '@/lib/auth';
+import { verifyPassword, generateSessionToken } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,8 +35,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generar token
-    const token = generateToken();
+    // Generar token de sesión firmado (ver lib/auth.ts)
+    const token = generateSessionToken(user.username);
 
     return NextResponse.json({
       success: true,

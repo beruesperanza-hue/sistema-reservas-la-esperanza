@@ -8,10 +8,4 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
-export function generateToken(): string {
-  return Math.random().toString(36).substring(2, 15);
-}
-
-export function isAuthenticated(token: string | undefined): boolean {
-  return token === process.env.ADMIN_TOKEN;
-}
+export { generateSessionToken, verifySessionToken } from '@/lib/adminSession';

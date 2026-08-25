@@ -76,6 +76,7 @@ model Customer {
 
   reservas        Reservation[]
   consentimientos ConsentRecord[]
+  orders          Order[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -83,6 +84,49 @@ model Customer {
   @@index([email])
   @@index([telefono])
   @@index([origen])
+}
+
+// Un pedido para retirar en el local, pagado online con Mercado Pago
+// (Checkout Pro). subtotal e items.precioUnitario siempre se calculan en el
+// servidor desde lib/carta.ts al crear el pedido — nunca se confía en un
+// precio mandado por el cliente.
+model Order {
+  id                String      @id @default(cuid())
+  numero            Int         @default(autoincrement())
+  nombre            String
+  telefono          String
+  email             String
+  notas             String?
+  subtotal          Int
+  // pendiente_pago | pagado | en_preparacion | listo_para_retirar | entregado | cancelado
+  estado            String      @default("pendiente_pago")
+  // "HH:mm" en hora de Buenos Aires, calculada al confirmarse el pago.
+  horaListoEstimada String?
+  mpPreferenceId    String?
+  mpPaymentId       String?
+  // Estado crudo devuelto por Mercado Pago, para auditoría/debug.
+  mpStatus          String?
+  items             OrderItem[]
+  customerId        String?
+  customer          Customer?   @relation(fields: [customerId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([estado])
+  @@index([mpPreferenceId])
+}
+
+model OrderItem {
+  id             String @id @default(cuid())
+  orderId        String
+  order          Order  @relation(fields: [orderId], references: [id])
+  // slug de SECCIONES_MENU (lib/carta.ts), para trazabilidad histórica.
+  seccion        String
+  nombre         String
+  precioUnitario Int
+  cantidad       Int
+
+  @@index([orderId])
 }
 
 // Un lote de importación (un Excel/CSV subido una vez). Guarda el mapeo de
@@ -187,6 +231,10 @@ model Settings {
   capacidadPorTurno     Int     @default(20)
   diasAvanzados         Int     @default(60)
   mensajeConfirmacion   String  @default("¡Gracias! Tu reserva fue realizada correctamente.")
+  // Pedidos online para retirar en el local (Mercado Pago Checkout Pro).
+  aceptaPedidosOnline   Boolean @default(true)
+  tiempoPreparacionMin  Int     @default(25)
+  pedidoMinimo          Int     @default(0)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }

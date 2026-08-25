@@ -75,6 +75,15 @@ export function formatearFechaLarga(fechaISO: string): string {
   }).format(fechaISOaDate(fechaISO));
 }
 
+/** Suma minutos a una hora actual 'HH:mm' (AR) y devuelve otra 'HH:mm'. Usado para estimar cuándo está listo un pedido. */
+export function sumarMinutosAHoraActualEnBA(minutos: number): string {
+  const [h, m] = horaActualEnBA().split(':').map(Number);
+  const total = h * 60 + m + minutos;
+  const hh = Math.floor((total % (24 * 60)) / 60);
+  const mm = total % 60;
+  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+}
+
 /** 'YYYY-MM-DD' → '23/07/2026'. */
 export function formatearFechaCorta(fechaISO: string): string {
   return new Intl.DateTimeFormat('es-AR', {
