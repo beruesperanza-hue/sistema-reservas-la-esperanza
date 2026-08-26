@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generar token de sesión firmado (ver lib/auth.ts)
-    const token = generateSessionToken(user.username);
+    const token = await generateSessionToken(user.username);
 
     return NextResponse.json({
       success: true,

@@ -5,9 +5,9 @@ import { verifySessionToken } from '@/lib/adminSession';
 // Protege /admin y /api/admin/* con una sesión real (ver lib/auth.ts). Antes
 // de esto la cookie admin_token no se validaba contra nada: alcanzaba con que
 // existiera. /admin es la propia pantalla de login, así que queda afuera.
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const valido = verifySessionToken(request.cookies.get('admin_token')?.value);
+  const valido = await verifySessionToken(request.cookies.get('admin_token')?.value);
 
   if (pathname.startsWith('/api/admin')) {
     if (!valido) {

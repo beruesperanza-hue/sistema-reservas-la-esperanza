@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Sistema de reservas profesional para La Esperanza",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "prisma": {
     "seed": "node prisma/seed.js"
   },
