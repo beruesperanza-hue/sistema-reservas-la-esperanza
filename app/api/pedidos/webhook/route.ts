@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { consultarPago, validarFirmaWebhook } from '@/lib/mercadopago';
-import { sendOrderConfirmation } from '@/lib/email';
+import { sendOrderConfirmation, sendNewOrderAlertEmail } from '@/lib/email';
+import { enviarWhatsApp } from '@/lib/whatsapp';
 import { sumarMinutosAHoraActualEnBA } from '@/lib/fechas';
+import { CONTACTO } from '@/lib/constants';
 
 /**
  * Webhook de Mercado Pago (Checkout Pro). Nunca se confía en el payload
@@ -67,14 +69,59 @@ export async function POST(request: NextRequest) {
     });
 
     if (seApruebaAhora) {
+      const itemsMail = order.items.map((it) => ({
+        nombre: it.nombre,
+        cantidad: it.cantidad,
+        precioUnitario: it.precioUnitario,
+      }));
+
       await sendOrderConfirmation(
         order.email,
         order.nombre,
         order.numero,
-        order.items.map((it) => ({ nombre: it.nombre, cantidad: it.cantidad, precioUnitario: it.precioUnitario })),
+        itemsMail,
         order.subtotal,
-        horaListoEstimada
+        horaListoEstimada,
+        order.tipoEntrega,
+        order.costoEnvio,
+        order.direccionEnvio,
+        order.pisoEnvio
       );
+
+      // Avisos internos al restaurante — no bloquean la confirmación al
+      // cliente si fallan (ej. WhatsApp sin ventana de 24hs abierta).
+      try {
+        await sendNewOrderAlertEmail(
+          order.numero,
+          order.nombre,
+          order.telefono,
+          itemsMail,
+          order.subtotal,
+          order.tipoEntrega,
+          order.costoEnvio,
+          order.direccionEnvio,
+          order.pisoEnvio
+        );
+      } catch (e) {
+        console.error('Error enviando mail de aviso de pedido al restaurante:', e);
+      }
+
+      try {
+        const total = order.subtotal + order.costoEnvio;
+        const entregaTexto =
+          order.tipoEntrega === 'retiro'
+            ? 'Retira en el local'
+            : `Envío a: ${order.direccionEnvio}${order.pisoEnvio ? `, piso/depto ${order.pisoEnvio}` : ''}`;
+        const mensaje = [
+          `🔔 Nuevo pedido #${order.numero} — ${order.nombre} (${order.telefono})`,
+          ...itemsMail.map((it) => `${it.cantidad}× ${it.nombre}`),
+          entregaTexto,
+          `Total: $${total.toLocaleString('es-AR')}`,
+        ].join('\n');
+        await enviarWhatsApp(CONTACTO.WHATSAPP_NUMERO, mensaje);
+      } catch (e) {
+        console.error('Error enviando WhatsApp de aviso de pedido:', e);
+      }
     }
 
     return NextResponse.json({ received: true });

@@ -98,6 +98,11 @@ model Order {
   email             String
   notas             String?
   subtotal          Int
+  // retiro | envio_cerca (<=3km) | envio_lejos (>3km) — precios fijos en Settings.
+  tipoEntrega       String      @default("retiro")
+  costoEnvio        Int         @default(0)
+  direccionEnvio    String?
+  pisoEnvio         String?
   // pendiente_pago | pagado | en_preparacion | listo_para_retirar | entregado | cancelado
   estado            String      @default("pendiente_pago")
   // "HH:mm" en hora de Buenos Aires, calculada al confirmarse el pago.
@@ -235,6 +240,11 @@ model Settings {
   aceptaPedidosOnline   Boolean @default(true)
   tiempoPreparacionMin  Int     @default(25)
   pedidoMinimo          Int     @default(0)
+  // Envío a domicilio: precio fijo según zona, elegida por el cliente
+  // (no se calcula distancia automática — ver lib/pedidosCarta.ts / checkout).
+  aceptaEnvioDomicilio  Boolean @default(true)
+  costoEnvioCerca       Int     @default(5000)
+  costoEnvioLejos       Int     @default(10000)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }

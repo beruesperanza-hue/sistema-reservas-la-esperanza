@@ -339,9 +339,15 @@ export async function sendOrderConfirmation(
   numero: number,
   items: ItemPedidoMail[],
   subtotal: number,
-  horaListoEstimada: string | null
+  horaListoEstimada: string | null,
+  tipoEntrega: string = 'retiro',
+  costoEnvio: number = 0,
+  direccionEnvio: string | null = null,
+  pisoEnvio: string | null = null
 ) {
   const formatearARS = (v: number) => `$${v.toLocaleString('es-AR')}`;
+  const esEnvio = tipoEntrega !== 'retiro';
+  const total = subtotal + costoEnvio;
 
   const filasItems = items
     .map(
@@ -353,21 +359,34 @@ export async function sendOrderConfirmation(
     )
     .join('');
 
+  const filaEnvio = esEnvio
+    ? `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#201914;">Envío a domicilio</td>
+      <td align="right" style="padding:8px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#201914;">${formatearARS(costoEnvio)}</td>
+    </tr>`
+    : '';
+
+  const entregaHtml = esEnvio
+    ? `<p style="margin:0 0 8px 0;">Te lo llevamos a: ${direccionEnvio || ''}${pisoEnvio ? `, piso/depto ${pisoEnvio}` : ''}.</p>`
+    : `<p style="margin:0 0 8px 0;">Retirá tu pedido en el local: ${CONTACTO.DIRECCION}.</p>`;
+
   const contenido = `
     <p style="margin:0 0 16px 0;">Hola <strong>${nombre}</strong>,</p>
     <p style="margin:0 0 24px 0;">¡Recibimos tu pago! Tu pedido <strong>#${numero}</strong> ya está confirmado${
-      horaListoEstimada ? ` y estará listo para retirar aproximadamente a las <strong>${horaListoEstimada}</strong>` : ''
+      horaListoEstimada ? ` y estará listo aproximadamente a las <strong>${horaListoEstimada}</strong>` : ''
     }.</p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
       ${filasItems}
+      ${filaEnvio}
       <tr>
         <td style="padding:12px 0 0 0;font-family:Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;color:#201914;">Total</td>
-        <td align="right" style="padding:12px 0 0 0;font-family:Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;color:#201914;">${formatearARS(subtotal)}</td>
+        <td align="right" style="padding:12px 0 0 0;font-family:Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;color:#201914;">${formatearARS(total)}</td>
       </tr>
     </table>
 
-    <p style="margin:0 0 8px 0;">Retirá tu pedido en el local: ${CONTACTO.DIRECCION}.</p>
+    ${entregaHtml}
     <p style="margin:0 0 8px 0;">Cualquier consulta, escribinos por WhatsApp. ¡Gracias por elegirnos! 🌟</p>
   `;
 
@@ -377,9 +396,12 @@ export async function sendOrderConfirmation(
     `¡Recibimos tu pago! Tu pedido #${numero} ya está confirmado${horaListoEstimada ? ` y estará listo aprox. a las ${horaListoEstimada}` : ''}.`,
     '',
     ...items.map((it) => `${it.cantidad}× ${it.nombre} — ${formatearARS(it.precioUnitario * it.cantidad)}`),
-    `Total: ${formatearARS(subtotal)}`,
+    ...(esEnvio ? [`Envío a domicilio — ${formatearARS(costoEnvio)}`] : []),
+    `Total: ${formatearARS(total)}`,
     '',
-    `Retirá tu pedido en: ${CONTACTO.DIRECCION}`,
+    esEnvio
+      ? `Te lo llevamos a: ${direccionEnvio || ''}${pisoEnvio ? `, piso/depto ${pisoEnvio}` : ''}`
+      : `Retirá tu pedido en: ${CONTACTO.DIRECCION}`,
     '',
     PIE_TEXTO,
   ].join('\n');
@@ -388,6 +410,72 @@ export async function sendOrderConfirmation(
     email,
     `Pedido #${numero} confirmado — La Esperanza`,
     layout(`Pedido #${numero} confirmado.`, 'Pedido confirmado', contenido),
+    texto
+  );
+}
+
+const EMAIL_AVISOS_PEDIDOS = 'laesperanzadevillacrespo@gmail.com';
+
+const TIPO_ENTREGA_LABEL: Record<string, string> = {
+  retiro: 'Retira en el local',
+  envio_cerca: 'Envío a domicilio (cerca)',
+  envio_lejos: 'Envío a domicilio (lejos)',
+};
+
+/**
+ * Aviso interno al restaurante cuando se confirma un pedido pago — no es el
+ * mail de confirmación del cliente (sendOrderConfirmation). Va siempre a
+ * EMAIL_AVISOS_PEDIDOS, sin depender de qué email cargó el cliente.
+ */
+export async function sendNewOrderAlertEmail(
+  numero: number,
+  nombreCliente: string,
+  telefonoCliente: string,
+  items: ItemPedidoMail[],
+  subtotal: number,
+  tipoEntrega: string,
+  costoEnvio: number,
+  direccionEnvio: string | null,
+  pisoEnvio: string | null
+) {
+  const formatearARS = (v: number) => `$${v.toLocaleString('es-AR')}`;
+  const total = subtotal + costoEnvio;
+
+  const filasItems = items
+    .map((it) => `${it.cantidad}× ${it.nombre} — ${formatearARS(it.precioUnitario * it.cantidad)}`)
+    .join('\n');
+
+  const entregaTexto =
+    tipoEntrega === 'retiro'
+      ? 'Retira en el local'
+      : `Envío a domicilio: ${direccionEnvio || 's/d'}${pisoEnvio ? `, piso/depto ${pisoEnvio}` : ''} (${formatearARS(costoEnvio)})`;
+
+  const contenido = `
+    <p style="margin:0 0 16px 0;">Nuevo pedido pago <strong>#${numero}</strong> de <strong>${nombreCliente}</strong> (${telefonoCliente}).</p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
+      ${items.map((it) => `
+        <tr>
+          <td style="padding:6px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#201914;">${it.cantidad}× ${it.nombre}</td>
+          <td align="right" style="padding:6px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#201914;">${formatearARS(it.precioUnitario * it.cantidad)}</td>
+        </tr>`).join('')}
+    </table>
+    <p style="margin:0 0 8px 0;"><strong>${TIPO_ENTREGA_LABEL[tipoEntrega] || tipoEntrega}</strong>${tipoEntrega !== 'retiro' ? ` — ${direccionEnvio || 's/d'}${pisoEnvio ? `, piso/depto ${pisoEnvio}` : ''}` : ''}</p>
+    <p style="margin:0;font-weight:bold;">Total: ${formatearARS(total)}</p>
+  `;
+
+  const texto = [
+    `Nuevo pedido pago #${numero} de ${nombreCliente} (${telefonoCliente}).`,
+    '',
+    filasItems,
+    '',
+    entregaTexto,
+    `Total: ${formatearARS(total)}`,
+  ].join('\n');
+
+  return enviarMail(
+    EMAIL_AVISOS_PEDIDOS,
+    `Nuevo pedido #${numero} — ${nombreCliente}`,
+    layout(`Nuevo pedido #${numero}.`, 'Nuevo pedido', contenido),
     texto
   );
 }

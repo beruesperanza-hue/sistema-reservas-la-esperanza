@@ -7,12 +7,17 @@ import { revalidatePath } from 'next/cache';
 
 const MENSAJES_PEDIDO = {
   NO_ACEPTA_PEDIDOS: 'En este momento no estamos aceptando pedidos online.',
+  NO_ACEPTA_ENVIO: 'En este momento no estamos haciendo envíos a domicilio. Elegí retiro en el local.',
   CARRITO_VACIO: 'Tu carrito está vacío.',
   ITEM_INVALIDO: 'Uno de los ítems de tu pedido ya no está disponible. Revisá tu carrito.',
+  TIPO_ENTREGA_INVALIDO: 'Elegí una forma de entrega válida.',
+  FALTA_DIRECCION: 'Necesitamos la dirección para el envío.',
   PEDIDO_MINIMO: (min: number) => `El pedido mínimo es de $${min.toLocaleString('es-AR')}.`,
   ERROR_GENERICO: 'Ocurrió un error al procesar tu pedido. Por favor intentá de nuevo.',
   PEDIDO_NO_ENCONTRADO: 'El pedido no fue encontrado.',
 };
+
+const TIPOS_ENTREGA = ['retiro', 'envio_cerca', 'envio_lejos'];
 
 interface CartLineInput {
   seccion: string;
@@ -27,6 +32,9 @@ interface CreateOrderData {
   email: string;
   notas?: string;
   items: CartLineInput[];
+  tipoEntrega?: string;
+  direccionEnvio?: string;
+  pisoEnvio?: string;
 }
 
 async function vincularClientePedido(orderId: string, data: { nombre: string; email: string; telefono: string }) {
@@ -95,6 +103,24 @@ export async function createOrder(data: CreateOrderData) {
       return { success: false, error: MENSAJES_PEDIDO.PEDIDO_MINIMO(settings.pedidoMinimo) };
     }
 
+    // Entrega: el cliente elige la zona, el precio siempre se calcula acá
+    // (nunca se confía en un costoEnvio mandado por el navegador).
+    const tipoEntrega = TIPOS_ENTREGA.includes(data.tipoEntrega || '') ? data.tipoEntrega! : 'retiro';
+    if (tipoEntrega !== 'retiro') {
+      if (settings && !settings.aceptaEnvioDomicilio) {
+        return { success: false, error: MENSAJES_PEDIDO.NO_ACEPTA_ENVIO };
+      }
+      if (!data.direccionEnvio || !data.direccionEnvio.trim()) {
+        return { success: false, error: MENSAJES_PEDIDO.FALTA_DIRECCION };
+      }
+    }
+    const costoEnvio =
+      tipoEntrega === 'envio_cerca'
+        ? settings?.costoEnvioCerca ?? 5000
+        : tipoEntrega === 'envio_lejos'
+        ? settings?.costoEnvioLejos ?? 10000
+        : 0;
+
     const order = await prisma.order.create({
       data: {
         nombre: data.nombre,
@@ -102,6 +128,10 @@ export async function createOrder(data: CreateOrderData) {
         email: data.email,
         notas: data.notas || null,
         subtotal,
+        tipoEntrega,
+        costoEnvio,
+        direccionEnvio: tipoEntrega !== 'retiro' ? data.direccionEnvio!.trim() : null,
+        pisoEnvio: tipoEntrega !== 'retiro' ? data.pisoEnvio?.trim() || null : null,
         items: { create: itemsValidados },
       },
     });
@@ -112,11 +142,17 @@ export async function createOrder(data: CreateOrderData) {
       console.error('Error vinculando cliente/pedido:', e);
     }
 
+    const itemsParaPago = itemsValidados.map((it) => ({
+      nombre: it.nombre,
+      precioUnitario: it.precioUnitario,
+      cantidad: it.cantidad,
+    }));
+    if (costoEnvio > 0) {
+      itemsParaPago.push({ nombre: 'Envío a domicilio', precioUnitario: costoEnvio, cantidad: 1 });
+    }
+
     const { crearPreferencia } = await import('@/lib/mercadopago');
-    const { preferenceId, initPoint } = await crearPreferencia(
-      order.id,
-      itemsValidados.map((it) => ({ nombre: it.nombre, precioUnitario: it.precioUnitario, cantidad: it.cantidad }))
-    );
+    const { preferenceId, initPoint } = await crearPreferencia(order.id, itemsParaPago);
 
     await prisma.order.update({ where: { id: order.id }, data: { mpPreferenceId: preferenceId } });
 

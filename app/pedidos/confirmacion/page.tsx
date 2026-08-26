@@ -94,10 +94,21 @@ export default async function ConfirmacionPage({
                     <span className="font-mono text-sand">{formatearPrecio(it.precioUnitario * it.cantidad)}</span>
                   </div>
                 ))}
+                {order.costoEnvio > 0 && (
+                  <div className="flex items-center justify-between py-2 border-b border-white/10 last:border-0 text-sm">
+                    <span className="text-sand-dim">Envío a domicilio</span>
+                    <span className="font-mono text-sand">{formatearPrecio(order.costoEnvio)}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between pt-4 mt-2">
                   <span className="font-semibold text-sand">Total</span>
-                  <span className="font-mono text-lg text-sand font-semibold">{formatearPrecio(order.subtotal)}</span>
+                  <span className="font-mono text-lg text-sand font-semibold">{formatearPrecio(order.subtotal + order.costoEnvio)}</span>
                 </div>
+                {order.tipoEntrega !== 'retiro' && (
+                  <p className="text-xs text-sand-faint mt-3">
+                    Envío a: {order.direccionEnvio}{order.pisoEnvio ? `, piso/depto ${order.pisoEnvio}` : ''}
+                  </p>
+                )}
               </div>
             </>
           )}

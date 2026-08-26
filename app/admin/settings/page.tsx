@@ -23,6 +23,9 @@ interface Settings {
   aceptaPedidosOnline: boolean;
   tiempoPreparacionMin: number;
   pedidoMinimo: number;
+  aceptaEnvioDomicilio: boolean;
+  costoEnvioCerca: number;
+  costoEnvioLejos: number;
 }
 
 export default function SettingsPage() {
@@ -274,6 +277,44 @@ export default function SettingsPage() {
                     onChange={(e) => setSettings({ ...settings, pedidoMinimo: parseInt(e.target.value) || 0 })}
                     className="form-input"
                   />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-100 pt-6 mt-2">
+                <label className="flex items-center gap-3 cursor-pointer mb-4">
+                  <input
+                    type="checkbox"
+                    checked={settings.aceptaEnvioDomicilio}
+                    onChange={(e) => setSettings({ ...settings, aceptaEnvioDomicilio: e.target.checked })}
+                    className="w-5 h-5 accent-esperanza-600"
+                  />
+                  <span className="font-semibold text-esperanza-700">Ofrecer envío a domicilio</span>
+                </label>
+                <p className="text-sm text-gray-500 mb-4">
+                  El cliente elige la zona en el checkout — no se calcula distancia automática.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="form-group">
+                    <label className="form-label">Envío cerca (hasta 3km) — $</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={settings.costoEnvioCerca}
+                      onChange={(e) => setSettings({ ...settings, costoEnvioCerca: parseInt(e.target.value) || 0 })}
+                      className="form-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Envío lejos (más de 3km) — $</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={settings.costoEnvioLejos}
+                      onChange={(e) => setSettings({ ...settings, costoEnvioLejos: parseInt(e.target.value) || 0 })}
+                      className="form-input"
+                    />
+                  </div>
                 </div>
               </div>
 

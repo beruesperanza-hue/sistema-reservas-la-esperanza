@@ -5,8 +5,11 @@ import Link from 'next/link';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { useCart, keyDeLinea } from '@/components/pedidos/CartContext';
+import { usePedidosSettings } from '@/components/pedidos/SettingsContext';
 import { createOrder } from '@/app/actions/orders';
 import { formatearPrecio } from '@/lib/carta';
+
+type TipoEntrega = 'retiro' | 'envio_cerca' | 'envio_lejos';
 
 const inputCls =
   'w-full px-4 py-3 bg-night-2 border border-white/15 rounded-sm text-sand placeholder:text-sand-faint focus:outline-none focus:border-brand-gold transition-colors';
@@ -14,12 +17,31 @@ const labelCls = 'block text-xs font-mono uppercase tracking-wide text-sand-dim 
 const btnPrimary =
   'w-full py-3 rounded-sm font-semibold bg-sand text-night hover:bg-brand-amber transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
+const OPCIONES_ENTREGA: { valor: TipoEntrega; label: string }[] = [
+  { valor: 'retiro', label: 'Retiro en el local' },
+  { valor: 'envio_cerca', label: 'Envío (hasta 3km)' },
+  { valor: 'envio_lejos', label: 'Envío (más de 3km)' },
+];
+
 export default function CheckoutPage() {
   const { lines, subtotal, setCantidad, remove, clear } = useCart();
-  const [form, setForm] = useState({ nombre: '', telefono: '', email: '', notas: '' });
+  const { aceptaEnvioDomicilio, costoEnvioCerca, costoEnvioLejos } = usePedidosSettings();
+  const [form, setForm] = useState({
+    nombre: '',
+    telefono: '',
+    email: '',
+    notas: '',
+    tipoEntrega: 'retiro' as TipoEntrega,
+    direccionEnvio: '',
+    pisoEnvio: '',
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submittingRef = useRef(false);
+
+  const costoEnvio =
+    form.tipoEntrega === 'envio_cerca' ? costoEnvioCerca : form.tipoEntrega === 'envio_lejos' ? costoEnvioLejos : 0;
+  const total = subtotal + costoEnvio;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +56,9 @@ export default function CheckoutPage() {
         telefono: form.telefono,
         email: form.email,
         notas: form.notas || undefined,
+        tipoEntrega: form.tipoEntrega,
+        direccionEnvio: form.tipoEntrega !== 'retiro' ? form.direccionEnvio : undefined,
+        pisoEnvio: form.tipoEntrega !== 'retiro' ? form.pisoEnvio : undefined,
         items: lines.map((l) => ({
           seccion: l.seccion,
           nombre: l.nombre,
@@ -105,9 +130,15 @@ export default function CheckoutPage() {
                     </div>
                   );
                 })}
+                {costoEnvio > 0 && (
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/10 text-sm">
+                    <span className="text-sand-dim">Envío a domicilio</span>
+                    <span className="font-mono text-sand">{formatearPrecio(costoEnvio)}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between pt-4 mt-2">
                   <span className="font-semibold text-sand">Total</span>
-                  <span className="font-mono text-xl text-sand font-semibold">{formatearPrecio(subtotal)}</span>
+                  <span className="font-mono text-xl text-sand font-semibold">{formatearPrecio(total)}</span>
                 </div>
               </div>
 
@@ -122,7 +153,57 @@ export default function CheckoutPage() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4 border border-white/10 rounded-sm p-6 md:p-8">
-                <h3 className="text-lg font-display font-semibold text-sand mb-2">👤 Tus datos</h3>
+                <h3 className="text-lg font-display font-semibold text-sand mb-2">🛵 ¿Cómo lo recibís?</h3>
+
+                <div className="grid sm:grid-cols-3 gap-2">
+                  {OPCIONES_ENTREGA.filter((o) => o.valor === 'retiro' || aceptaEnvioDomicilio).map((o) => (
+                    <button
+                      key={o.valor}
+                      type="button"
+                      onClick={() => setForm((p) => ({ ...p, tipoEntrega: o.valor }))}
+                      className={`py-3 px-3 rounded-sm font-semibold text-sm border transition-all ${
+                        form.tipoEntrega === o.valor
+                          ? 'bg-brand-gold border-brand-gold text-night'
+                          : 'bg-transparent border-white/15 text-sand-dim hover:border-brand-gold hover:text-brand-gold'
+                      }`}
+                    >
+                      {o.label}
+                      {o.valor !== 'retiro' && (
+                        <span className="block text-xs font-normal opacity-80 mt-0.5">
+                          {formatearPrecio(o.valor === 'envio_cerca' ? costoEnvioCerca : costoEnvioLejos)}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {form.tipoEntrega !== 'retiro' && (
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2">
+                      <label className={labelCls}>Dirección *</label>
+                      <input
+                        type="text"
+                        value={form.direccionEnvio}
+                        onChange={(e) => setForm((p) => ({ ...p, direccionEnvio: e.target.value }))}
+                        className={inputCls}
+                        required
+                        placeholder="Calle y número"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Piso / Depto</label>
+                      <input
+                        type="text"
+                        value={form.pisoEnvio}
+                        onChange={(e) => setForm((p) => ({ ...p, pisoEnvio: e.target.value }))}
+                        className={inputCls}
+                        placeholder="Opcional"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <h3 className="text-lg font-display font-semibold text-sand mb-2 pt-2">👤 Tus datos</h3>
 
                 <div>
                   <label className={labelCls}>Nombre *</label>
@@ -173,8 +254,10 @@ export default function CheckoutPage() {
                 </div>
 
                 <p className="text-xs text-sand-faint">
-                  Al confirmar te vamos a llevar a Mercado Pago para pagar {formatearPrecio(subtotal)}. Retirás en{' '}
-                  el local una vez confirmado el pago.
+                  Al confirmar te vamos a llevar a Mercado Pago para pagar {formatearPrecio(total)}.{' '}
+                  {form.tipoEntrega === 'retiro'
+                    ? 'Retirás en el local una vez confirmado el pago.'
+                    : 'Te lo llevamos a domicilio una vez confirmado el pago.'}
                 </p>
 
                 <button type="submit" disabled={loading} className={btnPrimary}>

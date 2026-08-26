@@ -19,11 +19,21 @@ interface Pedido {
   email: string;
   notas: string | null;
   subtotal: number;
+  tipoEntrega: string;
+  costoEnvio: number;
+  direccionEnvio: string | null;
+  pisoEnvio: string | null;
   estado: string;
   horaListoEstimada: string | null;
   createdAt: string;
   items: PedidoItem[];
 }
+
+const TIPO_ENTREGA_LABEL: Record<string, string> = {
+  retiro: '🏠 Retira en el local',
+  envio_cerca: '🛵 Envío (cerca)',
+  envio_lejos: '🛵 Envío (lejos)',
+};
 
 const ESTADO_LABEL: Record<string, string> = {
   pendiente_pago: 'Pendiente de pago',
@@ -136,11 +146,24 @@ export default function AdminPedidosPage() {
                         <span>{formatearARS(it.precioUnitario * it.cantidad)}</span>
                       </div>
                     ))}
+                    {p.costoEnvio > 0 && (
+                      <div className="flex justify-between text-sm text-gray-600 py-0.5">
+                        <span>Envío a domicilio</span>
+                        <span>{formatearARS(p.costoEnvio)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between font-semibold text-esperanza-700 pt-2 mt-1 border-t border-gray-100">
                       <span>Total</span>
-                      <span>{formatearARS(p.subtotal)}</span>
+                      <span>{formatearARS(p.subtotal + p.costoEnvio)}</span>
                     </div>
                   </div>
+
+                  <p className="text-sm font-semibold text-esperanza-700 mb-1">{TIPO_ENTREGA_LABEL[p.tipoEntrega] || p.tipoEntrega}</p>
+                  {p.tipoEntrega !== 'retiro' && (
+                    <p className="text-sm text-gray-600 mb-3">
+                      {p.direccionEnvio}{p.pisoEnvio ? `, piso/depto ${p.pisoEnvio}` : ''}
+                    </p>
+                  )}
 
                   {p.notas && <p className="text-sm text-gray-500 italic mb-3">Nota: {p.notas}</p>}
                   {p.horaListoEstimada && p.estado !== 'cancelado' && (
