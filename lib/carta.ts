@@ -87,7 +87,7 @@ export const VERMUT_Y_CUBATAS: ItemBebida[] = [
 
 export const SIN_ALCOHOL: ItemBebida[] = [
   { nombre: 'Gaseosas', precio: 6000 },
-  { nombre: 'Aguas o sifón', precio: 5800 },
+  { nombre: 'Aguas o sifón', precio: 1 }, // TEMPORAL: precio real de prueba de pago — revertir a 5800 después
   { nombre: 'Café (cápsula)', precio: 5400 },
 ];
 
