@@ -74,10 +74,14 @@ function FilaItem({ seccion, item }: { seccion: string; item: ItemPedible }) {
 
   const precio = precioDeItem(item);
   if (precio === null) return null;
+  const incluye = 'incluye' in item ? item.incluye : undefined;
 
   return (
     <div className="flex items-center justify-between gap-4 py-3.5 border-b border-white/10 last:border-0">
-      <span className="text-sand/90 flex-1">{item.nombre}</span>
+      <div className="flex-1">
+        <span className="text-sand/90">{item.nombre}</span>
+        {incluye && <p className="text-xs text-sand-faint mt-1">{incluye}</p>}
+      </div>
       <span className="font-mono text-sand tabular-nums">{formatearPrecio(precio)}</span>
       <Stepper seccion={seccion} nombre={item.nombre} precioUnitario={precio} />
     </div>

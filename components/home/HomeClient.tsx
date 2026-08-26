@@ -92,6 +92,12 @@ export default function HomeClient() {
             <MagneticLink href="/reservas" className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-sm bg-sand text-night hover:bg-brand-amber hover:text-night">
               Reservar mesa →
             </MagneticLink>
+            <MagneticLink href="/pedidos" className="relative inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-sm bg-sand text-night hover:bg-brand-amber hover:text-night">
+              <span className="absolute -top-2.5 -right-2.5 text-[10px] font-mono font-bold uppercase tracking-wide bg-brand-gold text-night px-2 py-0.5 rounded-full whitespace-nowrap">
+                ¡Nuevo!
+              </span>
+              Pedidos →
+            </MagneticLink>
             <MagneticLink href="#carta" className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-sm border border-white/25 text-sand hover:border-brand-gold hover:text-brand-gold">
               Ver la carta
             </MagneticLink>
@@ -252,6 +258,12 @@ export default function HomeClient() {
           <Reveal delayMs={160} className="flex flex-wrap justify-center gap-3.5 mt-10">
             <MagneticLink href="/reservas" className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-sm bg-sand text-night hover:bg-brand-amber">
               Reservar mesa →
+            </MagneticLink>
+            <MagneticLink href="/pedidos" className="relative inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-sm bg-sand text-night hover:bg-brand-amber">
+              <span className="absolute -top-2.5 -right-2.5 text-[10px] font-mono font-bold uppercase tracking-wide bg-brand-gold text-night px-2 py-0.5 rounded-full whitespace-nowrap">
+                ¡Nuevo!
+              </span>
+              Pedidos →
             </MagneticLink>
             <MagneticLink href={CONTACTO.WHATSAPP_URL} target="_blank" className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-sm border border-white/25 text-sand hover:border-brand-gold hover:text-brand-gold">
               WhatsApp
