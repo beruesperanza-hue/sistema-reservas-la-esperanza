@@ -3,10 +3,12 @@
 import prisma from '@/lib/db';
 import { obtenerItemsInactivos, estaActivo } from '@/lib/menuDisponibilidad';
 import { buscarItemPedible, precioDeItem, nombreConVariante, type Variante } from '@/lib/pedidosCarta';
+import { horaActualDentroDeRango } from '@/lib/fechas';
 import { revalidatePath } from 'next/cache';
 
 const MENSAJES_PEDIDO = {
   NO_ACEPTA_PEDIDOS: 'En este momento no estamos aceptando pedidos online.',
+  FUERA_DE_HORARIO: (desde: string, hasta: string) => `Los pedidos abren de ${desde} a ${hasta}.`,
   NO_ACEPTA_ENVIO: 'En este momento no estamos haciendo envíos a domicilio. Elegí retiro en el local.',
   CARRITO_VACIO: 'Tu carrito está vacío.',
   ITEM_INVALIDO: 'Uno de los ítems de tu pedido ya no está disponible. Revisá tu carrito.',
@@ -67,6 +69,11 @@ export async function createOrder(data: CreateOrderData) {
     const settings = await prisma.settings.findFirst();
     if (settings && !settings.aceptaPedidosOnline) {
       return { success: false, error: MENSAJES_PEDIDO.NO_ACEPTA_PEDIDOS };
+    }
+    const horarioDesde = settings?.horarioPedidosDesde ?? '19:30';
+    const horarioHasta = settings?.horarioPedidosHasta ?? '23:30';
+    if (!horaActualDentroDeRango(horarioDesde, horarioHasta)) {
+      return { success: false, error: MENSAJES_PEDIDO.FUERA_DE_HORARIO(horarioDesde, horarioHasta) };
     }
 
     const inactivos = await obtenerItemsInactivos();

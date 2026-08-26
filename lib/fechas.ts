@@ -75,6 +75,12 @@ export function formatearFechaLarga(fechaISO: string): string {
   }).format(fechaISOaDate(fechaISO));
 }
 
+/** ¿La hora actual en Buenos Aires cae dentro de ['HH:mm', 'HH:mm']? No cruza medianoche. */
+export function horaActualDentroDeRango(desde: string, hasta: string): boolean {
+  const ahora = horaActualEnBA();
+  return ahora >= desde && ahora <= hasta;
+}
+
 /** Suma minutos a una hora actual 'HH:mm' (AR) y devuelve otra 'HH:mm'. Usado para estimar cuándo está listo un pedido. */
 export function sumarMinutosAHoraActualEnBA(minutos: number): string {
   const [h, m] = horaActualEnBA().split(':').map(Number);

@@ -223,7 +223,7 @@ export default async function CartaPage() {
           <Reveal className="mb-16">
             <h2 className="font-display font-bold text-2xl md:text-3xl text-sand mb-1">Espe Combos</h2>
             <p className="text-sm text-sand-dim mb-5">
-              Comen 2, pican 4 — combos de 5 tapas para compartir, con 10% de descuento sobre el precio suelto
+              Comen 2, pican 4 — combos para compartir, con 10% de descuento sobre el precio suelto
             </p>
             <div className="grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10">
               {espeCombos.map((c) => (

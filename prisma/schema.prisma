@@ -238,6 +238,9 @@ model Settings {
   mensajeConfirmacion   String  @default("¡Gracias! Tu reserva fue realizada correctamente.")
   // Pedidos online para retirar en el local (Mercado Pago Checkout Pro).
   aceptaPedidosOnline   Boolean @default(true)
+  // "HH:mm" en hora de Buenos Aires — igual que el horario del restaurante.
+  horarioPedidosDesde   String  @default("19:30")
+  horarioPedidosHasta   String  @default("23:30")
   tiempoPreparacionMin  Int     @default(25)
   pedidoMinimo          Int     @default(0)
   // Envío a domicilio: precio fijo según zona, elegida por el cliente

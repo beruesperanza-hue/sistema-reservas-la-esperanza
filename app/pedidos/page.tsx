@@ -6,6 +6,7 @@ import CartBar from '@/components/pedidos/CartBar';
 import prisma from '@/lib/db';
 import { obtenerItemsInactivos, estaActivo } from '@/lib/menuDisponibilidad';
 import { CATALOGO_PEDIDOS } from '@/lib/pedidosCarta';
+import { horaActualDentroDeRango } from '@/lib/fechas';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,10 @@ export default async function PedidosPage() {
     obtenerItemsInactivos(),
   ]);
 
-  const aceptaPedidos = settings?.aceptaPedidosOnline ?? true;
+  const horarioDesde = settings?.horarioPedidosDesde ?? '19:30';
+  const horarioHasta = settings?.horarioPedidosHasta ?? '23:30';
+  const dentroDeHorario = horaActualDentroDeRango(horarioDesde, horarioHasta);
+  const aceptaPedidos = (settings?.aceptaPedidosOnline ?? true) && dentroDeHorario;
 
   const secciones: SeccionPedible[] = Object.entries(CATALOGO_PEDIDOS).map(([slug, items]) => ({
     slug,
@@ -56,7 +60,11 @@ export default async function PedidosPage() {
 
           {!aceptaPedidos ? (
             <div className="border border-white/10 rounded-sm p-8 text-center">
-              <p className="text-sand text-lg font-semibold mb-2">No estamos tomando pedidos en este momento</p>
+              <p className="text-sand text-lg font-semibold mb-2">
+                {!dentroDeHorario
+                  ? `Los pedidos abren de ${horarioDesde} a ${horarioHasta}`
+                  : 'No estamos tomando pedidos en este momento'}
+              </p>
               <p className="text-sand-dim text-sm mb-6">
                 Podés reservar una mesa o escribirnos por WhatsApp para consultar.
               </p>

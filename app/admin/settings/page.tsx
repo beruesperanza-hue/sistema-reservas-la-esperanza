@@ -21,6 +21,8 @@ interface Settings {
   telefonoRestaurante: string;
   direccionRestaurante: string;
   aceptaPedidosOnline: boolean;
+  horarioPedidosDesde: string;
+  horarioPedidosHasta: string;
   tiempoPreparacionMin: number;
   pedidoMinimo: number;
   aceptaEnvioDomicilio: boolean;
@@ -255,6 +257,27 @@ export default function SettingsPage() {
               <p className="text-sm text-gray-500 -mt-4">
                 Si lo desactivás, /pedidos deja de aceptar pedidos nuevos hasta que lo actives de nuevo.
               </p>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="form-group">
+                  <label className="form-label">Pedidos abren a las</label>
+                  <input
+                    type="time"
+                    value={settings.horarioPedidosDesde}
+                    onChange={(e) => setSettings({ ...settings, horarioPedidosDesde: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Pedidos cierran a las</label>
+                  <input
+                    type="time"
+                    value={settings.horarioPedidosHasta}
+                    onChange={(e) => setSettings({ ...settings, horarioPedidosHasta: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+              </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="form-group">
