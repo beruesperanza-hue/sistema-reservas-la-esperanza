@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { actualizarEstadoPedido } from '@/app/actions/orders';
+import { ZONAS_ENVIO } from '@/lib/constants';
 
 interface PedidoItem {
   id: string;
@@ -31,8 +32,8 @@ interface Pedido {
 
 const TIPO_ENTREGA_LABEL: Record<string, string> = {
   retiro: '🏠 Retira en el local',
-  envio_cerca: '🛵 Envío (cerca)',
-  envio_lejos: '🛵 Envío (lejos)',
+  envio_cerca: `🛵 Envío — ${ZONAS_ENVIO.envio_cerca.nombre}`,
+  envio_lejos: `🛵 Envío — ${ZONAS_ENVIO.envio_lejos.nombre}`,
 };
 
 const ESTADO_LABEL: Record<string, string> = {

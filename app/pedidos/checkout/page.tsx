@@ -8,6 +8,7 @@ import { useCart, keyDeLinea } from '@/components/pedidos/CartContext';
 import { usePedidosSettings } from '@/components/pedidos/SettingsContext';
 import { createOrder } from '@/app/actions/orders';
 import { formatearPrecio } from '@/lib/carta';
+import { ZONAS_ENVIO } from '@/lib/constants';
 
 type TipoEntrega = 'retiro' | 'envio_cerca' | 'envio_lejos';
 
@@ -19,8 +20,8 @@ const btnPrimary =
 
 const OPCIONES_ENTREGA: { valor: TipoEntrega; label: string }[] = [
   { valor: 'retiro', label: 'Retiro en el local' },
-  { valor: 'envio_cerca', label: 'Envío (hasta 3km)' },
-  { valor: 'envio_lejos', label: 'Envío (más de 3km)' },
+  { valor: 'envio_cerca', label: ZONAS_ENVIO.envio_cerca.nombre },
+  { valor: 'envio_lejos', label: ZONAS_ENVIO.envio_lejos.nombre },
 ];
 
 export default function CheckoutPage() {
@@ -176,6 +177,12 @@ export default function CheckoutPage() {
                     </button>
                   ))}
                 </div>
+
+                {form.tipoEntrega !== 'retiro' && (
+                  <p className="text-xs text-sand-faint -mt-1">
+                    Incluye: {ZONAS_ENVIO[form.tipoEntrega].barrios.join(', ')}.
+                  </p>
+                )}
 
                 {form.tipoEntrega !== 'retiro' && (
                   <div className="grid md:grid-cols-3 gap-4">

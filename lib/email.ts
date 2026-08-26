@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { CONTACTO, UBICACIONES, UBICACIONES_LABEL } from '@/lib/constants';
+import { CONTACTO, UBICACIONES, UBICACIONES_LABEL, ZONAS_ENVIO } from '@/lib/constants';
 
 // Gmail API vía OAuth2 (usa HTTPS, no SMTP → funciona en Railway).
 // Manda los correos desde la casilla real del restaurante.
@@ -418,8 +418,8 @@ const EMAIL_AVISOS_PEDIDOS = 'laesperanzadevillacrespo@gmail.com';
 
 const TIPO_ENTREGA_LABEL: Record<string, string> = {
   retiro: 'Retira en el local',
-  envio_cerca: 'Envío a domicilio (cerca)',
-  envio_lejos: 'Envío a domicilio (lejos)',
+  envio_cerca: `Envío a domicilio — ${ZONAS_ENVIO.envio_cerca.nombre}`,
+  envio_lejos: `Envío a domicilio — ${ZONAS_ENVIO.envio_lejos.nombre}`,
 };
 
 /**

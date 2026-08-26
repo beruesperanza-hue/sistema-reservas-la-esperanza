@@ -32,6 +32,28 @@ export const DIA_NUMERO_A_NOMBRE = {
 // números del 1 al 20 — antes saltaba impares (7, 9, 11, 13...) por arriba de 6.
 export const PERSONAS_OPCIONES = Array.from({ length: 20 }, (_, i) => i + 1);
 
+// Zonas de envío a domicilio (el cliente elige, no se calcula distancia real).
+// "Caballito" está partido en dos zonas por la avenida Rivadavia.
+export const ZONAS_ENVIO = {
+  envio_cerca: {
+    nombre: 'Villa Crespo y alrededores',
+    barrios: [
+      'Villa Crespo',
+      'Palermo',
+      'Almagro',
+      'Chacarita',
+      'Colegiales',
+      'Paternal',
+      'Villa Ortúzar',
+      'Caballito (hasta Rivadavia)',
+    ],
+  },
+  envio_lejos: {
+    nombre: 'Recoleta y alrededores',
+    barrios: ['Caballito (desde Rivadavia)', 'Recoleta', 'Belgrano', 'Balvanera', 'Boedo'],
+  },
+} as const;
+
 // Dónde quiere sentarse el cliente. La vereda depende del clima, por eso el aviso.
 export const UBICACIONES = {
   ADENTRO: 'adentro',
