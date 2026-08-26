@@ -10,9 +10,6 @@ import {
   CLASICOS_DE_MAR,
   ARROCES,
   POSTRES,
-  HORA_DEL_VERMUT,
-  DE_GRIFO,
-  VERMUT_Y_CUBATAS,
   SIN_ALCOHOL,
   VINITOS,
   ESPE_COMBOS,
@@ -24,15 +21,15 @@ import {
 export type ItemPedible = Plato | ItemBebida | Combo;
 export type Variante = 'tapa' | 'racion';
 
+// Hora del Vermut, De Grifo y Vermut y Cubatas quedan afuera: son para tomar
+// en el momento (promo de horario, chopp, tragos armados), no tienen sentido
+// para pedir online y retirar/enviar a domicilio.
 export const CATALOGO_PEDIDOS: Record<string, ItemPedible[]> = {
   tortillas: TORTILLAS,
   tapas_raciones: TAPAS_Y_RACIONES,
   clasicos_mar: CLASICOS_DE_MAR,
   arroces: ARROCES,
   postres: POSTRES,
-  hora_vermut: HORA_DEL_VERMUT,
-  de_grifo: DE_GRIFO,
-  vermut_cubatas: VERMUT_Y_CUBATAS,
   sin_alcohol: SIN_ALCOHOL,
   vinitos: VINITOS,
   espe_combos: ESPE_COMBOS,
