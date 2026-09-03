@@ -63,7 +63,7 @@ export const POSTRES: Plato[] = [
 ];
 
 export const HORA_DEL_VERMUT: ItemBebida[] = [
-  { nombre: '2 Vermut + Triolet', precio: 18700 },
+  { nombre: '2 Vermut + Triolet', precio: 21000 },
   { nombre: 'Vermú + tapa de croquetas + tapa de papas bravas', precio: 26000 },
 ];
 
