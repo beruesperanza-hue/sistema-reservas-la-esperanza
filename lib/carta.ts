@@ -68,7 +68,7 @@ export const HORA_DEL_VERMUT: ItemBebida[] = [
 ];
 
 export const DE_GRIFO: ItemBebida[] = [
-  { nombre: 'Caña Imperial 350 cm³', precio: 7500 },
+  { nombre: 'Caña Imperial 350 cm³', precio: 8200 },
   { nombre: 'Caña Sidra 1888', precio: 7500 },
 ];
 
