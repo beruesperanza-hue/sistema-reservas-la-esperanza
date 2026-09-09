@@ -48,7 +48,7 @@ export const TAPAS_Y_RACIONES: Plato[] = [
 export const CLASICOS_DE_MAR: Plato[] = [
   { nombre: 'Rabas', tapa: 16200, racion: 29700 },
   { nombre: 'Huevos rotos con gambas al ajillo', tapa: 22000, racion: 36000 },
-  { nombre: 'Gambas al ajillo o al azafrán', tapa: 20000, racion: 29000 },
+  { nombre: 'Gambas al ajillo o al azafrán', racion: 29000 },
 ];
 
 export const ARROCES: Plato[] = [
