@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Icon, { type IconName } from './Icon';
+import { useAvisoPedidos } from './useAvisoPedidos';
 
 const LINKS: { href: string; label: string; icon: IconName }[] = [
   { href: '/admin/reservas', label: 'Reservas', icon: 'calendar' },
@@ -15,6 +16,31 @@ const LINKS: { href: string; label: string; icon: IconName }[] = [
 export default function AdminHeader() {
   const router = useRouter();
   const pathname = usePathname();
+  const { pendientes, sonidoActivo, toggleSonido } = useAvisoPedidos();
+
+  const Contador = ({ className = '' }: { className?: string }) =>
+    pendientes > 0 ? (
+      <span
+        className={`min-w-[18px] h-[18px] px-1 rounded-full bg-brand-amber text-night text-[10.5px] font-extrabold leading-[18px] text-center ${className}`}
+        aria-label={`${pendientes} pedidos sin tomar`}
+      >
+        {pendientes}
+      </span>
+    ) : null;
+
+  const BotonSonido = ({ className = '' }: { className?: string }) => (
+    <button
+      type="button"
+      onClick={toggleSonido}
+      aria-pressed={sonidoActivo}
+      title={sonidoActivo ? 'Aviso sonoro de pedidos activado — tocar para silenciar' : 'Activar aviso sonoro de pedidos nuevos'}
+      className={`flex items-center justify-center rounded-lg transition-colors ${
+        sonidoActivo ? 'text-brand-gold hover:bg-white/5' : 'text-sand-faint hover:text-sand hover:bg-white/5'
+      } ${className}`}
+    >
+      <Icon name={sonidoActivo ? 'bell' : 'bellOff'} size={18} />
+    </button>
+  );
 
   const handleLogout = () => {
     document.cookie = 'admin_token=; path=/; max-age=0';
@@ -53,26 +79,31 @@ export default function AdminHeader() {
                 >
                   <Icon name={l.icon} size={16} className={activo ? 'text-brand-gold' : ''} />
                   {l.label}
+                  {l.href === '/admin/pedidos' && <Contador />}
                   {activo && <span className="absolute left-3 right-3 bottom-0 h-0.5 bg-brand-gold rounded-full" />}
                 </Link>
               );
             })}
+            <BotonSonido className="ml-2 w-9 h-9" />
             <button
               onClick={handleLogout}
-              className="ml-3 pl-4 border-l border-white/10 h-8 flex items-center gap-2 text-[13px] text-sand-dim hover:text-sand transition-colors"
+              className="ml-2 pl-4 border-l border-white/10 h-8 flex items-center gap-2 text-[13px] text-sand-dim hover:text-sand transition-colors"
             >
               <Icon name="logout" size={16} />
               Salir
             </button>
           </nav>
 
-          <button
-            onClick={handleLogout}
-            aria-label="Cerrar sesión"
-            className="md:hidden w-11 h-11 -mr-2 flex items-center justify-center text-sand-dim"
-          >
-            <Icon name="logout" size={20} />
-          </button>
+          <div className="md:hidden flex items-center -mr-2">
+            <BotonSonido className="w-11 h-11" />
+            <button
+              onClick={handleLogout}
+              aria-label="Cerrar sesión"
+              className="w-11 h-11 flex items-center justify-center text-sand-dim"
+            >
+              <Icon name="logout" size={20} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -89,7 +120,10 @@ export default function AdminHeader() {
                 activo ? 'text-sand' : 'text-sand-faint'
               }`}
             >
-              <Icon name={l.icon} size={19} className={activo ? 'text-brand-gold' : ''} />
+              <span className="relative">
+                <Icon name={l.icon} size={19} className={activo ? 'text-brand-gold' : ''} />
+                {l.href === '/admin/pedidos' && <Contador className="absolute -top-1.5 -right-3" />}
+              </span>
               {l.label === 'Configuración' ? 'Ajustes' : l.label}
               {activo && <span className="absolute left-4 right-4 bottom-0 h-0.5 bg-brand-gold rounded-full" />}
             </Link>

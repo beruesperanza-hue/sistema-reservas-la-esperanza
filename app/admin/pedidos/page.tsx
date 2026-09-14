@@ -72,19 +72,35 @@ export default function AdminPedidosPage() {
   const [loading, setLoading] = useState(true);
   const [actualizando, setActualizando] = useState<string | null>(null);
 
-  const cargar = async () => {
-    setLoading(true);
+  const [ultimaActualizacion, setUltimaActualizacion] = useState<Date | null>(null);
+
+  const cargar = async (silencioso = false) => {
+    if (!silencioso) setLoading(true);
     try {
-      const res = await fetch(`/api/admin/pedidos?filtro=${filtro}`);
+      const res = await fetch(`/api/admin/pedidos?filtro=${filtro}`, { cache: 'no-store' });
+      if (!res.ok) return;
       const data = await res.json();
       setPedidos(data.pedidos || []);
+      setUltimaActualizacion(new Date());
+    } catch {
+      // sin conexión momentánea: se reintenta en el próximo ciclo
     } finally {
-      setLoading(false);
+      if (!silencioso) setLoading(false);
     }
   };
 
+  // Se refresca sola cada 30s (sin spinner) y al instante cuando el header
+  // detecta un pedido nuevo, así nadie tiene que acordarse de recargar.
   useEffect(() => {
     cargar();
+    const intervalo = setInterval(() => cargar(true), 30_000);
+    const alLlegar = () => cargar(true);
+    window.addEventListener('admin:pedido-nuevo', alLlegar);
+    return () => {
+      clearInterval(intervalo);
+      window.removeEventListener('admin:pedido-nuevo', alLlegar);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtro]);
 
   const avanzarEstado = async (id: string, nuevoEstado: string) => {
@@ -92,6 +108,7 @@ export default function AdminPedidosPage() {
     const res = await actualizarEstadoPedido(id, nuevoEstado);
     if (res.success) {
       setPedidos((prev) => prev.map((p) => (p.id === id ? { ...p, estado: nuevoEstado } : p)));
+      window.dispatchEvent(new CustomEvent('admin:pedidos-cambio'));
     }
     setActualizando(null);
   };
@@ -105,8 +122,14 @@ export default function AdminPedidosPage() {
           <div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700">Pedidos</h1>
             {!loading && (
-              <p className="text-sm text-stone-500 mt-1">
+              <p className="text-sm text-stone-500 mt-1 flex items-center gap-2 flex-wrap">
                 {pedidos.length} {pedidos.length === 1 ? 'pedido' : 'pedidos'} {filtro === 'activos' ? 'activos' : 'en total'}
+                {ultimaActualizacion && (
+                  <span className="inline-flex items-center gap-1.5 text-xs text-stone-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
+                    se actualiza sola · {horaDe(ultimaActualizacion.toISOString())}
+                  </span>
+                )}
               </p>
             )}
           </div>

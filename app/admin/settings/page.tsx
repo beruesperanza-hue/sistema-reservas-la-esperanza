@@ -36,6 +36,13 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [aviso, setAviso] = useState<{ tipo: 'ok' | 'error'; texto: string } | null>(null);
+
+  useEffect(() => {
+    if (!aviso) return;
+    const t = setTimeout(() => setAviso(null), 3500);
+    return () => clearTimeout(t);
+  }, [aviso]);
 
   // Form para agregar un horario nuevo (a uno o varios días a la vez)
   const [nuevaHora, setNuevaHora] = useState('20:00');
@@ -144,11 +151,14 @@ export default function SettingsPage() {
         body: JSON.stringify(settings),
       });
 
-      if (response.ok) {
-        alert('Configuración guardada');
-      }
+      setAviso(
+        response.ok
+          ? { tipo: 'ok', texto: 'Configuración guardada' }
+          : { tipo: 'error', texto: 'No se pudo guardar. Probá de nuevo.' }
+      );
     } catch (error) {
       console.error('Error saving settings:', error);
+      setAviso({ tipo: 'error', texto: 'Sin conexión: no se guardó la configuración.' });
     } finally {
       setSaving(false);
     }
@@ -523,6 +533,25 @@ export default function SettingsPage() {
           </p>
         </div>
       </main>
+
+      {aviso && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed z-[60] bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 pl-3.5 pr-4 py-3 rounded-xl shadow-2xl text-sm font-semibold ${
+            aviso.tipo === 'ok' ? 'bg-esperanza-900 text-sand' : 'bg-red-700 text-white'
+          }`}
+        >
+          <span
+            className={`w-6 h-6 rounded-full flex items-center justify-center ${
+              aviso.tipo === 'ok' ? 'bg-green-600 text-white' : 'bg-white/20'
+            }`}
+          >
+            <Icon name={aviso.tipo === 'ok' ? 'check' : 'alert'} size={14} strokeWidth={aviso.tipo === 'ok' ? 3 : 2} />
+          </span>
+          {aviso.texto}
+        </div>
+      )}
     </div>
   );
 }
