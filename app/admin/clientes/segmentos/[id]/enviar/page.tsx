@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import AdminHeader from '@/components/admin/AdminHeader';
+import Icon from '@/components/admin/Icon';
 import { contarDestinatariosEmailDeSegmento, enviarCampaniaEmail } from '@/app/actions/customers';
 import { LIMITE_GMAIL_DIARIO } from '@/lib/constants';
 
@@ -60,48 +61,49 @@ export default function EnviarCampaniaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <AdminHeader />
 
-      <main className="container mx-auto px-4 py-12 max-w-3xl">
-        <Link href="/admin/clientes/segmentos" className="text-esperanza-600 hover:underline text-sm">
-          ← Volver a segmentos
+      <main className="container mx-auto px-4 py-8 md:py-10 max-w-3xl">
+        <Link href="/admin/clientes/segmentos" className="inline-flex items-center gap-1 text-sm font-medium text-esperanza-600 hover:text-esperanza-700">
+          <Icon name="arrowLeft" size={15} /> Volver a segmentos
         </Link>
-        <h1 className="text-4xl font-bold text-esperanza-700 mt-2 mb-2">Enviar mail</h1>
-        {segmento && <p className="text-gray-500 mb-8">Segmento: {segmento.nombre}</p>}
+        <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700 mt-3 mb-1">Enviar mail</h1>
+        {segmento && <p className="text-stone-500 mb-8">Segmento: {segmento.nombre}</p>}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-6">{error}</div>
+          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-6">{error}</div>
         )}
 
         {resultado ? (
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">Campaña enviada</h2>
+            <h2 className="text-lg font-bold mb-4">Campaña enviada</h2>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-stone-50 rounded-lg p-4">
                 <p className="text-2xl font-bold">{resultado.destinatarios}</p>
-                <p className="text-xs text-gray-500">Destinatarios</p>
+                <p className="text-xs text-stone-500">Destinatarios</p>
               </div>
               <div className="bg-green-50 rounded-lg p-4">
                 <p className="text-2xl font-bold text-green-700">{resultado.enviados}</p>
-                <p className="text-xs text-gray-500">Enviados</p>
+                <p className="text-xs text-stone-500">Enviados</p>
               </div>
               <div className="bg-red-50 rounded-lg p-4">
                 <p className="text-2xl font-bold text-red-700">{resultado.fallidos}</p>
-                <p className="text-xs text-gray-500">Fallidos</p>
+                <p className="text-xs text-stone-500">Fallidos</p>
               </div>
             </div>
           </div>
         ) : (
           <div className="card space-y-4">
             <div className="bg-esperanza-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">Destinatarios elegibles (con consentimiento de email autorizado)</p>
+              <p className="text-sm text-stone-600">Destinatarios elegibles (con consentimiento de email autorizado)</p>
               <p className="text-3xl font-bold text-esperanza-700">
                 {destinatarios === null ? '...' : destinatarios}
               </p>
               {destinatarios !== null && destinatarios > LIMITE_GMAIL_DIARIO && (
-                <p className="text-amber-600 text-sm mt-2">
-                  ⚠️ Este segmento tiene más destinatarios ({destinatarios}) que el límite gratuito diario de
+                <p className="text-amber-800 text-sm mt-3 flex items-start gap-2">
+                  <Icon name="alert" size={16} className="mt-0.5" />
+                  Este segmento tiene más destinatarios ({destinatarios}) que el límite gratuito diario de
                   Gmail ({LIMITE_GMAIL_DIARIO}/día). Si enviás ahora, es probable que una parte de los mails
                   falle por superar el límite.
                 </p>
@@ -121,7 +123,7 @@ export default function EnviarCampaniaPage() {
                 onChange={(e) => setCuerpo(e.target.value)}
                 placeholder="Escribí el mensaje que van a recibir todos los clientes de este segmento..."
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-stone-400 mt-1">
                 Se manda con el mismo encabezado y pie de página que los mails de reserva.
               </p>
             </div>

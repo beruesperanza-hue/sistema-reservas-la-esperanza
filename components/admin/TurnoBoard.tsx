@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { marcarAsistio, updateReservation } from '@/app/actions/reservations';
-import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
+import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_LABEL } from '@/lib/constants';
 import NuevaReservaModal from './NuevaReservaModal';
+import Icon from './Icon';
 
 interface ReservaTurno {
   id: string;
@@ -42,13 +43,13 @@ function ToggleCierre({ cerrado, onClick }: { cerrado: boolean; onClick: () => v
       role="switch"
       aria-checked={!cerrado}
       title={cerrado ? 'Turno cerrado a nuevas reservas — tocar para reabrir' : 'Turno abierto — tocar para cerrarlo a nuevas reservas'}
-      className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${
-        cerrado ? 'bg-gray-300' : 'bg-green-500'
+      className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 ${
+        cerrado ? 'bg-stone-300' : 'bg-green-600'
       }`}
     >
       <span
-        className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
-          cerrado ? 'left-0.5' : 'left-4'
+        className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-all ${
+          cerrado ? 'left-0.5' : 'left-[18px]'
         }`}
       />
     </button>
@@ -66,10 +67,10 @@ function CheckAsistio({ asistio, onClick }: { asistio: boolean; onClick: () => v
       }}
       title={asistio ? 'Ya se sentó — tocar para desmarcar' : 'Marcar que ya se sentó'}
       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-        asistio ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 text-transparent hover:border-esperanza-400'
+        asistio ? 'bg-green-600 border-green-600 text-white' : 'border-stone-300 text-transparent hover:border-green-600'
       }`}
     >
-      ✓
+      <Icon name="check" size={13} strokeWidth={3} />
     </button>
   );
 }
@@ -84,39 +85,56 @@ function ReservaRow({
   onEditarPersonas: (personas: number) => void;
 }) {
   return (
-    <details className={`group px-5 py-2.5 hover:bg-gray-50 transition-colors ${reserva.asistio ? 'bg-green-50/40' : ''}`}>
+    <details className={`group px-4 md:px-5 py-2.5 hover:bg-esperanza-50/60 transition-colors ${reserva.asistio ? 'bg-green-50/50' : ''}`}>
       <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
         <span className="flex items-center gap-3 min-w-0">
           <CheckAsistio asistio={reserva.asistio} onClick={onToggleAsistio} />
           <span
             className={`font-medium truncate flex items-center gap-2 min-w-0 ${
-              reserva.asistio ? 'text-gray-400 line-through' : 'text-gray-900'
+              reserva.asistio ? 'text-stone-400 line-through' : 'text-stone-900'
             }`}
           >
             {reserva.nombre} {reserva.apellido}
             {reserva.creadaPorAdmin && (
-              <span className="text-[10px] font-normal text-esperanza-500 bg-esperanza-50 px-1.5 py-0.5 rounded flex-shrink-0 no-underline">
+              <span className="badge bg-esperanza-100 text-esperanza-600 font-medium flex-shrink-0">
                 a mano
               </span>
             )}
           </span>
         </span>
-        <span className="flex items-center gap-3 text-sm text-gray-500 flex-shrink-0">
-          <span className="font-medium">👥 {reserva.personas}</span>
-          <span className="text-gray-400 group-open:rotate-180 transition-transform">⌄</span>
+        <span className="flex items-center gap-3 text-sm text-stone-500 flex-shrink-0">
+          <span className="font-semibold text-esperanza-700 flex items-center gap-1">
+            <Icon name="users" size={14} className="text-stone-400" />
+            {reserva.personas}
+          </span>
+          <Icon name="chevronDown" size={16} className="text-stone-400 group-open:rotate-180 transition-transform" />
         </span>
       </summary>
-      <div className="mt-1.5 pl-9 text-xs text-gray-500 space-y-1.5">
-        <div>📱 {reserva.telefono}</div>
-        <div>📧 {reserva.email}</div>
-        {reserva.comentarios && <div>💬 {reserva.comentarios}</div>}
-        <div className="flex items-center gap-1.5">
-          <span>👥 Personas:</span>
+      <div className="mt-2 ml-3 pl-6 border-l-2 border-esperanza-100 text-[13px] text-stone-600 space-y-1.5">
+        <a href={`tel:${reserva.telefono}`} className="flex items-center gap-2 hover:text-esperanza-700">
+          <Icon name="phone" size={14} className="text-stone-400" />
+          {reserva.telefono}
+        </a>
+        {reserva.email && (
+          <div className="flex items-center gap-2 break-all">
+            <Icon name="mail" size={14} className="text-stone-400" />
+            {reserva.email}
+          </div>
+        )}
+        {reserva.comentarios && (
+          <div className="flex items-start gap-2 text-esperanza-700">
+            <Icon name="message" size={14} className="text-esperanza-400 mt-0.5" />
+            {reserva.comentarios}
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <Icon name="users" size={14} className="text-stone-400" />
+          <span>Personas</span>
           <select
             value={reserva.personas}
             onClick={(e) => e.stopPropagation()}
             onChange={(e) => onEditarPersonas(parseInt(e.target.value))}
-            className="border border-gray-200 rounded px-1.5 py-0.5 text-xs font-medium text-gray-700"
+            className="border border-esperanza-200 bg-white rounded-md px-2 py-1 text-xs font-semibold text-esperanza-700"
           >
             {PERSONAS_OPCIONES.map((n) => (
               <option key={n} value={n}>
@@ -159,16 +177,19 @@ function SectorAcordeon({
   );
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden mb-3">
+    <div className="bg-white rounded-xl border border-esperanza-200/80 overflow-hidden mb-4">
       <button
         type="button"
         onClick={() => setAbierto((v) => !v)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between gap-3 px-4 md:px-5 py-3.5 hover:bg-esperanza-50/60 transition-colors"
       >
-        <span className="font-semibold text-gray-900 flex items-center gap-2">
-          {UBICACIONES_ICONO[tipo]} {UBICACIONES_LABEL[tipo]}
+        <span className="font-bold text-esperanza-700 flex items-center gap-2.5">
+          <span className="w-8 h-8 rounded-lg bg-esperanza-100 text-esperanza-600 flex items-center justify-center">
+            <Icon name={tipo === UBICACIONES.VEREDA ? 'sun' : 'home'} size={17} />
+          </span>
+          {UBICACIONES_LABEL[tipo]}
         </span>
-        <span className="flex items-center gap-3 text-sm text-gray-500">
+        <span className="flex items-center gap-3 text-xs md:text-sm text-stone-500 text-right">
           <span>
             {totalReservas === 0
               ? 'sin reservas'
@@ -176,23 +197,24 @@ function SectorAcordeon({
                   totalSentados > 0 ? ` · ${totalSentados} sentados` : ''
                 }`}
           </span>
-          <span className={`text-gray-400 transition-transform inline-block ${abierto ? 'rotate-180' : ''}`}>⌄</span>
+          <Icon name="chevronDown" size={18} className={`text-stone-400 transition-transform ${abierto ? 'rotate-180' : ''}`} />
         </span>
       </button>
 
       {abierto && (
-        <div className="border-t border-gray-100">
+        <div className="border-t border-esperanza-100">
           {filas.length === 0 ? (
-            <p className="px-5 py-6 text-center text-sm text-gray-400">Sin turnos configurados para este día.</p>
+            <p className="px-5 py-6 text-center text-sm text-stone-400">Sin turnos configurados para este día.</p>
           ) : (
             filas.map(({ turno, sector }) => (
-              <div key={turno.hora} className={`border-b border-gray-100 last:border-0 ${turno.pasado ? 'opacity-60' : ''}`}>
-                <div className="flex items-center justify-between gap-3 px-5 py-2.5 bg-gray-50">
-                  <span className="font-semibold text-sm text-esperanza-700 flex-shrink-0">
-                    🕐 {turno.hora}
-                    {turno.pasado && <span className="ml-2 text-xs font-normal text-gray-400">pasó</span>}
+              <div key={turno.hora} className={`border-b border-esperanza-100 last:border-0 ${turno.pasado ? 'opacity-55' : ''}`}>
+                <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-2 bg-esperanza-50/70">
+                  <span className="flex items-center gap-2 flex-shrink-0">
+                    <span className="font-extrabold text-[15px] text-esperanza-700 tabular-nums">{turno.hora}</span>
+                    {turno.pasado && <span className="badge bg-stone-200/70 text-stone-500">pasó</span>}
+                    {sector.cerrado && !turno.pasado && <span className="badge bg-red-50 text-red-700">cerrado</span>}
                   </span>
-                  <span className="text-xs text-gray-500 truncate">
+                  <span className="text-xs text-stone-500 truncate">
                     {sector.reservas.length === 0
                       ? 'sin reservas'
                       : `${sector.reservado} personas · ${sector.reservas.length} ${sector.reservas.length === 1 ? 'reserva' : 'reservas'}`}
@@ -201,9 +223,10 @@ function SectorAcordeon({
                     <button
                       type="button"
                       onClick={() => onNuevaReserva(turno.hora)}
-                      className="text-xs px-2 py-1 rounded bg-esperanza-100 text-esperanza-700 hover:bg-esperanza-200 font-semibold"
+                      className="btn btn-small btn-secondary !px-2.5"
                     >
-                      + Reserva
+                      <Icon name="plus" size={13} strokeWidth={2.4} />
+                      Reserva
                     </button>
                     {!turno.pasado && (
                       <ToggleCierre cerrado={sector.cerrado} onClick={() => onToggleCierre(turno.hora)} />
@@ -211,7 +234,7 @@ function SectorAcordeon({
                   </div>
                 </div>
 
-                <div className="divide-y divide-gray-50">
+                <div className="divide-y divide-esperanza-100/70">
                   {sector.reservas.map((r) => (
                     <ReservaRow
                       key={r.id}
@@ -319,7 +342,7 @@ export default function TurnoBoard({
   if (loading) {
     return (
       <div className="text-center py-12">
-        <div className="inline-block w-8 h-8 border-4 border-esperanza-200 border-t-esperanza-500 rounded-full animate-spin"></div>
+        <div className="spinner"></div>
       </div>
     );
   }

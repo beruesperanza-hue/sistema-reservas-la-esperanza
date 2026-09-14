@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import AdminHeader from '@/components/admin/AdminHeader';
+import Icon from '@/components/admin/Icon';
 import { updateCustomer, actualizarConsentimiento } from '@/app/actions/customers';
 import { formatearFechaLarga, dateAFechaISO } from '@/lib/fechas';
 import type { CamposCliente } from '@/lib/segmentos';
@@ -119,10 +120,10 @@ export default function FichaClientePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-paper">
         <AdminHeader />
         <div className="text-center py-24">
-          <div className="inline-block w-8 h-8 border-4 border-esperanza-200 border-t-esperanza-500 rounded-full animate-spin"></div>
+          <div className="spinner"></div>
         </div>
       </div>
     );
@@ -130,30 +131,30 @@ export default function FichaClientePage() {
 
   if (!cliente || !campos) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-paper">
         <AdminHeader />
-        <div className="text-center py-24 text-gray-600">Cliente no encontrado.</div>
+        <div className="text-center py-24 text-stone-500">Cliente no encontrado.</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <AdminHeader />
 
-      <main className="container mx-auto px-4 py-12 max-w-5xl">
-        <Link href="/admin/clientes" className="text-esperanza-600 hover:underline text-sm">
-          ← Volver a clientes
+      <main className="container mx-auto px-4 py-8 md:py-10 max-w-5xl">
+        <Link href="/admin/clientes" className="inline-flex items-center gap-1 text-sm font-medium text-esperanza-600 hover:text-esperanza-700">
+          <Icon name="arrowLeft" size={15} /> Volver a clientes
         </Link>
 
-        <h1 className="text-4xl font-bold text-esperanza-700 mt-2 mb-8">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700 mt-3 mb-6">
           {cliente.nombre} {cliente.apellido}
         </h1>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-5">
           {/* Datos del cliente */}
           <div className="card space-y-4">
-            <h2 className="text-xl font-semibold">Datos</h2>
+            <h2 className="text-lg font-bold">Datos</h2>
 
             <div>
               <label className="form-label">Nombre</label>
@@ -171,7 +172,7 @@ export default function FichaClientePage() {
               <label className="form-label">Teléfono</label>
               <input className="form-input" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
               {cliente.telefonoPais && (
-                <p className="text-xs text-gray-400 mt-1">País del teléfono: {cliente.telefonoPais}</p>
+                <p className="text-xs text-stone-400 mt-1">País del teléfono: {cliente.telefonoPais}</p>
               )}
             </div>
             <div>
@@ -182,8 +183,8 @@ export default function FichaClientePage() {
               <label className="form-label">Notas</label>
               <textarea className="form-input" rows={3} value={notas} onChange={(e) => setNotas(e.target.value)} />
             </div>
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" checked={vip} onChange={(e) => setVip(e.target.checked)} />
+            <label className="flex items-center gap-2.5 text-sm font-medium text-esperanza-700 cursor-pointer">
+              <input type="checkbox" className="w-4 h-4 accent-esperanza-700" checked={vip} onChange={(e) => setVip(e.target.checked)} />
               Cliente VIP
             </label>
 
@@ -191,7 +192,7 @@ export default function FichaClientePage() {
               {guardando ? 'Guardando...' : 'Guardar cambios'}
             </button>
 
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-stone-400">
               Origen: {cliente.origen} · Creado como parte de{' '}
               {cliente.origen.startsWith('importado_') ? 'una importación' : 'alta directa'}
             </p>
@@ -199,10 +200,10 @@ export default function FichaClientePage() {
 
           {/* Consentimiento */}
           <div className="card space-y-4">
-            <h2 className="text-xl font-semibold">Consentimiento de marketing</h2>
+            <h2 className="text-lg font-bold">Consentimiento de marketing</h2>
 
             {(['email', 'whatsapp'] as const).map((canal) => (
-              <div key={canal} className="border-b pb-3">
+              <div key={canal} className="border-b border-esperanza-100 pb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-semibold capitalize">{canal}</span>
                   <EstadoBadge estado={campos.consentimiento[canal]} />
@@ -225,8 +226,8 @@ export default function FichaClientePage() {
             ))}
 
             <div>
-              <h3 className="font-semibold text-sm text-gray-600 mb-2">Historial</h3>
-              <div className="space-y-1 text-xs text-gray-500 max-h-40 overflow-y-auto">
+              <h3 className="font-semibold text-sm text-stone-600 mb-2">Historial</h3>
+              <div className="space-y-1 text-xs text-stone-500 max-h-40 overflow-y-auto">
                 {cliente.consentimientos.length === 0 && <p>Sin registros todavía.</p>}
                 {cliente.consentimientos.map((c) => (
                   <div key={c.id}>
@@ -240,9 +241,9 @@ export default function FichaClientePage() {
         </div>
 
         {/* Actividad histórica importada */}
-        <div className="card mt-8">
-          <h2 className="text-xl font-semibold mb-4">Actividad histórica importada</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div className="card mt-5">
+          <h2 className="text-lg font-bold mb-4">Actividad histórica importada</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-5 text-sm">
             <Stat label="Visitas históricas" value={cliente.visitasHistoricas} />
             <Stat
               label="Última visita histórica"
@@ -258,23 +259,23 @@ export default function FichaClientePage() {
             />
           </div>
           {cliente.notasHistoricas && (
-            <p className="text-sm text-gray-600 mt-4 italic">"{cliente.notasHistoricas}"</p>
+            <p className="text-sm text-stone-600 mt-4 italic">"{cliente.notasHistoricas}"</p>
           )}
         </div>
 
         {/* Reservas del sistema */}
-        <div className="card mt-8">
-          <h2 className="text-xl font-semibold mb-4">Reservas en el sistema</h2>
+        <div className="card mt-5">
+          <h2 className="text-lg font-bold mb-4">Reservas en el sistema</h2>
           {cliente.reservas.length === 0 ? (
-            <p className="text-gray-500 text-sm">Este cliente todavía no tiene reservas cargadas en el sistema.</p>
+            <p className="text-stone-500 text-sm">Este cliente todavía no tiene reservas cargadas en el sistema.</p>
           ) : (
-            <div className="divide-y">
+            <div className="divide-y divide-esperanza-100">
               {cliente.reservas.map((r) => (
-                <div key={r.id} className="py-2 flex justify-between text-sm">
+                <div key={r.id} className="py-2.5 flex justify-between items-center gap-3 text-sm text-esperanza-700">
                   <span>
                     {formatearFechaLarga(r.fecha)} · {r.hora} · {r.personas} personas
                   </span>
-                  <span className={r.estado === 'cancelada' ? 'text-red-600' : 'text-gray-600'}>{r.estado}</span>
+                  <span className={`badge ${r.estado === 'cancelada' ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>{r.estado}</span>
                 </div>
               ))}
             </div>
@@ -289,10 +290,10 @@ function EstadoBadge({ estado }: { estado: string }) {
   const estilos: Record<string, string> = {
     autorizado: 'bg-green-100 text-green-700',
     revocado: 'bg-red-100 text-red-700',
-    nunca_solicitado: 'bg-gray-100 text-gray-600',
+    nunca_solicitado: 'bg-stone-100 text-stone-600',
   };
   return (
-    <span className={`px-2 py-1 rounded text-xs font-semibold ${estilos[estado] || estilos.nunca_solicitado}`}>
+    <span className={`badge py-1 capitalize ${estilos[estado] || estilos.nunca_solicitado}`}>
       {estado.replace('_', ' ')}
     </span>
   );
@@ -301,8 +302,8 @@ function EstadoBadge({ estado }: { estado: string }) {
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div>
-      <p className="text-gray-400 text-xs">{label}</p>
-      <p className="font-semibold text-gray-800">{value}</p>
+      <p className="text-stone-500 text-[11px] uppercase tracking-[0.06em] font-semibold">{label}</p>
+      <p className="font-extrabold text-lg text-esperanza-700 mt-0.5">{value}</p>
     </div>
   );
 }

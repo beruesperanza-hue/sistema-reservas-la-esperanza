@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import AdminHeader from '@/components/admin/AdminHeader';
+import Icon from '@/components/admin/Icon';
 import { importarClientes, type ImportarClientesInput } from '@/app/actions/customers';
 
 const CAMPOS_DESTINO = [
@@ -171,22 +172,22 @@ export default function ImportarClientesPage() {
   const tieneNombreMapeado = Object.values(mapeo).includes('nombre');
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <AdminHeader />
 
-      <main className="container mx-auto px-4 py-12 max-w-5xl">
-        <Link href="/admin/clientes" className="text-esperanza-600 hover:underline text-sm">
-          ← Volver a clientes
+      <main className="container mx-auto px-4 py-8 md:py-10 max-w-5xl">
+        <Link href="/admin/clientes" className="inline-flex items-center gap-1 text-sm font-medium text-esperanza-600 hover:text-esperanza-700">
+          <Icon name="arrowLeft" size={15} /> Volver a clientes
         </Link>
-        <h1 className="text-4xl font-bold text-esperanza-700 mt-2 mb-8">Importar clientes</h1>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700 mt-3 mb-6">Importar clientes</h1>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-6">{error}</div>
+          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-6">{error}</div>
         )}
 
         {paso === 1 && (
           <div className="card">
-            <p className="text-gray-600 mb-4">
+            <p className="text-stone-600 mb-4">
               Subí un archivo CSV o Excel exportado de tu sistema anterior (Excel viejo, Woki, Bigbox,
               Mozrest) o de contactos de Instagram/Facebook.
             </p>
@@ -202,7 +203,7 @@ export default function ImportarClientesPage() {
         {paso === 2 && (
           <div className="space-y-6">
             <div className="card">
-              <h2 className="text-xl font-semibold mb-4">
+              <h2 className="text-lg font-bold mb-4">
                 {filas.length} filas detectadas en <span className="font-mono text-sm">{nombreArchivo}</span>
               </h2>
 
@@ -233,11 +234,11 @@ export default function ImportarClientesPage() {
               <h3 className="font-semibold mb-2">Mapeo de columnas</h3>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {columnas.map((col) => (
-                  <div key={col} className="flex items-center gap-3 bg-gray-50 p-2 rounded">
+                  <div key={col} className="flex items-center gap-3 bg-esperanza-50/70 p-2 rounded-lg">
                     <span className="font-mono text-sm w-52 truncate" title={col}>
                       {col}
                     </span>
-                    <span className="text-gray-400">→</span>
+                    <Icon name="chevronRight" size={16} className="text-stone-400" />
                     <select
                       className="form-input"
                       value={mapeo[col] || ''}
@@ -254,8 +255,9 @@ export default function ImportarClientesPage() {
               </div>
 
               {!tieneNombreMapeado && (
-                <p className="text-amber-600 text-sm mt-4">
-                  ⚠️ No mapeaste ninguna columna a "Nombre". Las filas sin nombre solo se importarán si
+                <p className="text-amber-800 text-sm mt-4 flex items-start gap-2">
+                  <Icon name="alert" size={16} className="mt-0.5" />
+                  No mapeaste ninguna columna a "Nombre". Las filas sin nombre solo se importarán si
                   tienen email o teléfono.
                 </p>
               )}
@@ -266,7 +268,7 @@ export default function ImportarClientesPage() {
               <div className="overflow-x-auto">
                 <table className="text-sm w-full">
                   <thead>
-                    <tr className="text-left text-gray-500">
+                    <tr className="text-left text-stone-500">
                       {columnas.map((col) => (
                         <th key={col} className="pr-4 py-1">
                           {mapeo[col] || col}
@@ -278,7 +280,7 @@ export default function ImportarClientesPage() {
                     {filas.slice(0, 5).map((fila, i) => (
                       <tr key={i} className="border-t">
                         {columnas.map((col) => (
-                          <td key={col} className="pr-4 py-1 text-gray-700">
+                          <td key={col} className="pr-4 py-1 text-stone-700">
                             {fila[col]}
                           </td>
                         ))}
@@ -291,7 +293,7 @@ export default function ImportarClientesPage() {
 
             <div className="flex gap-3">
               <button className="btn btn-secondary" onClick={() => setPaso(1)}>
-                ← Elegir otro archivo
+                <Icon name="arrowLeft" size={15} /> Elegir otro archivo
               </button>
               <button className="btn btn-primary" onClick={confirmarImportacion} disabled={procesando}>
                 {procesando ? `Importando ${filas.length} filas...` : `Importar ${filas.length} clientes`}
@@ -302,26 +304,26 @@ export default function ImportarClientesPage() {
 
         {paso === 3 && resultado && resultado.success && (
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">Importación completa</h2>
+            <h2 className="text-lg font-bold mb-4">Importación completa</h2>
             <div className="grid grid-cols-3 gap-4 mb-6 text-center">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-stone-50 rounded-lg p-4">
                 <p className="text-2xl font-bold">{resultado.filasTotales}</p>
-                <p className="text-xs text-gray-500">Filas totales</p>
+                <p className="text-xs text-stone-500">Filas totales</p>
               </div>
               <div className="bg-green-50 rounded-lg p-4">
                 <p className="text-2xl font-bold text-green-700">{resultado.filasImportadas}</p>
-                <p className="text-xs text-gray-500">Importadas</p>
+                <p className="text-xs text-stone-500">Importadas</p>
               </div>
               <div className="bg-red-50 rounded-lg p-4">
                 <p className="text-2xl font-bold text-red-700">{resultado.filasConError}</p>
-                <p className="text-xs text-gray-500">Con error</p>
+                <p className="text-xs text-stone-500">Con error</p>
               </div>
             </div>
 
             {resultado.errores.length > 0 && (
               <div>
                 <h3 className="font-semibold text-sm mb-2">Filas con error</h3>
-                <div className="max-h-64 overflow-y-auto text-sm text-gray-600 space-y-1">
+                <div className="max-h-64 overflow-y-auto text-sm text-stone-600 space-y-1">
                   {resultado.errores.map((e, i) => (
                     <div key={i}>
                       Fila {e.fila}: {e.motivo}
@@ -331,7 +333,7 @@ export default function ImportarClientesPage() {
               </div>
             )}
 
-            <Link href="/admin/clientes" className="btn btn-primary mt-6 inline-block">
+            <Link href="/admin/clientes" className="btn btn-primary mt-6">
               Ver clientes
             </Link>
           </div>

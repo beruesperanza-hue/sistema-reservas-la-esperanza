@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import AdminHeader from '@/components/admin/AdminHeader';
+import Icon from '@/components/admin/Icon';
 import { formatearFechaCorta } from '@/lib/fechas';
 
 interface ClienteFila {
@@ -58,32 +59,34 @@ export default function AdminClientesPage() {
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <AdminHeader />
 
-      <main className="container mx-auto px-4 py-12 max-w-7xl">
+      <main className="container mx-auto px-4 py-8 md:py-10 max-w-7xl">
         <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
           <div>
-            <h1 className="text-4xl font-bold text-esperanza-700">Clientes</h1>
-            <p className="text-gray-500 text-sm mt-1">{total} clientes en la base</p>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700">Clientes</h1>
+            <p className="text-stone-500 text-sm mt-1">{total} clientes en la base</p>
           </div>
           <div className="flex gap-2">
             <Link href="/admin/clientes/segmentos" className="btn btn-secondary">
-              🗂️ Segmentos
+              <Icon name="folder" size={16} />
+              Segmentos
             </Link>
             <Link href="/admin/clientes/importar" className="btn btn-primary">
-              ⬆️ Importar clientes
+              <Icon name="upload" size={16} />
+              Importar
             </Link>
           </div>
         </div>
 
         {/* Filtros */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8 grid md:grid-cols-4 gap-4 items-end">
+        <div className="bg-white rounded-xl border border-esperanza-200/80 p-4 mb-5 grid md:grid-cols-4 gap-4 items-end">
           <div className="md:col-span-2">
             <label className="form-label">Búsqueda</label>
             <input
-              type="text"
-              placeholder="Nombre, email o teléfono..."
+              type="search"
+              placeholder="Nombre, email o teléfono"
               value={q}
               onChange={(e) => {
                 setPage(1);
@@ -115,10 +118,11 @@ export default function AdminClientesPage() {
             </select>
           </div>
 
-          <div className="flex gap-4">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
+          <div className="flex gap-2 flex-wrap md:pb-1">
+            <label className={`chip cursor-pointer ${soloVip ? 'chip-on' : 'chip-off'}`}>
               <input
                 type="checkbox"
+                className="sr-only"
                 checked={soloVip}
                 onChange={(e) => {
                   setPage(1);
@@ -127,9 +131,10 @@ export default function AdminClientesPage() {
               />
               Solo VIP
             </label>
-            <label className="flex items-center gap-2 text-sm text-gray-700">
+            <label className={`chip cursor-pointer ${soloConProxima ? 'chip-on' : 'chip-off'}`}>
               <input
                 type="checkbox"
+                className="sr-only"
                 checked={soloConProxima}
                 onChange={(e) => {
                   setPage(1);
@@ -143,49 +148,49 @@ export default function AdminClientesPage() {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block w-8 h-8 border-4 border-esperanza-200 border-t-esperanza-500 rounded-full animate-spin"></div>
-            <p className="text-gray-600 mt-4">Cargando clientes...</p>
+            <div className="spinner"></div>
+            <p className="text-stone-500 text-sm mt-3">Cargando clientes...</p>
           </div>
         ) : clientes.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg">
-            <span className="text-5xl text-gray-300 mx-auto mb-4 block">🗂️</span>
-            <p className="text-gray-600">No hay clientes que coincidan con este filtro</p>
+          <div className="text-center py-14 bg-white rounded-xl border border-dashed border-esperanza-200">
+            <Icon name="users" size={36} strokeWidth={1.4} className="mx-auto mb-3 text-esperanza-300" />
+            <p className="text-stone-500">No hay clientes que coincidan con este filtro</p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden overflow-x-auto">
+          <div className="bg-white rounded-xl border border-esperanza-200/80 overflow-hidden overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-left text-gray-600">
+              <thead className="bg-esperanza-50/70 text-left text-[11px] uppercase tracking-[0.08em] text-stone-500 border-b border-esperanza-100">
                 <tr>
-                  <th className="px-4 py-3">Nombre</th>
-                  <th className="px-4 py-3">Contacto</th>
-                  <th className="px-4 py-3">Origen</th>
-                  <th className="px-4 py-3">Visitas</th>
-                  <th className="px-4 py-3">Última visita</th>
-                  <th className="px-4 py-3"></th>
+                  <th className="px-4 py-3 font-semibold">Nombre</th>
+                  <th className="px-4 py-3 font-semibold">Contacto</th>
+                  <th className="px-4 py-3 font-semibold">Origen</th>
+                  <th className="px-4 py-3 font-semibold">Visitas</th>
+                  <th className="px-4 py-3 font-semibold">Última visita</th>
+                  <th className="px-4 py-3 font-semibold"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-esperanza-100">
                 {clientes.map((c) => (
-                  <tr key={c.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-semibold text-gray-900">
+                  <tr key={c.id} className="hover:bg-esperanza-50/60">
+                    <td className="px-4 py-3 font-semibold text-esperanza-700">
                       {c.nombre} {c.apellido || ''}
-                      {c.vip && <span className="ml-2 text-xs text-amber-600">⭐ VIP</span>}
+                      {c.vip && <span className="badge ml-2 bg-brand-gold/20 text-esperanza-600">VIP</span>}
                       {c.tieneProximaReserva && (
-                        <span className="ml-2 text-xs text-esperanza-600">próxima reserva</span>
+                        <span className="badge ml-2 bg-green-50 text-green-700">próxima reserva</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">
+                    <td className="px-4 py-3 text-stone-600">
                       <div>{c.email || '—'}</div>
                       <div>{c.telefono || '—'}</div>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{c.origen}</td>
-                    <td className="px-4 py-3 text-gray-600">{c.visitasTotales}</td>
-                    <td className="px-4 py-3 text-gray-600">
+                    <td className="px-4 py-3 text-stone-600">{c.origen}</td>
+                    <td className="px-4 py-3 text-esperanza-700 font-semibold tabular-nums">{c.visitasTotales}</td>
+                    <td className="px-4 py-3 text-stone-600">
                       {c.ultimaVisita ? formatearFechaCorta(c.ultimaVisita.slice(0, 10)) : '—'}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Link href={`/admin/clientes/${c.id}`} className="text-esperanza-600 hover:underline">
-                        Ver ficha →
+                      <Link href={`/admin/clientes/${c.id}`} className="inline-flex items-center gap-1 font-semibold text-esperanza-600 hover:text-esperanza-700 whitespace-nowrap">
+                        Ver ficha <Icon name="chevronRight" size={14} />
                       </Link>
                     </td>
                   </tr>
@@ -202,9 +207,9 @@ export default function AdminClientesPage() {
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
-              ← Anterior
+              <Icon name="chevronLeft" size={16} /> Anterior
             </button>
-            <span className="text-gray-600 text-sm">
+            <span className="text-stone-500 text-sm tabular-nums">
               Página {page} de {totalPaginas}
             </span>
             <button
@@ -212,7 +217,7 @@ export default function AdminClientesPage() {
               disabled={page >= totalPaginas}
               onClick={() => setPage((p) => Math.min(totalPaginas, p + 1))}
             >
-              Siguiente →
+              Siguiente <Icon name="chevronRight" size={16} />
             </button>
           </div>
         )}

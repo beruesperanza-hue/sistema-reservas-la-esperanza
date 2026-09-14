@@ -43,28 +43,92 @@ h3 {
   color: #9d7e52;
 }
 
-.btn {
-  @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 cursor-pointer;
+/* ─── Panel de admin ────────────────────────────────────────────────
+   Todo lo de abajo (btn, form-*, card, chip, badge) lo usa solo /admin.
+   `:where(.admin-ui)` deja la especificidad en 0 para que cualquier
+   utility de Tailwind en el JSX siga ganando. */
+.admin-ui {
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  color: #1c1814;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+  font-feature-settings: "tnum" 1;
 }
 
-.btn-primary {
-  @apply bg-esperanza-600 text-white hover:bg-esperanza-700 active:scale-95;
+:where(.admin-ui) h1,
+:where(.admin-ui) h2,
+:where(.admin-ui) h3,
+:where(.admin-ui) h4 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  color: #1c1814;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
 }
+:where(.admin-ui) h1 { font-size: 1.875rem; font-weight: 800; }
+:where(.admin-ui) h2 { font-size: 1.25rem; font-weight: 700; }
+:where(.admin-ui) h3 { font-size: 1rem; font-weight: 700; }
 
-.btn-secondary {
-  @apply bg-esperanza-100 text-esperanza-700 hover:bg-esperanza-200 active:scale-95;
-}
+/* En @layer components para que las utilities del JSX (pl-10, w-auto…) sí puedan pisarlas. */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold
+      transition-colors duration-150 cursor-pointer select-none
+      disabled:opacity-50 disabled:cursor-not-allowed
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2;
+  }
 
-.btn-danger {
-  @apply bg-red-500 text-white hover:bg-red-600 active:scale-95;
-}
+  .btn-primary {
+    @apply bg-esperanza-700 text-sand hover:bg-black;
+  }
 
-.form-input {
-  @apply w-full px-4 py-2 border border-esperanza-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-esperanza-500 transition-all;
-}
+  .btn-secondary {
+    @apply bg-white text-esperanza-700 border border-esperanza-200 hover:border-esperanza-300 hover:bg-esperanza-50;
+  }
 
-.card {
-  @apply bg-white border border-esperanza-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow;
+  .btn-danger {
+    @apply bg-white text-red-700 border border-red-200 hover:bg-red-50 hover:border-red-300;
+  }
+
+  .btn-small {
+    @apply px-3 py-1.5 text-xs rounded-md;
+  }
+
+  .form-group {
+    @apply flex flex-col;
+  }
+
+  .form-label {
+    @apply block text-xs font-semibold text-stone-600 mb-1.5;
+  }
+
+  .form-input {
+    @apply w-full px-3.5 py-2.5 bg-white text-esperanza-700 text-sm border border-esperanza-200 rounded-lg
+      placeholder:text-stone-400 transition-shadow
+      focus:outline-none focus:border-esperanza-400 focus:ring-4 focus:ring-brand-gold/20;
+  }
+
+  .card {
+    @apply bg-white border border-esperanza-200/80 rounded-xl p-6;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors;
+  }
+  .chip-on {
+    @apply bg-esperanza-700 border-esperanza-700 text-sand;
+  }
+  .chip-off {
+    @apply bg-white border-esperanza-200 text-stone-600 hover:border-esperanza-300 hover:text-esperanza-700;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap;
+  }
+
+  .spinner {
+    @apply inline-block w-7 h-7 border-[3px] border-esperanza-200 border-t-esperanza-500 rounded-full animate-spin;
+  }
 }
 
 .fade-in {
@@ -84,17 +148,6 @@ h3 {
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #1a1a1a;
-    color: #e0e0e0;
-  }
-  
-  .card {
-    background-color: #2a2a2a;
-    border-color: #444;
-  }
-
-  .form-input {
-    background-color: #333;
-    border-color: #555;
     color: #e0e0e0;
   }
 }

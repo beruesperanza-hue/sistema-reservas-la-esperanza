@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { CONTACTO } from '@/lib/constants';
 import { trackEvent } from '@/lib/analytics';
 
@@ -8,6 +9,9 @@ const WHATSAPP_URL = `${CONTACTO.WHATSAPP_URL}?text=${encodeURIComponent(
 )}`;
 
 export default function WhatsAppFloat() {
+  // En el panel de admin no aplica (es para clientes) y tapaba botones en mobile.
+  if (usePathname()?.startsWith('/admin')) return null;
+
   return (
     <a
       href={WHATSAPP_URL}

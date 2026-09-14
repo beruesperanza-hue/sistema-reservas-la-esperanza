@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { createReservationAdmin } from '@/app/actions/reservations';
-import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_ICONO, UBICACIONES_LABEL } from '@/lib/constants';
+import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_LABEL } from '@/lib/constants';
+import Icon from './Icon';
 import { formatearFechaCorta } from '@/lib/fechas';
 
 interface Props {
@@ -85,22 +86,22 @@ export default function NuevaReservaModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-esperanza-700">📝 Nueva reserva</h2>
+    <div className="fixed inset-0 bg-esperanza-900/60 backdrop-blur-[2px] z-[100] flex items-end sm:items-center justify-center sm:p-4">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto">
+        <div className="sticky top-0 z-10 bg-white border-b border-esperanza-100 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-lg font-extrabold text-esperanza-700">Nueva reserva</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-700 text-2xl leading-none"
+            className="w-9 h-9 -mr-2 rounded-lg flex items-center justify-center text-stone-400 hover:text-esperanza-700 hover:bg-esperanza-50"
             aria-label="Cerrar"
           >
-            ×
+            <Icon name="x" size={18} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <p className="text-xs text-gray-500 -mt-2">
+          <p className="text-xs text-stone-500 bg-esperanza-50 rounded-lg px-3 py-2">
             Cargada desde el panel: no bloquea por turno pasado, cierre manual ni cupo — solo
             avisa si corresponde.
           </p>
@@ -114,7 +115,7 @@ export default function NuevaReservaModal({
           {avisos.length > 0 && (
             <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm space-y-1">
               {avisos.map((a, i) => (
-                <p key={i}>⚠️ {a}</p>
+                <p key={i} className="flex items-start gap-2"><Icon name="alert" size={15} className="mt-0.5" />{a}</p>
               ))}
               <p className="font-semibold">Reserva creada igual.</p>
             </div>
@@ -171,7 +172,7 @@ export default function NuevaReservaModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div className="form-group">
               <label className="form-label">Fecha *</label>
               <input
@@ -219,13 +220,13 @@ export default function NuevaReservaModal({
                   key={valor}
                   type="button"
                   onClick={() => setForm((prev) => ({ ...prev, ubicacion: valor }))}
-                  className={`py-2.5 px-4 rounded-lg font-semibold border-2 transition-all flex items-center justify-center gap-2 ${
+                  className={`py-2.5 px-4 rounded-lg text-sm font-semibold border transition-colors flex items-center justify-center gap-2 ${
                     form.ubicacion === valor
-                      ? 'bg-esperanza-600 border-esperanza-600 text-white'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-esperanza-300'
+                      ? 'bg-esperanza-700 border-esperanza-700 text-sand'
+                      : 'bg-white border-esperanza-200 text-esperanza-700 hover:border-esperanza-300'
                   }`}
                 >
-                  <span>{UBICACIONES_ICONO[valor]}</span>
+                  <Icon name={valor === UBICACIONES.VEREDA ? 'sun' : 'home'} size={16} />
                   {UBICACIONES_LABEL[valor]}
                 </button>
               ))}
@@ -244,7 +245,7 @@ export default function NuevaReservaModal({
           </div>
 
           {form.fecha && form.hora && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-stone-500">
               {formatearFechaCorta(form.fecha)} · {form.hora}
             </p>
           )}

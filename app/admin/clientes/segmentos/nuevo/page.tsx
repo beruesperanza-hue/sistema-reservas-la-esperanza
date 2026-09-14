@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AdminHeader from '@/components/admin/AdminHeader';
+import Icon from '@/components/admin/Icon';
 import SegmentoBuilder from '@/components/admin/SegmentoBuilder';
 import { crearSegmento, previsualizarSegmento } from '@/app/actions/customers';
 import type { NodoFiltro } from '@/lib/segmentos';
@@ -45,17 +46,17 @@ export default function NuevoSegmentoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <AdminHeader />
 
-      <main className="container mx-auto px-4 py-12 max-w-3xl">
-        <Link href="/admin/clientes/segmentos" className="text-esperanza-600 hover:underline text-sm">
-          ← Volver a segmentos
+      <main className="container mx-auto px-4 py-8 md:py-10 max-w-3xl">
+        <Link href="/admin/clientes/segmentos" className="inline-flex items-center gap-1 text-sm font-medium text-esperanza-600 hover:text-esperanza-700">
+          <Icon name="arrowLeft" size={15} /> Volver a segmentos
         </Link>
-        <h1 className="text-4xl font-bold text-esperanza-700 mt-2 mb-8">Nuevo segmento</h1>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700 mt-3 mb-6">Nuevo segmento</h1>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-6">{error}</div>
+          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-6">{error}</div>
         )}
 
         <div className="card space-y-4 mb-6">
@@ -74,12 +75,12 @@ export default function NuevoSegmentoPage() {
         </div>
 
         <div className="card mb-6">
-          <h2 className="text-xl font-semibold mb-4">Condiciones</h2>
+          <h2 className="text-lg font-bold mb-4">Condiciones</h2>
           <SegmentoBuilder value={filtro} onChange={setFiltro} />
         </div>
 
         <div className="card mb-6 text-center">
-          <p className="text-gray-500 text-sm">Clientes que matchean ahora mismo</p>
+          <p className="text-stone-500 text-sm">Clientes que matchean ahora mismo</p>
           <p className="text-3xl font-bold text-esperanza-700">{conteo === null ? '...' : conteo}</p>
         </div>
 

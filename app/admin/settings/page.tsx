@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import AdminHeader from '@/components/admin/AdminHeader';
+import Icon from '@/components/admin/Icon';
 import { DIAS_SEMANA, DIAS_SEMANA_ORDEN } from '@/lib/constants';
 
 interface Schedule {
@@ -155,12 +156,12 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-paper">
         <AdminHeader />
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
-            <div className="inline-block w-8 h-8 border-4 border-esperanza-200 border-t-esperanza-500 rounded-full animate-spin"></div>
-            <p className="text-gray-600 mt-4">Cargando configuración...</p>
+            <div className="spinner"></div>
+            <p className="text-stone-500 text-sm mt-3">Cargando configuración...</p>
           </div>
         </div>
       </div>
@@ -168,21 +169,21 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <AdminHeader />
 
-      <main className="container mx-auto px-4 py-12 max-w-6xl">
-        <h1 className="text-4xl font-bold text-esperanza-700 mb-8">Configuración</h1>
+      <main className="container mx-auto px-4 py-6 md:py-8 max-w-6xl">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700 mb-6">Configuración</h1>
 
         {/* Configuración General */}
-        <div className="bg-white rounded-lg shadow p-8 mb-8">
-          <h2 className="text-2xl font-bold text-esperanza-700 mb-6">Configuración del Restaurante</h2>
+        <div className="bg-white rounded-xl border border-esperanza-200/80 p-5 md:p-7 mb-5">
+          <h2 className="text-lg font-bold text-esperanza-700 mb-5">Datos del restaurante</h2>
 
           {settings && (
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="form-group">
-                  <label className="form-label">Nombre del Restaurante</label>
+                  <label className="form-label">Nombre del restaurante</label>
                   <input
                     type="text"
                     value={settings.nombreRestaurante}
@@ -222,7 +223,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Días de Reserva Anticipada</label>
+                  <label className="form-label">Días de reserva anticipada</label>
                   <input
                     type="number"
                     value={settings.diasAvanzados}
@@ -233,15 +234,16 @@ export default function SettingsPage() {
               </div>
 
               <button onClick={handleSaveSettings} disabled={saving} className="btn btn-primary">
-                💾 {saving ? 'Guardando...' : 'Guardar Configuración'}
+                <Icon name="save" size={16} />
+                {saving ? 'Guardando...' : 'Guardar configuración'}
               </button>
             </div>
           )}
         </div>
 
         {/* Pedidos online */}
-        <div className="bg-white rounded-lg shadow p-8 mb-8">
-          <h2 className="text-2xl font-bold text-esperanza-700 mb-6">Pedidos online</h2>
+        <div className="bg-white rounded-xl border border-esperanza-200/80 p-5 md:p-7 mb-5">
+          <h2 className="text-lg font-bold text-esperanza-700 mb-5">Pedidos online</h2>
 
           {settings && (
             <div className="space-y-6">
@@ -250,11 +252,11 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.aceptaPedidosOnline}
                   onChange={(e) => setSettings({ ...settings, aceptaPedidosOnline: e.target.checked })}
-                  className="w-5 h-5 accent-esperanza-600"
+                  className="w-5 h-5 accent-esperanza-700"
                 />
                 <span className="font-semibold text-esperanza-700">Aceptando pedidos online</span>
               </label>
-              <p className="text-sm text-gray-500 -mt-4">
+              <p className="text-sm text-stone-500 -mt-4">
                 Si lo desactivás, /pedidos deja de aceptar pedidos nuevos hasta que lo actives de nuevo.
               </p>
 
@@ -303,23 +305,23 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="border-t border-gray-100 pt-6 mt-2">
+              <div className="border-t border-stone-100 pt-6 mt-2">
                 <label className="flex items-center gap-3 cursor-pointer mb-4">
                   <input
                     type="checkbox"
                     checked={settings.aceptaEnvioDomicilio}
                     onChange={(e) => setSettings({ ...settings, aceptaEnvioDomicilio: e.target.checked })}
-                    className="w-5 h-5 accent-esperanza-600"
+                    className="w-5 h-5 accent-esperanza-700"
                   />
                   <span className="font-semibold text-esperanza-700">Ofrecer envío a domicilio</span>
                 </label>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-stone-500 mb-4">
                   El cliente elige la zona en el checkout — no se calcula distancia automática.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="form-group">
-                    <label className="form-label">Envío cerca (hasta 3km) — $</label>
+                    <label className="form-label">Envío Villa Crespo y alrededores — $</label>
                     <input
                       type="number"
                       min={0}
@@ -329,7 +331,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Envío lejos (más de 3km) — $</label>
+                    <label className="form-label">Envío Recoleta y alrededores — $</label>
                     <input
                       type="number"
                       min={0}
@@ -342,22 +344,23 @@ export default function SettingsPage() {
               </div>
 
               <button onClick={handleSaveSettings} disabled={saving} className="btn btn-primary">
-                💾 {saving ? 'Guardando...' : 'Guardar Configuración'}
+                <Icon name="save" size={16} />
+                {saving ? 'Guardando...' : 'Guardar configuración'}
               </button>
             </div>
           )}
         </div>
 
         {/* Gestión de Horarios */}
-        <div className="bg-white rounded-lg shadow p-8">
-          <h2 className="text-2xl font-bold text-esperanza-700 mb-2">Horarios</h2>
-          <p className="text-gray-500 text-sm mb-6">
+        <div className="bg-white rounded-xl border border-esperanza-200/80 p-5 md:p-7">
+          <h2 className="text-lg font-bold text-esperanza-700 mb-1">Horarios</h2>
+          <p className="text-stone-500 text-sm mb-6">
             Qué turnos existen cada día y cuántas mesas hay en cada uno. La capacidad de salón y
             vereda se maneja por separado: si un turno no tiene mesas afuera, dejá la vereda en 0.
           </p>
 
           {/* Agregar nuevo horario */}
-          <div className="bg-esperanza-50 border border-esperanza-200 rounded-lg p-5 mb-8">
+          <div className="bg-esperanza-50/70 border border-esperanza-200 rounded-xl p-4 md:p-5 mb-6">
             <h3 className="font-semibold text-esperanza-700 mb-3 text-sm">Agregar horario nuevo</h3>
             <div className="grid sm:grid-cols-3 gap-3 mb-3">
               <div>
@@ -398,11 +401,7 @@ export default function SettingsPage() {
                     key={dia}
                     type="button"
                     onClick={() => toggleDia(dia)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all capitalize ${
-                      nuevosDias.includes(dia)
-                        ? 'bg-esperanza-600 border-esperanza-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-600 hover:border-esperanza-300'
-                    }`}
+                    className={`chip capitalize !text-sm ${nuevosDias.includes(dia) ? 'chip-on' : 'chip-off'}`}
                   >
                     {dia}
                   </button>
@@ -414,21 +413,22 @@ export default function SettingsPage() {
               disabled={agregando || nuevosDias.length === 0}
               className="btn btn-primary"
             >
-              ➕ {agregando ? 'Agregando...' : 'Agregar'}
+              <Icon name="plus" size={16} strokeWidth={2.2} />
+              {agregando ? 'Agregando...' : 'Agregar'}
             </button>
           </div>
 
           {/* Grilla semanal: horas x días */}
           {horas.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">Todavía no hay horarios cargados.</p>
+            <p className="text-center text-stone-500 py-8">Todavía no hay horarios cargados.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr>
-                    <th className="text-left p-2 sticky left-0 bg-white">Hora</th>
+                    <th className="text-left p-2 sticky left-0 bg-white text-[11px] uppercase tracking-[0.08em] text-stone-500 font-semibold">Hora</th>
                     {DIAS_SEMANA_ORDEN.map((dia) => (
-                      <th key={dia} className="p-2 text-center font-semibold text-gray-600 capitalize min-w-[130px]">
+                      <th key={dia} className="p-2 text-center text-[11px] uppercase tracking-[0.08em] font-semibold text-stone-500 min-w-[120px]">
                         {DIAS_SEMANA[dia as keyof typeof DIAS_SEMANA]}
                       </th>
                     ))}
@@ -436,8 +436,8 @@ export default function SettingsPage() {
                 </thead>
                 <tbody>
                   {horas.map((hora) => (
-                    <tr key={hora} className="border-t border-gray-100">
-                      <td className="p-2 font-semibold text-esperanza-700 sticky left-0 bg-white">{hora}</td>
+                    <tr key={hora} className="border-t border-esperanza-100">
+                      <td className="p-2 font-extrabold text-esperanza-700 sticky left-0 bg-white tabular-nums">{hora}</td>
                       {DIAS_SEMANA_ORDEN.map((dia) => {
                         const h = celda(dia, hora);
                         if (!h) {
@@ -446,7 +446,7 @@ export default function SettingsPage() {
                               <button
                                 type="button"
                                 onClick={() => agregarCelda(dia, hora)}
-                                className="w-full h-full min-h-[64px] rounded-lg border border-dashed border-gray-200 text-gray-300 hover:border-esperanza-300 hover:text-esperanza-400 transition-all"
+                                className="w-full h-full min-h-[64px] rounded-lg border border-dashed border-esperanza-200 text-esperanza-300 hover:border-esperanza-400 hover:text-esperanza-500 transition-all"
                                 title="Agregar este turno para este día"
                               >
                                 +
@@ -458,27 +458,27 @@ export default function SettingsPage() {
                           <td key={dia} className="p-1">
                             <div
                               className={`rounded-lg border p-2 ${
-                                h.activo ? 'border-esperanza-200 bg-esperanza-50/40' : 'border-gray-200 bg-gray-50'
+                                h.activo ? 'border-esperanza-200 bg-white' : 'border-stone-200 bg-stone-100/70 opacity-70'
                               }`}
                             >
                               <div className="flex items-center justify-between gap-1 mb-1">
-                                <span className="text-[10px] text-gray-500">🏠</span>
+                                <span className="text-stone-400" title="Salón"><Icon name="home" size={13} /></span>
                                 <input
                                   type="number"
                                   min={0}
                                   defaultValue={h.capacidad}
                                   onBlur={(e) => guardarCelda(h.id, { capacidad: parseInt(e.target.value) || 0 })}
-                                  className="w-12 text-center text-xs border border-gray-200 rounded px-1 py-0.5"
+                                  className="w-12 text-center text-xs font-semibold text-esperanza-700 border border-esperanza-200 rounded-md px-1 py-1"
                                 />
                               </div>
                               <div className="flex items-center justify-between gap-1 mb-1.5">
-                                <span className="text-[10px] text-gray-500">☀️</span>
+                                <span className="text-stone-400" title="Vereda"><Icon name="sun" size={13} /></span>
                                 <input
                                   type="number"
                                   min={0}
                                   defaultValue={h.capacidadVereda}
                                   onBlur={(e) => guardarCelda(h.id, { capacidadVereda: parseInt(e.target.value) || 0 })}
-                                  className="w-12 text-center text-xs border border-gray-200 rounded px-1 py-0.5"
+                                  className="w-12 text-center text-xs font-semibold text-esperanza-700 border border-esperanza-200 rounded-md px-1 py-1"
                                 />
                               </div>
                               <div className="flex items-center justify-between">
@@ -487,8 +487,8 @@ export default function SettingsPage() {
                                   onClick={() => guardarCelda(h.id, { activo: !h.activo })}
                                   className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${
                                     h.activo
-                                      ? 'bg-green-100 text-green-700'
-                                      : 'bg-gray-200 text-gray-500'
+                                      ? 'bg-green-100 text-green-800'
+                                      : 'bg-stone-200 text-stone-600'
                                   }`}
                                   title={h.activo ? 'Click para desactivar' : 'Click para activar'}
                                 >
@@ -499,10 +499,11 @@ export default function SettingsPage() {
                                   onClick={() => {
                                     if (confirm('¿Eliminar este turno de este día?')) eliminarCelda(h.id);
                                   }}
-                                  className="text-[10px] text-red-500 hover:text-red-700 px-1"
+                                  className="text-stone-400 hover:text-red-700 p-1"
                                   title="Eliminar"
+                                  aria-label="Eliminar turno"
                                 >
-                                  🗑️
+                                  <Icon name="trash" size={13} />
                                 </button>
                               </div>
                             </div>
@@ -516,10 +517,9 @@ export default function SettingsPage() {
             </div>
           )}
 
-          <p className="text-xs text-gray-400 mt-4">
-            🏠 = capacidad de salón · ☀️ = capacidad de vereda (0 = sin mesas afuera ese turno).
-            Para bloquear un turno puntual (una fecha específica, no todos los días), usá el botón
-            &quot;Cerrar&quot; desde el Dashboard del día correspondiente.
+          <p className="text-xs text-stone-500 mt-4 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+            <Icon name="home" size={13} /> salón · <Icon name="sun" size={13} /> vereda (0 = sin mesas afuera ese turno).
+            Para cerrar un turno puntual de una fecha, usá el interruptor del turno en Reservas.
           </p>
         </div>
       </main>

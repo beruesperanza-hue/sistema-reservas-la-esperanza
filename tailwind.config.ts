@@ -16,18 +16,22 @@ const config: Config = {
         'display': ['var(--font-display)', 'system-ui', 'sans-serif'],
       },
       colors: {
+        // Paleta del panel de admin (solo se usa en /admin). Tonos cálidos
+        // alineados a la marca 2026: 50-400 papel/bordes, 500-600 bronce
+        // (links/acentos), 700-900 tinta/noche (títulos, botón primario, header).
         esperanza: {
-          50: '#f5f7fb',
-          100: '#e8ecf5',
-          200: '#d4dde8',
-          300: '#b8c7da',
-          400: '#8fa8c9',
-          500: '#1a3a52',
-          600: '#152d42',
-          700: '#0f2235',
-          800: '#0a1820',
-          900: '#050c10',
+          50: '#faf6ef',
+          100: '#f1eadd',
+          200: '#e4d9c6',
+          300: '#cdbb9c',
+          400: '#b0915c',
+          500: '#8c6d36',
+          600: '#6f5528',
+          700: '#1c1814',
+          800: '#141110',
+          900: '#0e0d0b',
         },
+        paper: '#f4efe6',
         accent: {
           red: '#8b3a3a',
           gold: '#d4af37',

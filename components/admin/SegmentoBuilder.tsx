@@ -1,5 +1,6 @@
 'use client';
 
+import Icon from './Icon';
 import { CAMPOS_SEGMENTO, type Condicion, type NodoFiltro, type OperadorCondicion } from '@/lib/segmentos';
 
 const LABEL_OP: Record<OperadorCondicion, string> = {
@@ -61,11 +62,7 @@ export default function SegmentoBuilder({
               key={op}
               type="button"
               onClick={() => onChange({ ...value, operador: op })}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                value.operador === op
-                  ? 'bg-esperanza-500 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className={`chip !text-sm !px-4 !py-2 ${value.operador === op ? 'chip-on' : 'chip-off'}`}
             >
               {op === 'AND' ? 'Todas (Y)' : 'Cualquiera (O)'}
             </button>
@@ -75,13 +72,13 @@ export default function SegmentoBuilder({
 
       <div className="space-y-3">
         {condiciones.length === 0 && (
-          <p className="text-gray-500 text-sm">Todavía no agregaste ninguna condición.</p>
+          <p className="text-stone-500 text-sm">Todavía no agregaste ninguna condición.</p>
         )}
 
         {condiciones.map((cond, index) => {
           const info = campoInfo(cond.campo);
           return (
-            <div key={index} className="flex flex-wrap items-center gap-2 bg-gray-50 p-3 rounded-lg">
+            <div key={index} className="flex flex-wrap items-center gap-2 bg-esperanza-50/70 border border-esperanza-100 p-3 rounded-lg">
               <select
                 className="form-input w-auto"
                 value={cond.campo}
@@ -125,8 +122,9 @@ export default function SegmentoBuilder({
                 onClick={() => quitarCondicion(index)}
                 className="btn btn-small btn-danger ml-auto"
                 title="Quitar condición"
+                aria-label="Quitar condición"
               >
-                🗑️
+                <Icon name="trash" size={14} />
               </button>
             </div>
           );
@@ -134,7 +132,8 @@ export default function SegmentoBuilder({
       </div>
 
       <button type="button" onClick={agregarCondicion} className="btn btn-secondary">
-        + Agregar condición
+        <Icon name="plus" size={15} strokeWidth={2.2} />
+        Agregar condición
       </button>
     </div>
   );
