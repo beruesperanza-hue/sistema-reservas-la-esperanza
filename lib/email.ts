@@ -30,13 +30,20 @@ function base64Body(text: string): string {
 }
 
 // Arma un MIME multipart/alternative (texto plano + HTML) en base64url.
-function buildRawMessage(to: string, subject: string, html: string, text: string): string {
+function buildRawMessage(
+  to: string,
+  subject: string,
+  html: string,
+  text: string,
+  headersExtra: string[] = []
+): string {
   const boundary = `laespe_${Date.now().toString(36)}`;
 
   const message = [
     `From: La Esperanza de los Ascurra <${FROM}>`,
     `To: ${to}`,
     `Subject: ${encodeSubject(subject)}`,
+    ...headersExtra,
     'MIME-Version: 1.0',
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
     '',
@@ -63,24 +70,53 @@ function buildRawMessage(to: string, subject: string, html: string, text: string
     .replace(/=+$/, '');
 }
 
+export interface ResultadoEnvioMail {
+  ok: boolean;
+  error?: string;
+  /** Gmail rechazó por límite diario: conviene frenar el envío, no seguir fallando. */
+  cuotaAgotada?: boolean;
+}
+
+async function enviarMailDetallado(
+  to: string,
+  subject: string,
+  html: string,
+  text: string,
+  headersExtra: string[] = []
+): Promise<ResultadoEnvioMail> {
+  // Para probar la sección de marketing en local sin credenciales de Gmail
+  // y sin mandarle mails a clientes reales. Nunca se activa en producción.
+  if (process.env.EMAIL_SIMULAR === '1' && process.env.NODE_ENV !== 'production') {
+    console.log('✉️  [simulado] a:', to, '|', subject);
+    return { ok: true };
+  }
+
+  try {
+    console.log('🔧 ENVIANDO EMAIL CON GMAIL API A:', to);
+    const res = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: { raw: buildRawMessage(to, subject, html, text, headersExtra) },
+    });
+    console.log('✅ EMAIL ENVIADO EXITOSAMENTE A:', to, '- id:', res.data.id);
+    return { ok: true };
+  } catch (error) {
+    console.error('❌ ERROR AL ENVIAR EMAIL:', error);
+    const e = error as { code?: number; message?: string; errors?: { reason?: string }[] };
+    const motivo = e.errors?.[0]?.reason ?? '';
+    const cuotaAgotada =
+      e.code === 429 ||
+      /quota|rateLimitExceeded|dailyLimitExceeded|userRateLimitExceeded/i.test(`${motivo} ${e.message ?? ''}`);
+    return { ok: false, error: (e.message ?? 'Error desconocido').slice(0, 300), cuotaAgotada };
+  }
+}
+
 async function enviarMail(
   to: string,
   subject: string,
   html: string,
   text: string
 ): Promise<boolean> {
-  try {
-    console.log('🔧 ENVIANDO EMAIL CON GMAIL API A:', to);
-    const res = await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: { raw: buildRawMessage(to, subject, html, text) },
-    });
-    console.log('✅ EMAIL ENVIADO EXITOSAMENTE A:', to, '- id:', res.data.id);
-    return true;
-  } catch (error) {
-    console.error('❌ ERROR AL ENVIAR EMAIL:', error);
-    return false;
-  }
+  return (await enviarMailDetallado(to, subject, html, text)).ok;
 }
 
 // Botón "bulletproof" (tabla en vez de <a> con padding) para que se vea igual en Outlook.
@@ -99,7 +135,7 @@ function boton(href: string, label: string, bg: string, color = '#ffffff'): stri
 }
 
 // Layout compartido por todos los mails: header con logo + contenido + footer.
-function layout(preheader: string, titulo: string, contenido: string): string {
+function layout(preheader: string, titulo: string, contenido: string, pieExtra = ''): string {
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -187,6 +223,7 @@ function layout(preheader: string, titulo: string, contenido: string): string {
               <p style="margin:16px 0 0 0;font-size:11px;color:#8f877c;">
                 La Esperanza de los Ascurra · Desde 2011
               </p>
+              ${pieExtra}
             </td>
           </tr>
 
@@ -494,4 +531,50 @@ export async function sendCampaignEmail(
     layout(asunto, asunto, cuerpoHtml),
     [cuerpoTexto, '', PIE_TEXTO].join('\n')
   );
+}
+
+/** El HTML completo de un mail de marketing, tal como lo recibe el cliente (también sirve de vista previa). */
+export function htmlMailMarketing(opciones: {
+  asunto: string;
+  titulo: string;
+  cuerpoHtml: string;
+  linkBaja?: string | null;
+}): string {
+  const pieBaja = opciones.linkBaja
+    ? `<p style="margin:12px 0 0 0;font-size:11px;color:#8f877c;">
+         Recibís este mail porque sos cliente de La Esperanza.
+         <a href="${opciones.linkBaja}" target="_blank" style="color:#c2b8ac;text-decoration:underline;">No quiero recibir más mails</a>
+       </p>`
+    : '';
+  return layout(opciones.asunto, opciones.titulo, opciones.cuerpoHtml, pieBaja);
+}
+
+/**
+ * Mail de la sección Marketing (campañas e invitaciones). Siempre lleva link
+ * de baja visible y el encabezado List-Unsubscribe, que es lo que hace que
+ * Gmail muestre "Anular suscripción" y no mande el mail a spam.
+ */
+export async function enviarMailMarketing(opciones: {
+  email: string;
+  asunto: string;
+  titulo: string;
+  cuerpoHtml: string;
+  cuerpoTexto: string;
+  linkBaja: string;
+  /** Endpoint que recibe el POST de "Anular suscripción" de Gmail. */
+  linkBajaUnClick: string;
+}): Promise<ResultadoEnvioMail> {
+  const html = htmlMailMarketing(opciones);
+  const texto = [
+    opciones.cuerpoTexto,
+    '',
+    PIE_TEXTO,
+    '',
+    `Para no recibir más mails: ${opciones.linkBaja}`,
+  ].join('\n');
+
+  return enviarMailDetallado(opciones.email, opciones.asunto, html, texto, [
+    `List-Unsubscribe: <${opciones.linkBajaUnClick}>`,
+    'List-Unsubscribe-Post: List-Unsubscribe=One-Click',
+  ]);
 }

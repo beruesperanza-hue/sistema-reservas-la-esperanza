@@ -194,6 +194,58 @@ model EmailCampaignLog {
   createdAt     DateTime @default(now())
 }
 
+// Campaña de la sección Marketing. Dos tipos:
+//  - 'campania': mail a clientes con consentimiento de email autorizado
+//    (todos, o los de un segmento).
+//  - 'invitacion': mail ÚNICO a clientes que nunca dieron consentimiento
+//    (los importados), pidiéndoles que se suscriban. A quien ya recibió una
+//    invitación no se le vuelve a mandar otra.
+// Los destinatarios se congelan en EnvioCampania al empezar a enviar, así el
+// envío se puede cortar y retomar al día siguiente sin repetir ni saltear a nadie.
+model Campania {
+  id            String   @id @default(cuid())
+  tipo          String   @default("campania") // 'campania' | 'invitacion'
+  nombre        String   // nombre interno, no lo ve el cliente
+  asunto        String
+  cuerpoTexto   String   // lo que escribe el admin (admite {nombre} y **negrita**)
+  botonTexto    String?
+  botonUrl      String?
+  segmentId     String?  // null = todos los suscriptos
+  segmentNombre String?  // copia del nombre, por si el segmento se borra
+  // borrador | enviando | enviada
+  estado        String   @default("borrador")
+  destinatarios Int      @default(0)
+  enviados      Int      @default(0)
+  fallidos      Int      @default(0)
+  envios        EnvioCampania[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  enviadaEn     DateTime?
+
+  @@index([estado])
+  @@index([tipo])
+}
+
+// Un destinatario de una campaña. Guarda el email con el que se mandó
+// (aunque después el cliente lo cambie) y el resultado.
+model EnvioCampania {
+  id         String    @id @default(cuid())
+  campaniaId String
+  campania   Campania  @relation(fields: [campaniaId], references: [id], onDelete: Cascade)
+  customerId String
+  email      String
+  // pendiente | enviado | fallido | omitido (se dio de baja mientras estaba en cola)
+  estado     String    @default("pendiente")
+  error      String?
+  enviadoEn  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([campaniaId, customerId])
+  @@index([campaniaId, estado])
+  @@index([customerId])
+  @@index([enviadoEn])
+}
+
 model Schedule {
   id        String   @id @default(cuid())
   dia       String

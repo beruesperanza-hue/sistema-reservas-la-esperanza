@@ -9,6 +9,7 @@ const LINKS: { href: string; label: string; icon: IconName }[] = [
   { href: '/admin/reservas', label: 'Reservas', icon: 'calendar' },
   { href: '/admin/pedidos', label: 'Pedidos', icon: 'bag' },
   { href: '/admin/clientes', label: 'Clientes', icon: 'users' },
+  { href: '/admin/marketing', label: 'Marketing', icon: 'mail' },
   { href: '/admin/carta', label: 'Carta', icon: 'menu' },
   { href: '/admin/settings', label: 'Configuración', icon: 'settings' },
 ];
@@ -108,7 +109,7 @@ export default function AdminHeader() {
       </div>
 
       {/* Mobile: pestañas siempre visibles — un toque para cambiar de sección */}
-      <nav className="md:hidden grid grid-cols-5 border-t border-white/10">
+      <nav className="md:hidden grid grid-cols-6 border-t border-white/10">
         {LINKS.map((l) => {
           const activo = esActivo(l.href);
           return (
