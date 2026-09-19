@@ -2,6 +2,9 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import prisma from '@/lib/db';
 import { CONTACTO } from '@/lib/constants';
 import { type NodoFiltro, evaluarSegmento, obtenerClientesConCampos } from '@/lib/segmentos';
+import { personalizar, primerNombre } from '@/lib/textoMarketing';
+
+export { personalizar, primerNombre };
 
 // ---------------------------------------------------------------------------
 // Límites
@@ -77,17 +80,6 @@ function escapar(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/** "JUAN CARLOS perez" -> "Juan". Los nombres importados de Bigbox vienen de cualquier forma. */
-export function primerNombre(nombre: string | null | undefined): string {
-  const primero = (nombre ?? '').trim().split(/\s+/)[0] ?? '';
-  if (!primero || !/[a-záéíóúñü]/i.test(primero)) return '';
-  return primero.charAt(0).toUpperCase() + primero.slice(1).toLowerCase();
-}
-
-/** Reemplaza {nombre} y limpia lo que queda feo si el cliente no tiene nombre ("Hola ,"). */
-export function personalizar(texto: string, nombre: string): string {
-  return texto.replace(/\{nombre\}/gi, nombre).replace(/[ \t]+([,.!?])/g, '$1');
-}
 
 /**
  * Texto del admin -> HTML del mail. Admite párrafos (línea en blanco),

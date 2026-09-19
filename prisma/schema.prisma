@@ -246,6 +246,49 @@ model EnvioCampania {
   @@index([enviadoEn])
 }
 
+// Promo por WhatsApp. No se envía sola: el admin abre WhatsApp cliente por
+// cliente con el mensaje ya escrito (wa.me), en tandas diarias. La foto va
+// guardada acá (Railway no tiene disco persistente) y se muestra en una página
+// pública /p/<slug>: WhatsApp la levanta como vista previa del link.
+model PromoWhatsapp {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  nombre        String   // interno
+  titulo        String   // título de la página de la promo y de la vista previa
+  mensaje       String   // admite {nombre}
+  imagen        Bytes?
+  imagenTipo    String?
+  tamanioTanda  Int      @default(50)
+  // borrador | activa (ya se armaron las tandas)
+  estado        String   @default("borrador")
+  destinatarios Int      @default(0)
+  envios        EnvioWhatsapp[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Un cliente dentro de una tanda de una promo de WhatsApp.
+model EnvioWhatsapp {
+  id         String        @id @default(cuid())
+  promoId    String
+  promo      PromoWhatsapp @relation(fields: [promoId], references: [id], onDelete: Cascade)
+  customerId String
+  nombre     String
+  telefono   String        // ya normalizado para wa.me (ej. 5491123456789)
+  tanda      Int
+  // Posición dentro de la promo (0 = el mejor cliente). Todas las filas se
+  // crean en el mismo instante, así que createdAt no sirve para ordenar.
+  orden      Int           @default(0)
+  // pendiente | enviado | salteado | baja
+  estado     String        @default("pendiente")
+  enviadoEn  DateTime?
+  createdAt  DateTime      @default(now())
+
+  @@unique([promoId, customerId])
+  @@index([promoId, tanda])
+  @@index([promoId, estado])
+}
+
 model Schedule {
   id        String   @id @default(cuid())
   dia       String

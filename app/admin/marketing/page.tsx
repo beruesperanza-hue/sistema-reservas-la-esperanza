@@ -35,12 +35,18 @@ export default function MarketingPage() {
         <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
           <div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700">Marketing</h1>
-            <p className="text-stone-500 text-sm mt-1">Mails a los clientes del CRM, siempre con su consentimiento.</p>
+            <p className="text-stone-500 text-sm mt-1">Mails y WhatsApp a los clientes del CRM.</p>
           </div>
-          <Link href="/admin/marketing/nueva" className="btn btn-primary">
-            <Icon name="plus" size={16} strokeWidth={2.2} />
-            Nueva campaña
-          </Link>
+          <div className="flex gap-2 flex-wrap">
+            <Link href="/admin/marketing/whatsapp" className="btn btn-secondary">
+              <Icon name="message" size={16} />
+              Promos por WhatsApp
+            </Link>
+            <Link href="/admin/marketing/nueva" className="btn btn-primary">
+              <Icon name="plus" size={16} strokeWidth={2.2} />
+              Nueva campaña de mail
+            </Link>
+          </div>
         </div>
 
         {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-5">{error}</div>}
