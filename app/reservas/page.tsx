@@ -31,16 +31,16 @@ export default function ReservasPage() {
           {/* Info */}
           <div className="mt-10 grid md:grid-cols-2 gap-5">
             <div className="border border-white/10 rounded-sm p-5">
-              <h3 className="font-display font-semibold text-sand mb-2">💡 Tip</h3>
+              <h3 className="font-display font-semibold text-sand mb-2">💡 Tip 1</h3>
               <p className="text-sand-dim text-sm">
                 Asegurate de proporcionar un email y teléfono válido para poder confirmar tu reserva.
               </p>
             </div>
 
             <div className="border border-brand-gold/25 bg-brand-gold/[.05] rounded-sm p-5">
-              <h3 className="font-display font-semibold text-sand mb-2">⏰ Importante</h3>
+              <h3 className="font-display font-semibold text-sand mb-2">💡 Tip 2</h3>
               <p className="text-sand-dim text-sm">
-                Podés reservar con hasta 60 días de anticipación. Por favor, cancelá con tiempo si no podés asistir.
+                Traé efectivo y te hacemos el 10% de descuento.
               </p>
             </div>
           </div>
