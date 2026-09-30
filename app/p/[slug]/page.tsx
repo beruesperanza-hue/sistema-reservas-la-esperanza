@@ -27,11 +27,6 @@ function textoPublico(mensaje: string): string {
   return personalizar(renglones.join('\n'), '').trim();
 }
 
-/** Sin el formato de WhatsApp (*negrita*, _cursiva_), para la descripción del link. */
-function sinFormato(texto: string): string {
-  return texto.replace(/[*_~]([^*_~\n]+)[*_~]/g, '$1');
-}
-
 /** *negrita* de WhatsApp -> <strong> en la página. */
 function conNegritas(texto: string) {
   return texto.split(/(\*[^*\n]+\*)/g).map((parte, i) =>
@@ -40,32 +35,30 @@ function conNegritas(texto: string) {
 }
 
 // Lo importante de esta página son los metadatos: WhatsApp los lee para armar
-// la vista previa del link con la foto grande.
+// la vista previa del link con la foto grande. A propósito NO se manda
+// descripción: si la hay, WhatsApp la muestra debajo de la foto y repite el
+// mismo texto que ya está en el mensaje. Así queda la foto y nada más.
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const promo = await buscar(slug);
   if (!promo) return { title: 'Promo · La Esperanza de los Ascurra', robots: 'noindex' };
 
-  const descripcion = sinFormato(textoPublico(promo.mensaje)).replace(/\s+/g, ' ').slice(0, 180);
   const imagen = promo.imagenTipo ? urlImagenPromo(promo.slug, promo.updatedAt.getTime()) : undefined;
 
   return {
     title: `${promo.titulo} · La Esperanza de los Ascurra`,
-    description: descripcion,
     robots: 'noindex, nofollow',
     alternates: { canonical: urlPromo(promo.slug) },
     openGraph: {
       type: 'website',
       url: urlPromo(promo.slug),
       title: promo.titulo,
-      description: descripcion,
       siteName: 'La Esperanza de los Ascurra',
       ...(imagen ? { images: [{ url: imagen, alt: promo.titulo }] } : {}),
     },
     twitter: {
       card: imagen ? 'summary_large_image' : 'summary',
       title: promo.titulo,
-      description: descripcion,
       ...(imagen ? { images: [imagen] } : {}),
     },
   };
