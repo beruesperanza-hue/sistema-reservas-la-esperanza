@@ -8,7 +8,7 @@ import { linkWhatsapp, mensajeWhatsapp } from '@/lib/textoMarketing';
 import {
   TAMANIO_TANDA_WHATSAPP,
   calcularDestinatariosWhatsapp,
-  nuevoSlug,
+  slugLibre,
   resumenTandas,
   urlPromo,
 } from '@/lib/whatsappPromo';
@@ -128,13 +128,17 @@ export async function guardarPromoWhatsapp(
     if (datos.id) {
       // Se puede editar aunque ya haya tandas: el mensaje se arma al abrir cada
       // WhatsApp, así que un cambio vale para los que todavía no se mandaron.
-      await prisma.promoWhatsapp.update({ where: { id: datos.id }, data });
+      // El slug solo se renombra mientras no se haya mandado nada: si ya salió,
+      // cambiarlo rompería el link que la gente tiene en el chat.
+      const yaEnviada = await prisma.envioWhatsapp.count({ where: { promoId: datos.id } });
+      const slug = yaEnviada > 0 ? undefined : await slugLibre(data.nombre, datos.id);
+      await prisma.promoWhatsapp.update({ where: { id: datos.id }, data: { ...data, ...(slug ? { slug } : {}) } });
       revalidatePath('/admin/marketing/whatsapp');
       return { success: true, id: datos.id };
     }
 
     const creada = await prisma.promoWhatsapp.create({
-      data: { ...data, slug: nuevoSlug(), tamanioTanda: TAMANIO_TANDA_WHATSAPP },
+      data: { ...data, slug: await slugLibre(data.nombre), tamanioTanda: TAMANIO_TANDA_WHATSAPP },
     });
     revalidatePath('/admin/marketing/whatsapp');
     return { success: true, id: creada.id };

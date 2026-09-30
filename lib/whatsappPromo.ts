@@ -10,6 +10,32 @@ export function nuevoSlug(): string {
   return randomBytes(5).toString('hex');
 }
 
+/** "PROMO OCTUBRE" -> "promo-octubre". El link que ve el cliente se lee mejor así. */
+export function slugDesdeNombre(nombre: string): string {
+  const limpio = nombre
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+  return limpio || nuevoSlug();
+}
+
+/**
+ * El slug definitivo: el legible si está libre, y si no el mismo con un número
+ * al final (promo-octubre-2). `idActual` permite conservar el suyo al editar.
+ */
+export async function slugLibre(nombre: string, idActual?: string): Promise<string> {
+  const base = slugDesdeNombre(nombre);
+  for (let i = 0; i < 25; i++) {
+    const candidato = i === 0 ? base : `${base}-${i + 1}`;
+    const existe = await prisma.promoWhatsapp.findUnique({ where: { slug: candidato }, select: { id: true } });
+    if (!existe || existe.id === idActual) return candidato;
+  }
+  return `${base}-${nuevoSlug()}`;
+}
+
 export function urlPromo(slug: string): string {
   return new URL(`/p/${slug}`, CONTACTO.SITIO).toString();
 }
