@@ -12,6 +12,20 @@ const nextConfig: NextConfig = {
   // WhatsApp. Son redirecciones temporales (307) a propósito: si mañana la
   // página de reservas cambia de ruta, el link corto sigue funcionando sin
   // que quede cacheado para siempre en el navegador de la gente.
+  // WhatsApp Web/Escritorio arma la vista previa desde el navegador: sin este
+  // permiso, el pedido de la página o de la foto le puede quedar bloqueado.
+  async headers() {
+    return [
+      {
+        source: '/p/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
+        ],
+      },
+    ];
+  },
+
   async redirects() {
     return [
       { source: '/r', destination: '/reservas', permanent: false },
