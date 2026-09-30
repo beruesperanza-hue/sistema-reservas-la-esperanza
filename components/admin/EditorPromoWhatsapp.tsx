@@ -14,22 +14,46 @@ interface Props {
   urlPromo?: string;
 }
 
-/**
- * Achica la foto antes de subirla: 1200 px de lado alcanzan para WhatsApp y la
- * página de la promo, y así queda liviana (la vista previa del link falla con
- * imágenes pesadas).
- */
+// La vista previa de un link en WhatsApp recorta la foto a un recuadro que
+// nunca es más alto que cuadrado. Para que una placa vertical se vea lo más
+// alta posible y sin que le corten el texto, la encajamos entera en un lienzo
+// 4:5 y rellenamos los costados con la misma foto ampliada y desenfocada.
+const ANCHO_FOTO = 1080;
+const ALTO_FOTO = 1350; // 4:5
+
 async function prepararFoto(archivo: File): Promise<{ base64: string; tipo: string; url: string }> {
   const url = URL.createObjectURL(archivo);
   const img = new Image();
   img.src = url;
   await img.decode();
 
-  const escala = Math.min(1, 1200 / Math.max(img.width, img.height));
   const canvas = document.createElement('canvas');
-  canvas.width = Math.round(img.width * escala);
-  canvas.height = Math.round(img.height * escala);
-  canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+  canvas.width = ANCHO_FOTO;
+  canvas.height = ALTO_FOTO;
+  const ctx = canvas.getContext('2d')!;
+
+  // Fondo: la foto ampliada hasta tapar todo el lienzo, desenfocada. Si el
+  // navegador no soporta filtros en canvas, queda el negro de la marca.
+  ctx.fillStyle = '#0e0d0b';
+  ctx.fillRect(0, 0, ANCHO_FOTO, ALTO_FOTO);
+  const cubrir = Math.max(ANCHO_FOTO / img.width, ALTO_FOTO / img.height);
+  ctx.save();
+  ctx.filter = 'blur(48px)';
+  ctx.globalAlpha = 0.75;
+  ctx.drawImage(
+    img,
+    (ANCHO_FOTO - img.width * cubrir) / 2,
+    (ALTO_FOTO - img.height * cubrir) / 2,
+    img.width * cubrir,
+    img.height * cubrir
+  );
+  ctx.restore();
+
+  // La foto completa, centrada y sin recortar.
+  const entrar = Math.min(ANCHO_FOTO / img.width, ALTO_FOTO / img.height);
+  const ancho = img.width * entrar;
+  const alto = img.height * entrar;
+  ctx.drawImage(img, (ANCHO_FOTO - ancho) / 2, (ALTO_FOTO - alto) / 2, ancho, alto);
   URL.revokeObjectURL(url);
 
   const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
@@ -95,9 +119,9 @@ export default function EditorPromoWhatsapp({ inicial, imagenActual = null, urlP
             <div className="flex items-start gap-4 flex-wrap">
               {fotoVisible ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={fotoVisible} alt="" className="w-28 h-28 object-cover rounded-lg border border-esperanza-200" />
+                <img src={fotoVisible} alt="" className="w-28 h-[8.75rem] object-contain bg-esperanza-900 rounded-lg border border-esperanza-200" />
               ) : (
-                <div className="w-28 h-28 rounded-lg border border-dashed border-esperanza-300 flex items-center justify-center text-stone-400">
+                <div className="w-28 h-[8.75rem] rounded-lg border border-dashed border-esperanza-300 flex items-center justify-center text-stone-400">
                   <Icon name="upload" size={22} />
                 </div>
               )}
@@ -119,7 +143,7 @@ export default function EditorPromoWhatsapp({ inicial, imagenActual = null, urlP
                   </button>
                 )}
                 <p className="text-xs text-stone-400 max-w-xs">
-                  Se ve grande en el chat gracias al link de la promo. Mejor horizontal o cuadrada.
+                  Se ve grande en el chat gracias al link de la promo. Podés subir la placa vertical de Instagram: se acomoda sola en formato 4:5 sin recortar nada.
                 </p>
               </div>
             </div>
@@ -182,7 +206,7 @@ export function VistaWhatsapp({ texto, foto, titulo }: { texto: string; foto: st
         <div className="bg-[#c6ebc0] rounded-md overflow-hidden mb-1.5">
           {foto && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={foto} alt="" className="w-full max-h-64 object-cover" />
+            <img src={foto} alt="" className="w-full max-h-80 object-contain bg-esperanza-900" />
           )}
           <div className="px-2.5 py-2">
             <p className="font-semibold text-[13px] leading-snug">{titulo || 'Título de la promo'}</p>
