@@ -41,7 +41,7 @@ function conNegritas(texto: string) {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const promo = await buscar(slug);
-  if (!promo) return { title: 'Promo · La Esperanza de los Ascurra', robots: 'noindex' };
+  if (!promo) return { title: 'Promo · La Esperanza de los Ascurra' };
 
   const imagen = promo.imagenTipo ? urlImagenPromo(promo.slug, promo.updatedAt.getTime()) : undefined;
 
@@ -50,7 +50,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     // null y no "sin campo": si no se pisa, hereda la descripción del sitio
     // (app/layout.tsx) y WhatsApp la muestra igual abajo de la foto.
     description: null,
-    robots: 'noindex, nofollow',
+    // Sin "noindex": el robot de WhatsApp lo respeta y deja de armar la vista
+    // previa. Estas páginas no están enlazadas ni en el sitemap, así que no
+    // hace falta bloquearlas para que no molesten en Google.
     alternates: { canonical: urlPromo(promo.slug) },
     openGraph: {
       type: 'website',
@@ -58,7 +60,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: promo.titulo,
       description: '',
       siteName: 'La Esperanza de los Ascurra',
-      ...(imagen ? { images: [{ url: imagen, alt: promo.titulo }] } : {}),
+      ...(imagen
+        ? { images: [{ url: imagen, alt: promo.titulo, width: 1080, height: 1350, type: 'image/jpeg' }] }
+        : {}),
     },
     twitter: {
       card: imagen ? 'summary_large_image' : 'summary',

@@ -20,6 +20,7 @@ interface Props {
 // 4:5 y rellenamos los costados con la misma foto ampliada y desenfocada.
 const ANCHO_FOTO = 1080;
 const ALTO_FOTO = 1350; // 4:5
+const MAX_PESO_FOTO = 240 * 1024;
 
 async function prepararFoto(archivo: File): Promise<{ base64: string; tipo: string; url: string }> {
   const url = URL.createObjectURL(archivo);
@@ -56,7 +57,13 @@ async function prepararFoto(archivo: File): Promise<{ base64: string; tipo: stri
   ctx.drawImage(img, (ANCHO_FOTO - ancho) / 2, (ALTO_FOTO - alto) / 2, ancho, alto);
   URL.revokeObjectURL(url);
 
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  // WhatsApp no arma la vista previa con fotos pesadas: se baja la calidad
+  // hasta que entre cómoda por debajo de los 300 KB.
+  let dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  for (const calidad of [0.75, 0.65, 0.55, 0.45]) {
+    if (dataUrl.length * 0.75 < MAX_PESO_FOTO) break;
+    dataUrl = canvas.toDataURL('image/jpeg', calidad);
+  }
   return { base64: dataUrl.split(',')[1], tipo: 'image/jpeg', url: dataUrl };
 }
 

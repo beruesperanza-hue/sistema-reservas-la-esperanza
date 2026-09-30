@@ -41,7 +41,7 @@ export function urlPromo(slug: string): string {
 }
 
 export function urlImagenPromo(slug: string, version: string | number = ''): string {
-  return new URL(`/api/promo/${slug}/imagen${version ? `?v=${version}` : ''}`, CONTACTO.SITIO).toString();
+  return new URL(`/p/${slug}/imagen${version ? `?v=${version}` : ''}`, CONTACTO.SITIO).toString();
 }
 
 export interface DestinatarioWhatsapp {
