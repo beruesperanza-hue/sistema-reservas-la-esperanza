@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
       { source: '/reservar', destination: '/reservas', permanent: false },
       { source: '/reserva', destination: '/reservas', permanent: false },
       { source: '/p', destination: '/pedidos', permanent: false },
+      // La promo de octubre salió primero con este link a 3 clientes, antes de
+      // acortarlo: que no les quede roto.
+      { source: '/p/promo-octubre', destination: '/p/octubre', permanent: false },
       { source: '/pedir', destination: '/pedidos', permanent: false },
     ];
   },
