@@ -47,18 +47,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return {
     title: `${promo.titulo} · La Esperanza de los Ascurra`,
+    // null y no "sin campo": si no se pisa, hereda la descripción del sitio
+    // (app/layout.tsx) y WhatsApp la muestra igual abajo de la foto.
+    description: null,
     robots: 'noindex, nofollow',
     alternates: { canonical: urlPromo(promo.slug) },
     openGraph: {
       type: 'website',
       url: urlPromo(promo.slug),
       title: promo.titulo,
+      description: null,
       siteName: 'La Esperanza de los Ascurra',
       ...(imagen ? { images: [{ url: imagen, alt: promo.titulo }] } : {}),
     },
     twitter: {
       card: imagen ? 'summary_large_image' : 'summary',
       title: promo.titulo,
+      description: null,
       ...(imagen ? { images: [imagen] } : {}),
     },
   };
