@@ -56,14 +56,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'website',
       url: urlPromo(promo.slug),
       title: promo.titulo,
-      description: null,
+      description: '',
       siteName: 'La Esperanza de los Ascurra',
       ...(imagen ? { images: [{ url: imagen, alt: promo.titulo }] } : {}),
     },
     twitter: {
       card: imagen ? 'summary_large_image' : 'summary',
       title: promo.titulo,
-      description: null,
+      description: '',
       ...(imagen ? { images: [imagen] } : {}),
     },
   };
