@@ -13,14 +13,14 @@ export function personalizar(texto: string, nombre: string): string {
   return texto.replace(/\{nombre\}/gi, nombre).replace(/[ \t]+([,.!?])/g, '$1');
 }
 
-/** Link corto de reservas (redirige a /reservas — ver next.config.ts). */
-export const LINK_RESERVAS = 'laesperanzadelosascurra.com/r';
+/** El sitio, tal como se muestra en los mensajes (sin https:// para que se lea corto). */
+export const LINK_SITIO = 'laesperanzadelosascurra.com';
 
 /**
  * El mensaje completo de WhatsApp. El link de la promo va solo en su renglón y
  * primero: WhatsApp arma la vista previa con el PRIMER link del mensaje, así
- * que la foto grande sale de esa página. Abajo va el link corto de reservas,
- * para que el cliente pueda reservar sin tener que buscar el sitio.
+ * que la foto grande sale de esa página. Abajo va la invitación al sitio, donde
+ * el cliente encuentra reservas, pedidos y la carta.
  */
 export function mensajeWhatsapp(mensaje: string, nombre: string, urlPromo: string): string {
   return [
@@ -28,7 +28,8 @@ export function mensajeWhatsapp(mensaje: string, nombre: string, urlPromo: strin
     '',
     urlPromo,
     '',
-    `Reservá aquí: ${LINK_RESERVAS}`,
+    'Conocé la nueva web: reservas, pedidos y menú',
+    LINK_SITIO,
     '',
     'Si no querés recibir más mensajes, respondé BAJA.',
   ].join('\n');
