@@ -75,10 +75,10 @@ export default function TandaPage() {
   const foto = async () => {
     if (!t) return;
     try {
-      await copiarFoto(`/api/promo/${t.promo.slug}/imagen?v=${t.promo.version}`);
-      setAvisoFoto('Foto copiada. En el chat, pegala con Cmd+V (o Ctrl+V) antes de enviar.');
+      await copiarFoto(`/p/${t.promo.slug}/imagen?v=${t.promo.version}`);
+      setAvisoFoto('Foto copiada. Queda en el portapapeles: en cada chat, pegala con Ctrl+V (Cmd+V en Mac) y enviá.');
     } catch {
-      setAvisoFoto('Este navegador no deja copiar imágenes. Igual la foto aparece sola por el link de la promo.');
+      setAvisoFoto('Este navegador no deja copiar imágenes: descargá la foto con el botón de al lado y adjuntala en el chat.');
     }
   };
 
@@ -124,21 +124,58 @@ export default function TandaPage() {
 
         {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-4">{error}</div>}
 
-        <div className="card !p-4 mb-4 text-sm text-stone-600 space-y-2">
-          <p>
-            Tocá <strong>Abrir WhatsApp</strong>: se abre el chat con el mensaje escrito, solo tenés que enviarlo. La foto
-            aparece sola por el link de la promo.
-          </p>
-          {t.promo.tieneImagen && (
-            <div className="flex items-center gap-3 flex-wrap">
-              <button className="btn btn-secondary btn-small" onClick={foto}>
-                <Icon name="upload" size={14} />
-                Copiar foto
-              </button>
-              <span className="text-xs text-stone-500">{avisoFoto || 'Opcional: para mandarla también como imagen.'}</span>
-            </div>
-          )}
-          <p className="text-xs text-stone-400">
+        <div className="card !p-4 md:!p-5 mb-4 text-sm text-stone-600">
+          <ol className="space-y-2.5 list-none">
+            {t.promo.tieneImagen && (
+              <li className="flex gap-3">
+                <span className="w-5 h-5 rounded-full bg-esperanza-700 text-sand text-[11px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                <div className="min-w-0">
+                  <p className="text-esperanza-700 font-semibold">Copiá la foto, una sola vez</p>
+                  <div className="flex items-center gap-2 flex-wrap mt-1.5">
+                    <button className="btn btn-secondary btn-small" onClick={foto}>
+                      <Icon name="upload" size={14} />
+                      Copiar foto
+                    </button>
+                    <a
+                      className="btn btn-secondary btn-small"
+                      href={`/p/${t.promo.slug}/imagen?v=${t.promo.version}`}
+                      download={`promo-${t.promo.slug}.jpg`}
+                    >
+                      <Icon name="save" size={14} />
+                      Descargar
+                    </a>
+                  </div>
+                  {avisoFoto && <p className="text-xs text-esperanza-600 mt-1.5">{avisoFoto}</p>}
+                </div>
+              </li>
+            )}
+            <li className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-esperanza-700 text-sand text-[11px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                {t.promo.tieneImagen ? '2' : '1'}
+              </span>
+              <div className="min-w-0">
+                <p className="text-esperanza-700 font-semibold">Abrí el WhatsApp del cliente</p>
+                <p>Se abre el chat con el mensaje ya escrito.</p>
+              </div>
+            </li>
+            <li className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-esperanza-700 text-sand text-[11px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                {t.promo.tieneImagen ? '3' : '2'}
+              </span>
+              <div className="min-w-0">
+                <p className="text-esperanza-700 font-semibold">
+                  {t.promo.tieneImagen ? 'Pegá la foto con Ctrl+V y enviá' : 'Enviá'}
+                </p>
+                {t.promo.tieneImagen && (
+                  <p>
+                    El texto pasa al pie de la foto. Así se ve grande y seguro — WhatsApp Web casi nunca muestra la
+                    foto sola por el link.
+                  </p>
+                )}
+              </div>
+            </li>
+          </ol>
+          <p className="text-xs text-stone-500 mt-3 pt-3 border-t border-esperanza-100">
             Si alguien contesta “BAJA”, volvé acá y tocá <em>Pidió baja</em>: no entra en ninguna promo más.
           </p>
         </div>
