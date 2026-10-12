@@ -669,3 +669,55 @@ export async function sendReservationCancelledAlertEmail(datos: {
     texto
   );
 }
+
+/**
+ * Mail con el link para cancelar, cuando el cliente lo pide desde la web
+ * (no tiene a mano el mail de confirmación). Se manda solo al mail de la
+ * reserva, así nadie puede cancelarle la mesa a otro.
+ */
+export async function sendCancelLinkEmail(
+  email: string,
+  nombre: string,
+  reservas: { fecha: string; hora: string; personas: number; link: string }[]
+) {
+  const bloques = reservas
+    .map(
+      (r) => `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px 0;border:1px solid #e5dfd3;border-radius:3px;">
+      <tr><td style="padding:16px 18px;font-family:Helvetica,Arial,sans-serif;">
+        <p style="margin:0 0 4px 0;font-size:16px;color:#201914;font-weight:bold;">${r.fecha} · ${r.hora}</p>
+        <p style="margin:0 0 14px 0;font-size:14px;color:#8b8378;">${r.personas} ${r.personas === 1 ? 'persona' : 'personas'}</p>
+        <a href="${r.link}" style="display:inline-block;padding:10px 20px;border:1px solid #d8d0c2;border-radius:3px;font-size:14px;font-weight:bold;color:#201914;text-decoration:none;">Cancelar esta reserva</a>
+      </td></tr>
+    </table>`
+    )
+    .join('');
+
+  const contenido = `
+    <p style="margin:0 0 16px 0;">Hola <strong>${nombre}</strong>,</p>
+    <p style="margin:0 0 20px 0;">Pediste cancelar desde la web. ${
+      reservas.length === 1 ? 'Esta es tu reserva:' : 'Estas son tus reservas:'
+    }</p>
+    ${bloques}
+    <p style="margin:0;font-size:14px;color:#8b8378;">Si no fuiste vos, ignorá este mail: la reserva sigue en pie.</p>
+  `;
+
+  const texto = [
+    `Hola ${nombre},`,
+    '',
+    'Pediste cancelar desde la web. Entrá al link de la reserva que quieras cancelar:',
+    '',
+    ...reservas.map((r) => `${r.fecha} · ${r.hora} · ${r.personas} personas\n${r.link}`),
+    '',
+    'Si no fuiste vos, ignorá este mail: la reserva sigue en pie.',
+    '',
+    PIE_TEXTO,
+  ].join('\n');
+
+  return enviarMail(
+    email,
+    'Cancelar tu reserva en La Esperanza',
+    layout('Link para cancelar tu reserva.', 'Cancelar tu reserva', contenido),
+    texto
+  );
+}

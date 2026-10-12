@@ -6,9 +6,10 @@ import {
   sendReservationConfirmation,
   sendReservationCancellation,
   sendReservationCancelledAlertEmail,
+  sendCancelLinkEmail,
 } from '@/lib/email';
 import { MENSAJES, ESTADOS_RESERVA, UBICACIONES } from '@/lib/constants';
-import { dateAFechaISO, diaSemanaDe, esTurnoPasado, fechaISOaDate, formatearFechaLarga } from '@/lib/fechas';
+import { dateAFechaISO, diaSemanaDe, esTurnoPasado, fechaISOaDate, formatearFechaLarga, hoyEnBA } from '@/lib/fechas';
 import { firmaValida, linkCancelarReserva } from '@/lib/marketing';
 import { getEstadoTurno, sectorDe } from '@/lib/turnos';
 import { revalidatePath } from 'next/cache';
@@ -459,5 +460,50 @@ export async function cancelarReservaDesdeLink(reservationId: string, firma: str
   } catch (error) {
     console.error('Error cancelando la reserva desde el link:', error);
     return { success: false as const, motivo: 'error' as const };
+  }
+}
+
+/**
+ * El cliente pide desde la web el link para cancelar. Se le manda por mail a
+ * la dirección de la reserva: así nadie puede cancelar la mesa de otro con
+ * solo saberle el mail. La respuesta es siempre la misma, exista o no la
+ * reserva — si no, el formulario serviría para averiguar quién tiene mesa.
+ */
+export async function pedirLinkDeCancelacion(email: string) {
+  const limpio = email.trim().toLowerCase();
+  if (!limpio || !limpio.includes('@')) {
+    return { success: false as const, error: 'Escribí el mail con el que hiciste la reserva.' };
+  }
+
+  try {
+    const reservas = await prisma.reservation.findMany({
+      where: {
+        email: { equals: limpio, mode: 'insensitive' },
+        estado: ESTADOS_RESERVA.CONFIRMADA,
+        fecha: { gte: fechaISOaDate(hoyEnBA()) },
+      },
+      orderBy: [{ fecha: 'asc' }, { hora: 'asc' }],
+      take: 10,
+    });
+
+    const proximas = reservas.filter((r) => !esTurnoPasado(dateAFechaISO(r.fecha), r.hora));
+
+    if (proximas.length > 0) {
+      await sendCancelLinkEmail(
+        proximas[0].email,
+        proximas[0].nombre,
+        proximas.map((r) => ({
+          fecha: formatearFechaLarga(dateAFechaISO(r.fecha)),
+          hora: r.hora,
+          personas: r.personas,
+          link: linkCancelarReserva(r.id),
+        }))
+      );
+    }
+
+    return { success: true as const };
+  } catch (error) {
+    console.error('Error mandando el link de cancelación:', error);
+    return { success: false as const, error: MENSAJES.ERROR_GENERICO };
   }
 }

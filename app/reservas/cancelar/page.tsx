@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import PantallaMail, { BotonMail, VolverAlSitio } from '@/components/mail/PantallaMail';
-import { cancelarReservaDesdeLink, reservaDeLinkCancelacion } from '@/app/actions/reservations';
+import { cancelarReservaDesdeLink, pedirLinkDeCancelacion, reservaDeLinkCancelacion } from '@/app/actions/reservations';
 import { CONTACTO, UBICACIONES_LABEL } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
@@ -27,9 +27,9 @@ function Dato({ label, valor }: { label: string; valor: string }) {
 export default async function CancelarReservaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ r?: string; t?: string; listo?: string }>;
+  searchParams: Promise<{ r?: string; t?: string; listo?: string; enviado?: string; error?: string }>;
 }) {
-  const { r = '', t = '', listo } = await searchParams;
+  const { r = '', t = '', listo, enviado, error } = await searchParams;
 
   if (listo) {
     return (
@@ -42,6 +42,68 @@ export default async function CancelarReservaPage({
         >
           Reservar otro día
         </Link>
+        <VolverAlSitio />
+      </PantallaMail>
+    );
+  }
+
+  if (enviado) {
+    return (
+      <PantallaMail icono="📩" titulo="Fijate en tu correo">
+        <p>
+          Si hay una reserva a tu nombre con ese mail, te mandamos el link para cancelarla. Puede tardar un
+          minuto en llegar; mirá también en correo no deseado.
+        </p>
+        <p>
+          ¿Preferís resolverlo al toque? Escribinos por{' '}
+          <a href={WHATSAPP} className="underline text-sand" target="_blank" rel="noopener noreferrer">
+            WhatsApp
+          </a>
+          .
+        </p>
+        <VolverAlSitio />
+      </PantallaMail>
+    );
+  }
+
+  // Sin link firmado: el cliente entró desde la web, le pedimos el mail de la
+  // reserva y le mandamos ahí el link (nadie puede cancelar la mesa de otro).
+  if (!r || !t) {
+    async function pedirLink(formData: FormData) {
+      'use server';
+      const res = await pedirLinkDeCancelacion(String(formData.get('email') ?? ''));
+      redirect(res.success ? '/reservas/cancelar?enviado=1' : '/reservas/cancelar?error=1');
+    }
+
+    return (
+      <PantallaMail icono="🪑" titulo="Cancelar una reserva">
+        <p>Poné el mail con el que reservaste y te mandamos el link para cancelar.</p>
+
+        {error && <p className="text-brand-amber text-sm">No pudimos procesarlo. Probá de nuevo en un minuto.</p>}
+
+        <form action={pedirLink} className="space-y-3 text-left">
+          <label htmlFor="email-cancelar" className="block text-sm text-sand-dim">
+            Tu email
+          </label>
+          <input
+            id="email-cancelar"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="nombre@mail.com"
+            className="w-full px-4 py-3.5 bg-night border border-white/15 rounded-sm text-sand placeholder:text-sand-faint focus:outline-none focus:border-brand-gold"
+          />
+          <BotonMail>Mandame el link</BotonMail>
+        </form>
+
+        <p className="text-sm">
+          Si querés cambiar el horario en vez de cancelar, escribinos por{' '}
+          <a href={WHATSAPP} className="underline text-sand" target="_blank" rel="noopener noreferrer">
+            WhatsApp
+          </a>
+          .
+        </p>
         <VolverAlSitio />
       </PantallaMail>
     );

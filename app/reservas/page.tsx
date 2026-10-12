@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import ReservationForm from '@/components/reservas/ReservationForm';
@@ -27,6 +28,14 @@ export default function ReservasPage() {
           <div className="border border-white/10 rounded-sm p-6 md:p-8 bg-night-2">
             <ReservationForm />
           </div>
+
+          <p className="mt-5 text-sm text-sand-dim">
+            ¿Ya tenés una reserva y no vas a poder venir?{' '}
+            <Link href="/reservas/cancelar" className="underline text-sand hover:text-brand-amber">
+              Cancelala acá
+            </Link>
+            .
+          </p>
 
           {/* Info */}
           <div className="mt-10 grid md:grid-cols-2 gap-5">
