@@ -310,6 +310,22 @@ model Schedule {
 // Se usa tanto para cierres manuales (lluvia, evento privado) como para el
 // cierre automático de turnos que ya pasaron, que NO se guarda acá — ese se
 // calcula al vuelo comparando contra la hora actual de Buenos Aires.
+// Cierre programado por adelantado: vacaciones, feriados, un evento privado.
+// Vale para un rango de fechas, y opcionalmente solo para una franja horaria
+// (horaDesde/horaHasta) y/o un sector. Sin franja, cierra el día entero.
+model CierreProgramado {
+  id        String   @id @default(cuid())
+  desde     DateTime
+  hasta     DateTime
+  horaDesde String?
+  horaHasta String?
+  sector    String?
+  motivo    String?
+  createdAt DateTime @default(now())
+
+  @@index([desde, hasta])
+}
+
 model TurnoCierre {
   id        String   @id @default(cuid())
   fecha     DateTime

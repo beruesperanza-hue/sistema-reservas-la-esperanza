@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import AdminHeader from '@/components/admin/AdminHeader';
 import MiniCalendario from '@/components/admin/MiniCalendario';
 import TurnoBoard from '@/components/admin/TurnoBoard';
@@ -190,10 +191,16 @@ export default function AdminReservasPage() {
             </p>
             <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700 first-letter:uppercase">{titulo}</h1>
           </div>
-          <button onClick={() => setModalAbierto(true)} className="btn btn-primary">
-            <Icon name="plus" size={16} strokeWidth={2.2} />
-            Nueva reserva
-          </button>
+          <div className="flex gap-2">
+            <Link href="/admin/cierres" className="btn btn-secondary">
+              <Icon name="ban" size={16} />
+              Cerrar días
+            </Link>
+            <button onClick={() => setModalAbierto(true)} className="btn btn-primary">
+              <Icon name="plus" size={16} strokeWidth={2.2} />
+              Nueva reserva
+            </button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-[300px_1fr] gap-5 items-start">

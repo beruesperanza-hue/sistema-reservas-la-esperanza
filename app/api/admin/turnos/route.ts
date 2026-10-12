@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { ESTADOS_RESERVA, UBICACIONES } from '@/lib/constants';
 import { diaSemanaDe, esTurnoPasado, fechaISOaDate } from '@/lib/fechas';
+import { cierreQueAplica, cierresDeFecha } from '@/lib/cierres';
 
 // Tablero operativo de un día: para cada turno de la plantilla semanal,
 // cruza capacidad (Schedule), cierres manuales (TurnoCierre) y reservas
@@ -18,13 +19,14 @@ export async function GET(request: NextRequest) {
     const fecha = fechaISOaDate(fechaStr);
     const diaNombre = diaSemanaDe(fechaStr);
 
-    const [horarios, reservas, cierres] = await Promise.all([
+    const [horarios, reservas, cierres, programados] = await Promise.all([
       prisma.schedule.findMany({ where: { dia: diaNombre, activo: true }, orderBy: { hora: 'asc' } }),
       prisma.reservation.findMany({
         where: { fecha, estado: ESTADOS_RESERVA.CONFIRMADA },
         orderBy: { createdAt: 'asc' },
       }),
       prisma.turnoCierre.findMany({ where: { fecha } }),
+      cierresDeFecha(fechaStr),
     ]);
 
     const turnos = horarios.map((horario) => {
@@ -47,14 +49,19 @@ export async function GET(request: NextRequest) {
         reservasSector: typeof reservasSalon,
         ocupado: number,
         capacidad: number,
-        cierre: (typeof cierres)[number] | undefined
+        cierre: (typeof cierres)[number] | undefined,
+        // Cierre programado (vacaciones, feriado) que tapa este turno: se ve
+        // como cerrado pero sin cierreId, porque el interruptor del tablero no
+        // puede reabrirlo — eso se hace desde /admin/cierres.
+        programado: ReturnType<typeof cierreQueAplica>
       ) => ({
         capacidad,
         reservado: ocupado,
         libres: Math.max(0, capacidad - ocupado),
-        cerrado: !!cierre || !!cierreGeneral,
+        cerrado: !!cierre || !!cierreGeneral || !!programado,
         cierreId: cierre?.id || cierreGeneral?.id || null,
-        motivoCierre: cierre?.motivo || cierreGeneral?.motivo || null,
+        cierreProgramado: !!programado,
+        motivoCierre: cierre?.motivo || cierreGeneral?.motivo || programado?.motivo || null,
         reservas: reservasSector.map((r) => ({
           id: r.id,
           nombre: r.nombre,
@@ -71,8 +78,20 @@ export async function GET(request: NextRequest) {
       return {
         hora: horario.hora,
         pasado: esTurnoPasado(fechaStr, horario.hora),
-        salon: sector(reservasSalon, ocupadoSalon, horario.capacidad, cierreSalon),
-        vereda: sector(reservasVereda, ocupadoVereda, horario.capacidadVereda, cierreVereda),
+        salon: sector(
+          reservasSalon,
+          ocupadoSalon,
+          horario.capacidad,
+          cierreSalon,
+          cierreQueAplica(programados, horario.hora, UBICACIONES.ADENTRO)
+        ),
+        vereda: sector(
+          reservasVereda,
+          ocupadoVereda,
+          horario.capacidadVereda,
+          cierreVereda,
+          cierreQueAplica(programados, horario.hora, UBICACIONES.VEREDA)
+        ),
       };
     });
 

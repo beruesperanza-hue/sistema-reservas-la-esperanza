@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import AdminHeader from '@/components/admin/AdminHeader';
 import Icon from '@/components/admin/Icon';
 import { DIAS_SEMANA, DIAS_SEMANA_ORDEN } from '@/lib/constants';
@@ -183,7 +184,13 @@ export default function SettingsPage() {
       <AdminHeader />
 
       <main className="container mx-auto px-4 py-6 md:py-8 max-w-6xl">
-        <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700 mb-6">Configuración</h1>
+        <div className="flex items-end justify-between gap-3 mb-6 flex-wrap">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-esperanza-700">Configuración</h1>
+          <Link href="/admin/cierres" className="btn btn-secondary">
+            <Icon name="ban" size={16} />
+            Cierres programados
+          </Link>
+        </div>
 
         {/* Configuración General */}
         <div className="bg-white rounded-xl border border-esperanza-200/80 p-5 md:p-7 mb-5">

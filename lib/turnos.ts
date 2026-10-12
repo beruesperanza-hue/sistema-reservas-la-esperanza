@@ -1,6 +1,7 @@
 import prisma from '@/lib/db';
 import { ESTADOS_RESERVA, UBICACIONES } from '@/lib/constants';
 import { esTurnoPasado, fechaISOaDate } from '@/lib/fechas';
+import { cierreQueAplica, cierresDeFecha } from '@/lib/cierres';
 
 export interface EstadoSector {
   capacidad: number;
@@ -34,7 +35,7 @@ export async function getEstadoTurno(
   const fecha = fechaISOaDate(fechaISO);
   const pasado = esTurnoPasado(fechaISO, hora);
 
-  const [reservasSalon, reservasVereda, cierres] = await Promise.all([
+  const [reservasSalon, reservasVereda, cierres, programados] = await Promise.all([
     prisma.reservation.aggregate({
       where: { fecha, hora, ubicacion: UBICACIONES.ADENTRO, estado: ESTADOS_RESERVA.CONFIRMADA },
       _sum: { personas: true },
@@ -44,11 +45,18 @@ export async function getEstadoTurno(
       _sum: { personas: true },
     }),
     prisma.turnoCierre.findMany({ where: { fecha, hora } }),
+    cierresDeFecha(fechaISO),
   ]);
 
   const cierreGeneral = cierres.some((c) => c.sector === null);
-  const cierreSalon = cierreGeneral || cierres.some((c) => c.sector === UBICACIONES.ADENTRO);
-  const cierreVereda = cierreGeneral || cierres.some((c) => c.sector === UBICACIONES.VEREDA);
+  const cierreSalon =
+    cierreGeneral ||
+    cierres.some((c) => c.sector === UBICACIONES.ADENTRO) ||
+    !!cierreQueAplica(programados, hora, UBICACIONES.ADENTRO);
+  const cierreVereda =
+    cierreGeneral ||
+    cierres.some((c) => c.sector === UBICACIONES.VEREDA) ||
+    !!cierreQueAplica(programados, hora, UBICACIONES.VEREDA);
 
   const ocupadoSalon = reservasSalon._sum.personas || 0;
   const ocupadoVereda = reservasVereda._sum.personas || 0;
