@@ -2,9 +2,14 @@
 
 import { Prisma } from '@prisma/client';
 import prisma from '@/lib/db';
-import { sendReservationConfirmation, sendReservationCancellation } from '@/lib/email';
+import {
+  sendReservationConfirmation,
+  sendReservationCancellation,
+  sendReservationCancelledAlertEmail,
+} from '@/lib/email';
 import { MENSAJES, ESTADOS_RESERVA, UBICACIONES } from '@/lib/constants';
-import { diaSemanaDe, esTurnoPasado, fechaISOaDate, formatearFechaLarga } from '@/lib/fechas';
+import { dateAFechaISO, diaSemanaDe, esTurnoPasado, fechaISOaDate, formatearFechaLarga } from '@/lib/fechas';
+import { firmaValida, linkCancelarReserva } from '@/lib/marketing';
 import { getEstadoTurno, sectorDe } from '@/lib/turnos';
 import { revalidatePath } from 'next/cache';
 
@@ -119,7 +124,7 @@ export async function createReservation(data: CreateReservationData) {
       },
     });
 
-    // Enviar email de confirmación
+    // Enviar email de confirmación, con el link para que se cancele solo.
     await sendReservationConfirmation(
       data.email,
       data.nombre,
@@ -127,7 +132,8 @@ export async function createReservation(data: CreateReservationData) {
       data.hora,
       data.personas,
       data.telefono,
-      ubicacion
+      ubicacion,
+      linkCancelarReserva(reservation.id)
     );
 
     // No bloqueante: si falla el link a Customer, la reserva ya está hecha y
@@ -293,7 +299,11 @@ export async function cancelReservation(reservationId: string) {
     });
 
     // Enviar email de cancelación
-    await sendReservationCancellation(reservation.email, reservation.nombre);
+    await sendReservationCancellation(reservation.email, reservation.nombre, {
+      fecha: formatearFechaLarga(dateAFechaISO(reservation.fecha)),
+      hora: reservation.hora,
+      personas: reservation.personas,
+    });
 
     revalidatePath('/admin');
     return { success: true, message: MENSAJES.CANCELA_EXITOSA };
@@ -354,5 +364,100 @@ export async function deleteReservation(reservationId: string) {
   } catch (error) {
     console.error('Error deleting reservation:', error);
     return { success: false, error: MENSAJES.ERROR_GENERICO };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Cancelación por el propio cliente (link firmado del mail de confirmación)
+// ---------------------------------------------------------------------------
+
+export type MotivoNoCancelable = 'link_invalido' | 'no_encontrada' | 'ya_cancelada' | 'ya_paso';
+
+/**
+ * Trae la reserva de un link de cancelación, validando la firma. Devuelve el
+ * motivo cuando no se puede cancelar, para que la página muestre qué pasó.
+ */
+export async function reservaDeLinkCancelacion(reservationId: string, firma: string) {
+  if (!firmaValida(reservationId, 'cancelar-reserva', firma)) {
+    return { ok: false as const, motivo: 'link_invalido' as MotivoNoCancelable };
+  }
+
+  const reserva = await prisma.reservation.findUnique({ where: { id: reservationId } });
+  if (!reserva) return { ok: false as const, motivo: 'no_encontrada' as MotivoNoCancelable };
+
+  const fechaISO = dateAFechaISO(reserva.fecha);
+  const datos = {
+    id: reserva.id,
+    nombre: reserva.nombre,
+    apellido: reserva.apellido,
+    fechaISO,
+    fecha: formatearFechaLarga(fechaISO),
+    hora: reserva.hora,
+    personas: reserva.personas,
+    ubicacion: reserva.ubicacion,
+    estado: reserva.estado,
+  };
+
+  if (reserva.estado === ESTADOS_RESERVA.CANCELADA) {
+    return { ok: false as const, motivo: 'ya_cancelada' as MotivoNoCancelable, datos };
+  }
+  if (esTurnoPasado(fechaISO, reserva.hora)) {
+    return { ok: false as const, motivo: 'ya_paso' as MotivoNoCancelable, datos };
+  }
+
+  return { ok: true as const, datos };
+}
+
+/**
+ * Cancela la reserva desde el link del mail. Vuelve a validar la firma del
+ * lado del servidor: la página ya lo hizo, pero esta acción se puede llamar
+ * directo, así que no se confía en lo que llega del navegador.
+ */
+export async function cancelarReservaDesdeLink(reservationId: string, firma: string) {
+  try {
+    const encontrada = await reservaDeLinkCancelacion(reservationId, firma);
+    if (!encontrada.ok) return { success: false as const, motivo: encontrada.motivo };
+
+    const reserva = await prisma.reservation.findUnique({ where: { id: reservationId } });
+    if (!reserva) return { success: false as const, motivo: 'no_encontrada' as MotivoNoCancelable };
+
+    await prisma.reservation.update({
+      where: { id: reservationId },
+      data: { estado: ESTADOS_RESERVA.CANCELADA },
+    });
+
+    const fecha = formatearFechaLarga(dateAFechaISO(reserva.fecha));
+
+    // Los mails no deben voltear la cancelación: ya está hecha en la base.
+    try {
+      await sendReservationCancellation(reserva.email, reserva.nombre, {
+        fecha,
+        hora: reserva.hora,
+        personas: reserva.personas,
+      });
+    } catch (e) {
+      console.error('Error mandando el mail de cancelación al cliente:', e);
+    }
+
+    try {
+      await sendReservationCancelledAlertEmail({
+        nombre: reserva.nombre,
+        apellido: reserva.apellido,
+        fecha,
+        hora: reserva.hora,
+        personas: reserva.personas,
+        telefono: reserva.telefono,
+        email: reserva.email,
+        ubicacion: reserva.ubicacion,
+      });
+    } catch (e) {
+      console.error('Error avisando al local de la cancelación:', e);
+    }
+
+    revalidatePath('/admin');
+    return { success: true as const };
+  } catch (error) {
+    console.error('Error cancelando la reserva desde el link:', error);
+    return { success: false as const, motivo: 'error' as const };
   }
 }

@@ -39,11 +39,13 @@ function secreto(): string {
  * Los links de baja y suscripción van firmados: sin la firma, cualquiera podría
  * dar de baja (o suscribir) a otro cliente cambiando el id en la URL.
  */
-export function firmar(customerId: string, accion: 'baja' | 'suscribir'): string {
+type AccionFirmada = 'baja' | 'suscribir' | 'cancelar-reserva';
+
+export function firmar(customerId: string, accion: AccionFirmada): string {
   return createHmac('sha256', secreto()).update(`${accion}:${customerId}`).digest('hex').slice(0, 32);
 }
 
-export function firmaValida(customerId: string, accion: 'baja' | 'suscribir', firma: string | null): boolean {
+export function firmaValida(customerId: string, accion: AccionFirmada, firma: string | null): boolean {
   if (!customerId || !firma) return false;
   const esperada = Buffer.from(firmar(customerId, accion));
   const recibida = Buffer.from(firma);
@@ -52,6 +54,15 @@ export function firmaValida(customerId: string, accion: 'baja' | 'suscribir', fi
 
 function urlPublica(ruta: string): string {
   return new URL(ruta, CONTACTO.SITIO).toString();
+}
+
+/**
+ * Link para que el cliente cancele su propia reserva desde el mail de
+ * confirmación. Va firmado: sin la firma, cambiando el id en la URL cualquiera
+ * podría cancelarle la mesa a otro.
+ */
+export function linkCancelarReserva(reservationId: string): string {
+  return urlPublica(`/reservas/cancelar?r=${reservationId}&t=${firmar(reservationId, 'cancelar-reserva')}`);
 }
 
 /** Link visible en el pie del mail: abre una página que pide confirmar la baja. */

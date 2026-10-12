@@ -253,7 +253,9 @@ export async function sendReservationConfirmation(
   hora: string,
   personas: number,
   telefono: string,
-  ubicacion: string = UBICACIONES.ADENTRO
+  ubicacion: string = UBICACIONES.ADENTRO,
+  /** Link firmado para que el cliente cancele solo (lib/marketing.ts). */
+  linkCancelar?: string
 ) {
   const ubicacionLabel = UBICACIONES_LABEL[ubicacion] || UBICACIONES_LABEL[UBICACIONES.ADENTRO];
 
@@ -281,8 +283,20 @@ export async function sendReservationConfirmation(
         : ''
     }
 
-    <p style="margin:0 0 8px 0;">Si necesitás cambiar o cancelar la reserva, escribinos por WhatsApp y lo resolvemos al toque.</p>
     <p style="margin:0 0 8px 0;">¡Te esperamos! 🌟</p>
+
+    ${
+      linkCancelar
+        ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px 0;">
+      <tr>
+        <td style="border:1px solid #d8d0c2;border-radius:3px;">
+          <a href="${linkCancelar}" style="display:inline-block;padding:12px 24px;font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:bold;color:#201914;text-decoration:none;">No voy a poder ir: cancelar</a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 8px 0;font-size:14px;color:#8b8378;">Si te surge algo, avisanos con este botón y liberamos la mesa. Para cambiar el horario, escribinos por WhatsApp.</p>`
+        : `<p style="margin:0 0 8px 0;">Si necesitás cambiar o cancelar la reserva, escribinos por WhatsApp y lo resolvemos al toque.</p>`
+    }
   `;
 
   const texto = [
@@ -296,7 +310,9 @@ export async function sendReservationConfirmation(
     `Mesa: ${ubicacionLabel}`,
     `Teléfono: ${telefono}`,
     '',
-    'Si necesitás cambiar o cancelar la reserva, escribinos por WhatsApp.',
+    linkCancelar
+      ? `Si no vas a poder venir, cancelá acá y liberamos la mesa:\n${linkCancelar}\nPara cambiar el horario, escribinos por WhatsApp.`
+      : 'Si necesitás cambiar o cancelar la reserva, escribinos por WhatsApp.',
     '',
     PIE_TEXTO,
   ].join('\n');
@@ -313,21 +329,38 @@ export async function sendReservationConfirmation(
   );
 }
 
-export async function sendReservationCancellation(email: string, nombre?: string) {
+export async function sendReservationCancellation(
+  email: string,
+  nombre?: string,
+  /** Fecha y hora de la reserva cancelada, para que el mail se entienda solo. */
+  detalle?: { fecha: string; hora: string; personas: number }
+) {
   const saludo = nombre ? `Hola <strong>${nombre}</strong>,` : 'Hola,';
+  const cual = detalle
+    ? `la del <strong>${detalle.fecha}</strong> a las <strong>${detalle.hora}</strong> para ${detalle.personas} ${detalle.personas === 1 ? 'persona' : 'personas'}`
+    : '';
 
   const contenido = `
     <p style="margin:0 0 16px 0;">${saludo}</p>
-    <p style="margin:0 0 16px 0;">Tu reserva en La Esperanza fue cancelada.</p>
-    <p style="margin:0 0 8px 0;">Si fue un error o querés reservar para otro día, escribinos por WhatsApp o entrá al sitio y elegí un nuevo horario.</p>
+    <p style="margin:0 0 16px 0;">Tu reserva en La Esperanza fue cancelada${cual ? `: ${cual}` : ''}.</p>
+    <p style="margin:0 0 8px 0;">Si fue un error o querés reservar para otro día, entrá al sitio y elegí un nuevo horario, o escribinos por WhatsApp.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px 0;">
+      <tr>
+        <td style="background-color:#201914;border-radius:3px;">
+          <a href="${CONTACTO.SITIO}/reservas" style="display:inline-block;padding:12px 28px;font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:bold;color:#f6f1e7;text-decoration:none;">Reservar otro día</a>
+        </td>
+      </tr>
+    </table>
     <p style="margin:0 0 8px 0;">¡Nos vemos pronto!</p>
   `;
 
   const texto = [
     nombre ? `Hola ${nombre},` : 'Hola,',
     '',
-    'Tu reserva en La Esperanza fue cancelada.',
-    'Si fue un error o querés reservar para otro día, escribinos por WhatsApp.',
+    detalle
+      ? `Tu reserva en La Esperanza fue cancelada: ${detalle.fecha} a las ${detalle.hora}, ${detalle.personas} personas.`
+      : 'Tu reserva en La Esperanza fue cancelada.',
+    `Si querés reservar para otro día: ${CONTACTO.SITIO}/reservas`,
     '',
     PIE_TEXTO,
   ].join('\n');
@@ -451,7 +484,7 @@ export async function sendOrderConfirmation(
   );
 }
 
-const EMAIL_AVISOS_PEDIDOS = 'laesperanzadevillacrespo@gmail.com';
+const EMAIL_AVISOS_LOCAL = 'laesperanzadevillacrespo@gmail.com';
 
 const TIPO_ENTREGA_LABEL: Record<string, string> = {
   retiro: 'Retira en el local',
@@ -462,7 +495,7 @@ const TIPO_ENTREGA_LABEL: Record<string, string> = {
 /**
  * Aviso interno al restaurante cuando se confirma un pedido pago — no es el
  * mail de confirmación del cliente (sendOrderConfirmation). Va siempre a
- * EMAIL_AVISOS_PEDIDOS, sin depender de qué email cargó el cliente.
+ * EMAIL_AVISOS_LOCAL, sin depender de qué email cargó el cliente.
  */
 export async function sendNewOrderAlertEmail(
   numero: number,
@@ -510,7 +543,7 @@ export async function sendNewOrderAlertEmail(
   ].join('\n');
 
   return enviarMail(
-    EMAIL_AVISOS_PEDIDOS,
+    EMAIL_AVISOS_LOCAL,
     `Nuevo pedido #${numero} — ${nombreCliente}`,
     layout(`Nuevo pedido #${numero}.`, 'Nuevo pedido', contenido),
     texto
@@ -577,4 +610,62 @@ export async function enviarMailMarketing(opciones: {
     `List-Unsubscribe: <${opciones.linkBajaUnClick}>`,
     'List-Unsubscribe-Post: List-Unsubscribe=One-Click',
   ]);
+}
+
+/**
+ * Aviso al local cuando el cliente se cancela solo desde el mail. En el panel
+ * la reserva ya figura cancelada, pero el mail hace que se enteren en el
+ * momento y puedan reofrecer la mesa.
+ */
+export async function sendReservationCancelledAlertEmail(datos: {
+  nombre: string;
+  apellido: string;
+  fecha: string;
+  hora: string;
+  personas: number;
+  telefono: string;
+  email: string;
+  ubicacion: string;
+}) {
+  const ubicacionLabel = UBICACIONES_LABEL[datos.ubicacion] || UBICACIONES_LABEL[UBICACIONES.ADENTRO];
+  const quien = `${datos.nombre} ${datos.apellido}`.trim();
+
+  const fila = (label: string, valor: string) => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8b8378;">${label}</td>
+      <td align="right" style="padding:8px 0;border-bottom:1px solid #e5dfd3;font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#201914;font-weight:bold;">${valor}</td>
+    </tr>`;
+
+  const contenido = `
+    <p style="margin:0 0 16px 0;"><strong>${quien}</strong> canceló su reserva desde el mail.</p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
+      ${fila('Fecha', datos.fecha)}
+      ${fila('Hora', datos.hora)}
+      ${fila('Personas', String(datos.personas))}
+      ${fila('Mesa', ubicacionLabel)}
+      ${fila('Teléfono', datos.telefono)}
+      ${fila('Email', datos.email)}
+    </table>
+    <p style="margin:0;font-size:14px;color:#8b8378;">La mesa quedó libre para ese turno.</p>
+  `;
+
+  const texto = [
+    `${quien} canceló su reserva desde el mail.`,
+    '',
+    `Fecha: ${datos.fecha}`,
+    `Hora: ${datos.hora}`,
+    `Personas: ${datos.personas}`,
+    `Mesa: ${ubicacionLabel}`,
+    `Teléfono: ${datos.telefono}`,
+    `Email: ${datos.email}`,
+    '',
+    'La mesa quedó libre para ese turno.',
+  ].join('\n');
+
+  return enviarMail(
+    EMAIL_AVISOS_LOCAL,
+    `Reserva cancelada — ${quien} · ${datos.fecha} ${datos.hora}`,
+    layout(`${quien} canceló la reserva del ${datos.fecha}.`, 'Reserva cancelada', contenido),
+    texto
+  );
 }
