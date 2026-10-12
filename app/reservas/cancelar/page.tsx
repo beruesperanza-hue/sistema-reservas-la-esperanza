@@ -38,7 +38,7 @@ export default async function CancelarReservaPage({
         <p>Cuando quieras volver, te esperamos.</p>
         <Link
           href="/reservas"
-          className="inline-flex items-center justify-center font-semibold text-sm px-8 py-4 rounded-sm bg-sand text-night hover:bg-brand-amber transition-colors"
+          className="flex items-center justify-center w-full font-semibold text-sm px-8 py-4 rounded-sm bg-sand text-night hover:bg-brand-amber transition-colors"
         >
           Reservar otro día
         </Link>
@@ -80,7 +80,7 @@ export default async function CancelarReservaPage({
         <p>No hace falta que hagas nada más.</p>
         <Link
           href="/reservas"
-          className="inline-flex items-center justify-center font-semibold text-sm px-8 py-4 rounded-sm bg-sand text-night hover:bg-brand-amber transition-colors"
+          className="flex items-center justify-center w-full font-semibold text-sm px-8 py-4 rounded-sm bg-sand text-night hover:bg-brand-amber transition-colors"
         >
           Reservar otro día
         </Link>
@@ -95,7 +95,7 @@ export default async function CancelarReservaPage({
         <p>Esta reserva era para un horario que ya pasó, así que no hay nada que cancelar.</p>
         <Link
           href="/reservas"
-          className="inline-flex items-center justify-center font-semibold text-sm px-8 py-4 rounded-sm bg-sand text-night hover:bg-brand-amber transition-colors"
+          className="flex items-center justify-center w-full font-semibold text-sm px-8 py-4 rounded-sm bg-sand text-night hover:bg-brand-amber transition-colors"
         >
           Reservar otro día
         </Link>
