@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { marcarAsistio, updateReservation } from '@/app/actions/reservations';
+import { cancelReservation, marcarAsistio, updateReservation } from '@/app/actions/reservations';
 import { PERSONAS_OPCIONES, UBICACIONES, UBICACIONES_LABEL } from '@/lib/constants';
 import NuevaReservaModal from './NuevaReservaModal';
 import Icon from './Icon';
@@ -24,6 +24,8 @@ interface SectorTurno {
   libres: number;
   cerrado: boolean;
   cierreId: string | null;
+  /** Viene de /admin/cierres: el interruptor del tablero no puede reabrirlo. */
+  cierreProgramado?: boolean;
   motivoCierre: string | null;
   reservas: ReservaTurno[];
 }
@@ -79,10 +81,14 @@ function ReservaRow({
   reserva,
   onToggleAsistio,
   onEditarPersonas,
+  onCancelar,
+  cancelando,
 }: {
   reserva: ReservaTurno;
   onToggleAsistio: () => void;
   onEditarPersonas: (personas: number) => void;
+  onCancelar: () => void;
+  cancelando: boolean;
 }) {
   return (
     <details className={`group px-4 md:px-5 py-2.5 hover:bg-esperanza-50/60 transition-colors ${reserva.asistio ? 'bg-green-50/50' : ''}`}>
@@ -143,6 +149,20 @@ function ReservaRow({
             ))}
           </select>
         </div>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            onCancelar();
+          }}
+          disabled={cancelando}
+          className="btn btn-danger btn-small mt-1"
+          title="Cancela la reserva y le avisa al cliente por mail"
+        >
+          <Icon name="ban" size={13} />
+          {cancelando ? 'Cancelando...' : 'Cancelar reserva'}
+        </button>
       </div>
     </details>
   );
@@ -155,6 +175,8 @@ function SectorAcordeon({
   onToggleAsistio,
   onEditarPersonas,
   onNuevaReserva,
+  onCancelar,
+  cancelandoId,
 }: {
   tipo: string;
   turnos: Turno[];
@@ -162,6 +184,8 @@ function SectorAcordeon({
   onToggleAsistio: (reservaId: string, nuevoValor: boolean) => void;
   onEditarPersonas: (reservaId: string, personas: number) => void;
   onNuevaReserva: (hora: string) => void;
+  onCancelar: (reservaId: string, nombre: string) => void;
+  cancelandoId: string | null;
 }) {
   const [abierto, setAbierto] = useState(true);
 
@@ -228,9 +252,14 @@ function SectorAcordeon({
                       <Icon name="plus" size={13} strokeWidth={2.4} />
                       Reserva
                     </button>
-                    {!turno.pasado && (
-                      <ToggleCierre cerrado={sector.cerrado} onClick={() => onToggleCierre(turno.hora)} />
-                    )}
+                    {!turno.pasado &&
+                      (sector.cierreProgramado ? (
+                        <span className="badge bg-amber-100 text-amber-800" title={sector.motivoCierre || 'Cierre programado'}>
+                          cierre programado
+                        </span>
+                      ) : (
+                        <ToggleCierre cerrado={sector.cerrado} onClick={() => onToggleCierre(turno.hora)} />
+                      ))}
                   </div>
                 </div>
 
@@ -241,6 +270,8 @@ function SectorAcordeon({
                       reserva={r}
                       onToggleAsistio={() => onToggleAsistio(r.id, !r.asistio)}
                       onEditarPersonas={(personas) => onEditarPersonas(r.id, personas)}
+                      onCancelar={() => onCancelar(r.id, `${r.nombre} ${r.apellido}`.trim())}
+                      cancelando={cancelandoId === r.id}
                     />
                   ))}
                 </div>
@@ -263,6 +294,7 @@ export default function TurnoBoard({
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<{ hora: string; sector: string } | null>(null);
+  const [cancelandoId, setCancelandoId] = useState<string | null>(null);
 
   const cargar = () => {
     setLoading(true);
@@ -339,6 +371,16 @@ export default function TurnoBoard({
     if (!result.success) cargar();
   };
 
+  // Cancela y le manda el mail al cliente (lo hace cancelReservation).
+  const cancelar = async (reservaId: string, nombre: string) => {
+    if (!confirm(`¿Cancelar la reserva de ${nombre}? Le llega un mail avisándole.`)) return;
+    setCancelandoId(reservaId);
+    const res = await cancelReservation(reservaId);
+    setCancelandoId(null);
+    if (res.success) cargar();
+    else alert(res.error || 'No se pudo cancelar la reserva.');
+  };
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -356,6 +398,8 @@ export default function TurnoBoard({
         onToggleAsistio={toggleAsistio}
         onEditarPersonas={editarPersonas}
         onNuevaReserva={(hora) => setModal({ hora, sector: UBICACIONES.ADENTRO })}
+        onCancelar={cancelar}
+        cancelandoId={cancelandoId}
       />
       <SectorAcordeon
         tipo={UBICACIONES.VEREDA}
@@ -364,6 +408,8 @@ export default function TurnoBoard({
         onToggleAsistio={toggleAsistio}
         onEditarPersonas={editarPersonas}
         onNuevaReserva={(hora) => setModal({ hora, sector: UBICACIONES.VEREDA })}
+        onCancelar={cancelar}
+        cancelandoId={cancelandoId}
       />
 
       {modal && (
