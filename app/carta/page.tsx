@@ -178,6 +178,11 @@ export default async function CartaPage() {
       </section>
 
       <main className="mx-auto px-5 max-w-2xl py-16 md:py-20">
+        <div className="mb-12 border border-brand-gold/35 bg-brand-gold/[.07] rounded-sm px-5 py-4 text-center">
+          <p className="font-display font-bold text-xl text-sand">15% de descuento pagando en efectivo</p>
+          <p className="text-sand-dim text-sm mt-1">Sobre todos los precios de la carta.</p>
+        </div>
+
         {tortillas.length > 0 && (
           <SeccionTapaRacion
             titulo="★ Nuestras Tortillas"
@@ -223,7 +228,7 @@ export default async function CartaPage() {
           <Reveal className="mb-16">
             <h2 className="font-display font-bold text-2xl md:text-3xl text-sand mb-1">Espe Combos</h2>
             <p className="text-sm text-sand-dim mb-5">
-              Comen 2, pican 4 — combos para compartir, con 10% de descuento sobre el precio suelto
+              Comen 2, pican 4 — combos para compartir, más baratos que pedir las tapas sueltas
             </p>
             <div className="grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10">
               {espeCombos.map((c) => (

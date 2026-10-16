@@ -24,93 +24,93 @@ export interface ItemBebida {
 }
 
 export const TORTILLAS: Plato[] = [
-  { nombre: 'Tortilla de papas', tapa: 13500, racion: 19200 },
-  { nombre: 'Tortilla con alioli y taquitos de jamón', nueva: true, tapa: 14700, racion: 20900 },
-  { nombre: 'Tortilla de papas, cherry salteados y camembert', nueva: true, tapa: 16000, racion: 23300 },
+  { nombre: 'Tortilla de papas', tapa: 14200, racion: 20000 },
+  { nombre: 'Tortilla con alioli y taquitos de jamón', nueva: true, tapa: 15400, racion: 22000 },
+  { nombre: 'Tortilla de papas, cherry salteados y camembert', nueva: true, tapa: 16800, racion: 24500 },
 ];
 
 export const TAPAS_Y_RACIONES: Plato[] = [
-  { nombre: 'Papas bravas', tapa: 8800, racion: 14800 },
-  { nombre: 'Croquetas de jamón (2/4 ud.)', tapa: 10800, racion: 18600 },
-  { nombre: 'Triolet: pollo escabeche, zanahorias al curry y olivas', tapa: 11600 },
-  { nombre: 'Buñuelos de acelga con muzzarella (2/4 ud.)', tapa: 11600, racion: 21200 },
-  { nombre: 'Ensalada veggie: rúcula, pimientos, cherry salteado, zanahoria, olivas, cebolla encurtida y cilantro', tapa: 12800, racion: 19600 },
-  { nombre: 'Pincho moruno con puré de berenjenas', tapa: 15900, racion: 24900 },
-  { nombre: 'Pollo al aglio con papas españolas', tapa: 16200, racion: 26900 },
-  { nombre: 'Cerdo cabrales con batatas', tapa: 16900, racion: 27000 },
-  { nombre: 'Huevos rotos veggies con pimientos y queso azul', nueva: true, tapa: 17200, racion: 28500 },
-  { nombre: 'Provoleta con tomate y pesto', racion: 20700 },
-  { nombre: 'Camembert frito con salsa de arándanos', racion: 21700 },
-  { nombre: 'Burrata: rúcula, cebolla encurtida, pepinos agridulces y cherry salteados', racion: 23400 },
-  { nombre: 'Ojo de bife (300 gr) con salsa de pimiento y huevo frito', racion: 35000 },
+  { nombre: 'Papas bravas', tapa: 9200, racion: 15500 },
+  { nombre: 'Croquetas de jamón (2/4 ud.)', tapa: 11300, racion: 19500 },
+  { nombre: 'Triolet: pollo escabeche, zanahorias al curry y olivas', tapa: 12200 },
+  { nombre: 'Buñuelos de acelga con muzzarella (2/4 ud.)', tapa: 12200, racion: 22500 },
+  { nombre: 'Ensalada veggie: rúcula, pimientos, cherry salteado, zanahoria, olivas, cebolla encurtida y cilantro', tapa: 13400, racion: 19600 },
+  { nombre: 'Pincho moruno con puré de berenjenas', tapa: 16700, racion: 26000 },
+  { nombre: 'Pollo al aglio con papas españolas', tapa: 17000, racion: 28000 },
+  { nombre: 'Cerdo cabrales con batatas', tapa: 17700, racion: 28500 },
+  { nombre: 'Huevos rotos veggies con pimientos y queso azul', nueva: true, tapa: 18100, racion: 30000 },
+  { nombre: 'Provoleta con tomate y pesto', racion: 21500 },
+  { nombre: 'Camembert frito con salsa de arándanos', racion: 23000 },
+  { nombre: 'Burrata: rúcula, cebolla encurtida, pepinos agridulces y cherry salteados', racion: 24500 },
+  { nombre: 'Ojo de bife (300 gr) con salsa de pimiento y huevo frito', racion: 37000 },
 ];
 
 export const CLASICOS_DE_MAR: Plato[] = [
-  { nombre: 'Rabas', tapa: 16200, racion: 29700 },
-  { nombre: 'Huevos rotos con gambas al ajillo', tapa: 22000, racion: 36000 },
-  { nombre: 'Gambas al ajillo o al azafrán', racion: 29000 },
+  { nombre: 'Rabas', tapa: 17000, racion: 31000 },
+  { nombre: 'Huevos rotos con gambas al ajillo', tapa: 23000, racion: 38000 },
+  { nombre: 'Gambas al ajillo o al azafrán', racion: 30500 },
 ];
 
 export const ARROCES: Plato[] = [
-  { nombre: 'Paella valenciana: pollo, cerdo, chauchas y romero', precio: 41400 },
-  { nombre: 'Arroz con gambas y calamares', precio: 48000 },
+  { nombre: 'Paella valenciana: pollo, cerdo, chauchas y romero', precio: 43500 },
+  { nombre: 'Arroz con gambas y calamares', precio: 50500 },
 ];
 
 export const POSTRES: Plato[] = [
-  { nombre: 'Flan con dulce de leche', precio: 9600 },
-  { nombre: 'Panqueque de dulce de leche', precio: 9800 },
-  { nombre: 'Torta de queso vasca', precio: 12200 },
+  { nombre: 'Flan con dulce de leche', precio: 10100 },
+  { nombre: 'Panqueque de dulce de leche', precio: 10300 },
+  { nombre: 'Torta de queso vasca', precio: 12800 },
 ];
 
 export const HORA_DEL_VERMUT: ItemBebida[] = [
-  { nombre: '2 Vermut + Triolet', precio: 21000 },
-  { nombre: 'Vermú + tapa de croquetas + tapa de papas bravas', precio: 26000 },
+  { nombre: '2 Vermut + Triolet', precio: 22000 },
+  { nombre: 'Vermú + tapa de croquetas + tapa de papas bravas', precio: 27500 },
 ];
 
 export const DE_GRIFO: ItemBebida[] = [
-  { nombre: 'Caña Imperial 350 cm³', precio: 8200 },
-  { nombre: 'Caña Sidra 1888', precio: 8200 },
+  { nombre: 'Caña Imperial 350 cm³', precio: 8600 },
+  { nombre: 'Caña Sidra 1888', precio: 8600 },
 ];
 
 export const VERMUT_Y_CUBATAS: ItemBebida[] = [
-  { nombre: 'Vaso de vermut rosso con pomelo o soda', precio: 7700 },
-  { nombre: 'Aperisidra: Cynar, sidra 1888 y pomelo', precio: 7700 },
-  { nombre: 'Copa de tinto verano', precio: 8200 },
-  { nombre: 'Ferroviario: rosso, fernet y soda', precio: 9200 },
-  { nombre: 'Cynar con pomelo o naranja', precio: 9800 },
-  { nombre: 'Campari con naranja o tónica', precio: 10500 },
-  { nombre: 'Aperol Spritz', precio: 13100 },
-  { nombre: 'Fernet con coca', precio: 13100 },
-  { nombre: 'Gin Tonic', precio: 14000 },
-  { nombre: 'Negroni', precio: 15000 },
-  { nombre: 'Negroni Sbagliato: Vermouth Rosso, Campari y Espumante', precio: 14700 },
-  { nombre: 'Vinos por copa: Alma Mora Malbec', precio: 6800 },
+  { nombre: 'Vaso de vermut rosso con pomelo o soda', precio: 8100 },
+  { nombre: 'Aperisidra: Cynar, sidra 1888 y pomelo', precio: 8100 },
+  { nombre: 'Copa de tinto verano', precio: 8600 },
+  { nombre: 'Ferroviario: rosso, fernet y soda', precio: 9700 },
+  { nombre: 'Cynar con pomelo o naranja', precio: 10300 },
+  { nombre: 'Campari con naranja o tónica', precio: 11000 },
+  { nombre: 'Aperol Spritz', precio: 13800 },
+  { nombre: 'Fernet con coca', precio: 13800 },
+  { nombre: 'Gin Tonic', precio: 14700 },
+  { nombre: 'Negroni', precio: 15800 },
+  { nombre: 'Negroni Sbagliato: Vermouth Rosso, Campari y Espumante', precio: 15400 },
+  { nombre: 'Vinos por copa: Alma Mora Malbec', precio: 7100 },
 ];
 
 export const SIN_ALCOHOL: ItemBebida[] = [
-  { nombre: 'Gaseosas', precio: 6000 },
-  { nombre: 'Aguas o sifón', precio: 5800 },
-  { nombre: 'Café (cápsula)', precio: 5400 },
+  { nombre: 'Gaseosas', precio: 6300 },
+  { nombre: 'Aguas o sifón', precio: 6100 },
+  { nombre: 'Café (cápsula)', precio: 5700 },
 ];
 
 export const VINITOS: ItemBebida[] = [
-  { nombre: 'Alamos Malbec', precio: 20000 },
-  { nombre: 'Chateaux Subsónico Blanco', precio: 23000 },
-  { nombre: 'Chateaux Subsónico Blend o Malbec', precio: 35000 },
-  { nombre: 'DV Catena Cabernet-Malbec', precio: 28000 },
-  { nombre: 'El Porvenir Amauta Torrontés', precio: 23000 },
-  { nombre: 'Fabre Montmayou Reserva', precio: 23000 },
-  { nombre: 'Ferus Blanc de Blancs', precio: 28000 },
-  { nombre: 'Humberto Canale Blush Rosé', precio: 24000 },
-  { nombre: 'Losance Rosé', precio: 24000 },
-  { nombre: 'Nicasia Blanco', precio: 20000 },
-  { nombre: 'Nicasia Cabernet Franc', precio: 22000 },
-  { nombre: 'Perro Callejero Pinot Noir', precio: 23000 },
-  { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 25000 },
-  { nombre: 'San Pedro de Yacochuya 2021', precio: 54000 },
-  { nombre: 'Sapo de otro pozo Malbec', precio: 30000 },
-  { nombre: 'Serbal Sauvignon Blanc', precio: 25000 },
-  { nombre: 'Tierra del Fuego Red Blend', precio: 22000 },
+  { nombre: 'Alamos Malbec', precio: 21000 },
+  { nombre: 'Chateaux Subsónico Blanco', precio: 24000 },
+  { nombre: 'Chateaux Subsónico Blend o Malbec', precio: 37000 },
+  { nombre: 'DV Catena Cabernet-Malbec', precio: 29500 },
+  { nombre: 'El Porvenir Amauta Torrontés', precio: 24000 },
+  { nombre: 'Fabre Montmayou Reserva', precio: 24000 },
+  { nombre: 'Ferus Blanc de Blancs', precio: 29500 },
+  { nombre: 'Humberto Canale Blush Rosé', precio: 25000 },
+  { nombre: 'Losance Rosé', precio: 25000 },
+  { nombre: 'Nicasia Blanco', precio: 21000 },
+  { nombre: 'Nicasia Cabernet Franc', precio: 23000 },
+  { nombre: 'Perro Callejero Pinot Noir', precio: 24000 },
+  { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 26000 },
+  { nombre: 'San Pedro de Yacochuya 2021', precio: 56500 },
+  { nombre: 'Sapo de otro pozo Malbec', precio: 31500 },
+  { nombre: 'Serbal Sauvignon Blanc', precio: 26000 },
+  { nombre: 'Tierra del Fuego Red Blend', precio: 23000 },
 ];
 
 // "Comen 2, pican 4" — combos para compartir, nombrados como barrios de Madrid.
@@ -120,27 +120,27 @@ export const ESPE_COMBOS: Combo[] = [
   {
     nombre: 'Atocha',
     incluye: 'Papas bravas, croquetas de jamón, Triolet, buñuelos y pincho moruno',
-    precio: 50000,
-    precioSuelto: 58700,
+    precio: 52500,
+    precioSuelto: 61600,
   },
   {
     nombre: 'Sol',
     incluye: 'Tortilla de camembert, ensalada veggie, buñuelos y papas bravas',
-    precio: 45000,
-    precioSuelto: 49200,
+    precio: 47500,
+    precioSuelto: 51600,
     vegetariano: true,
   },
   {
     nombre: 'Chueca',
     incluye: 'Tortilla de papas, pincho moruno, pollo al aglio y rabas',
-    precio: 58000,
-    precioSuelto: 61800,
+    precio: 61000,
+    precioSuelto: 64900,
   },
   {
     nombre: 'Chamartín',
     incluye: 'Tortilla cherry/camembert, huevos rotos con gambas al ajillo, rabas y cerdo cabrales',
-    precio: 65000,
-    precioSuelto: 71100,
+    precio: 68500,
+    precioSuelto: 74500,
   },
 ];
 

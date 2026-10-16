@@ -49,7 +49,7 @@ export default function ReservasPage() {
             <div className="border border-brand-gold/25 bg-brand-gold/[.05] rounded-sm p-5">
               <h3 className="font-display font-semibold text-sand mb-2">💡 Tip 2</h3>
               <p className="text-sand-dim text-sm">
-                Traé efectivo y te hacemos el 10% de descuento.
+                Traé efectivo y te hacemos el 15% de descuento.
               </p>
             </div>
           </div>
