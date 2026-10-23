@@ -34,15 +34,15 @@ export const TAPAS_Y_RACIONES: Plato[] = [
   { nombre: 'Croquetas de jamón (2/4 ud.)', tapa: 11300, racion: 19500 },
   { nombre: 'Triolet: pollo escabeche, zanahorias al curry y olivas', tapa: 12200 },
   { nombre: 'Buñuelos de acelga con muzzarella (2/4 ud.)', tapa: 12200, racion: 22500 },
-  { nombre: 'Ensalada veggie: rúcula, pimientos, cherry salteado, zanahoria, olivas, cebolla encurtida y cilantro', tapa: 13400, racion: 19600 },
+  { nombre: 'Ensalada veggie: rúcula, champiñones salteados, cherry salteado, zanahoria, olivas, cebolla encurtida y cilantro', tapa: 13400, racion: 19600 },
   { nombre: 'Pincho moruno con puré de berenjenas', tapa: 16700, racion: 26000 },
   { nombre: 'Pollo al aglio con papas españolas', tapa: 17000, racion: 28000 },
   { nombre: 'Cerdo cabrales con batatas', tapa: 17700, racion: 28500 },
-  { nombre: 'Huevos rotos veggies con pimientos y queso azul', nueva: true, tapa: 18100, racion: 30000 },
+  { nombre: 'Huevos rotos veggies con champiñones provenzal y queso azul', nueva: true, tapa: 18100, racion: 30000 },
   { nombre: 'Provoleta con tomate y pesto', racion: 21500 },
   { nombre: 'Camembert frito con salsa de arándanos', racion: 23000 },
   { nombre: 'Burrata: rúcula, cebolla encurtida, pepinos agridulces y cherry salteados', racion: 24500 },
-  { nombre: 'Ojo de bife (300 gr) con salsa de pimiento y huevo frito', racion: 37000 },
+  { nombre: 'Ojo de bife (300 gr) con lechuga a la plancha y huevo frito', racion: 37000 },
 ];
 
 export const CLASICOS_DE_MAR: Plato[] = [
