@@ -104,8 +104,6 @@ export const VINITOS: ItemBebida[] = [
   { nombre: 'Perro Callejero Pinot Noir', precio: 24000 },
   { nombre: 'Humberto Canale Blush Rosé', precio: 25000 },
   { nombre: 'Losance Rosé', precio: 25000 },
-  { nombre: 'Saint Felicien Cabernet Sauvignon', precio: 26500 },
-  { nombre: 'Serbal Sauvignon Blanc', precio: 26500 },
   { nombre: 'DV Catena Cabernet-Malbec', precio: 29500 },
   { nombre: 'Ferus Blanc de Blancs', precio: 29500 },
   { nombre: 'Sapo de otro pozo Malbec', precio: 31500 },
