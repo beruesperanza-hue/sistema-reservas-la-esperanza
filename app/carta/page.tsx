@@ -179,7 +179,7 @@ export default async function CartaPage() {
 
       <main className="mx-auto px-5 max-w-2xl py-16 md:py-20">
         <div className="mb-12 border border-brand-gold/35 bg-brand-gold/[.07] rounded-sm px-5 py-4 text-center">
-          <p className="font-display font-bold text-xl text-sand">15% de descuento pagando en efectivo</p>
+          <p className="font-display font-bold text-xl text-sand">10% de descuento pagando en efectivo</p>
           <p className="text-sand-dim text-sm mt-1">Sobre todos los precios de la carta.</p>
         </div>
 
